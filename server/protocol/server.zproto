@@ -1,0 +1,42 @@
+##########rpc
+sr_register 0x01 {
+	.rpc:integer 1
+	.id:integer 2
+	.typ:string 3
+	.handler:integer[] 4
+}
+
+sa_register 0x02 {
+	.rpc:integer 1
+}
+
+sr_fetchtoken 0x03 {
+	.rpc:integer 1
+}
+
+sa_fetchtoken 0x04 {
+	.rpc:integer 1
+	.token:integer 2
+}
+
+sr_kickout 0x05 {
+	.rpc:integer 1
+}
+
+sa_kickout 0x06 {
+	.rpc:integer 1
+}
+############cmd
+s_multicast 0x100 {
+	.uid:integer[] 1
+	.data:string 2
+}
+
+s_login 0x101 {
+
+}
+
+s_logout 0x102 {
+
+}
+
