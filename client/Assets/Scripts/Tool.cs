@@ -1,9 +1,12 @@
+using System.Text;
+using System.Security.Cryptography;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using client_zproto;
 
 class Tool {
+	/*
 	private const int RESOLUTION = 100;
 	public static void ToProto(ref vector2 dst, Vector2 src) {
 		dst.x = (int)(src.x * RESOLUTION);
@@ -38,6 +41,21 @@ class Tool {
 		dst.y = (float)src.y / (float)RESOLUTION;
 		dst.z = (float)src.z / (float)RESOLUTION;
 		dst.w = (float)src.w / (float)RESOLUTION;
+	}
+	*/
+
+	public static byte[] sha1(string passwd) {
+		ASCIIEncoding enc = new ASCIIEncoding();
+		byte[] hash = enc.GetBytes(passwd);
+		SHA1 sha = new SHA1CryptoServiceProvider();
+		return sha.ComputeHash(hash);
+	}
+
+	public static byte[] hmac(byte[] passwd, string text) {
+		ASCIIEncoding enc = new ASCIIEncoding();
+		byte[] hash = enc.GetBytes(text);
+		HMACSHA1 hmac = new HMACSHA1(passwd);
+		return hmac.ComputeHash(hash);
 	}
 
 	public static GameObject FindChild(Transform parent, string childName) {

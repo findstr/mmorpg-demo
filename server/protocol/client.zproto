@@ -1,6 +1,6 @@
 a_error 0x1000 {
 	.cmd:integer 1
-	.errno:integer 2
+	.err:integer 2
 }
 #############account
 r_accountcreate 0x2000 {

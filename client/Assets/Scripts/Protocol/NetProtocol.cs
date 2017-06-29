@@ -15,7 +15,7 @@ public class NetProtocol {
 	private byte[] buffer = new byte[8];
 	private short length_val = 0;
 	//protocol
-	private error error_response = new error();
+	private a_error error_response = new a_error();
 	private Dictionary<int, wire> protocol_obj = new Dictionary<int, wire>();
 	private Dictionary<int, cb_t> protocol_cb = new Dictionary<int, cb_t>();
 	//event
@@ -26,7 +26,7 @@ public class NetProtocol {
 	private int connect_port;
 
 	private void error(int err, wire obj) {
-		error errobj = (error)obj;
+		a_error errobj = (a_error)obj;
 		int cmd = errobj.cmd;
 		int errno = errobj.err;
 		if (!protocol_obj.ContainsKey(cmd)) {
@@ -50,15 +50,18 @@ public class NetProtocol {
 		return ;
 	}
 
-	public void Connect(string addr, int port, event_cb_t open, event_cb_t close) {
+	public void Connect(string addr, int port) {
 		Close();
 		Debug.Log("Connect:" + addr + ":" + port);
 		connect_addr = addr;
 		connect_port = port;
-		event_connect = open;
-		event_close = close;
 		socket.Connect(addr, port);
 		socket_status = socket.Status;
+	}
+
+	public void Event(event_cb_t open, event_cb_t close) {
+		event_connect = open;
+		event_close = close;
 	}
 
 	public void Reconnect() {
@@ -106,7 +109,8 @@ public class NetProtocol {
 		if (socket_status == NetSocket.CLOSE)
 			return ;
 		if (socket.Status == NetSocket.DISCONNECT) {
-			event_close();
+			if (event_close != null)
+				event_close();
 			socket_status = NetSocket.DISCONNECT;
 			Debug.Log("[NetProtocol] Reconnect addr " + connect_addr + ":" + connect_port);
 			socket.Connect(connect_addr, connect_port);
@@ -115,7 +119,8 @@ public class NetProtocol {
 		case NetSocket.DISCONNECT:
 			if (socket.Status == NetSocket.CONNECTED) {
 				socket_status = NetSocket.CONNECTED;
-				event_connect();
+				if (event_connect != null)
+					event_connect();
 			}
 			break;
 		}

@@ -6,6 +6,7 @@ local crypt = require "crypt"
 local const = require "const"
 local proto = require "protocol.client"
 local errno = require "protocol.errno"
+local rpc = require "rpc"
 local db = require "dbinst"
 local sformat = string.format
 
@@ -24,7 +25,7 @@ local ERR = {
 local function cmd_send(fd, cmd, ack)
 	local cmd = proto:querytag(cmd)
 	local hdr = string.pack("<I4", cmd)
-	local body = proto:encode(cmd, ERR)
+	local body = proto:encode(cmd, ack)
 	return S:send(fd, hdr .. body)
 end
 
@@ -66,19 +67,28 @@ local a_accountcreate = {
 	uid = false,
 }
 reg("r_accountcreate", function(fd, req)
+	local name = req.user
+	local passwd = req.passwd
+	local ok, uid = db.inst:hget(account_set, name)
+	print("logind hget:", ok, uid)
+	if ok then
+		a_accountcreate.uid = tonumber(uid)
+		cmd_send(fd, "a_accountcreate", a_accountcreate)
+		print("[logind] r_accountcreate", name, uid)
+		return
+	end
 	local ok, uid = db.inst:incr(account_idx)
+	print("create", ok, uid)
 	if not ok then
 		print("[logind] create user fail", uid)
 		return cmd_error(fd, cmd, errno.ACCOUNT_CREATE)
 	end
-	local name = req.user
-	local passwd = req.passwd
-	db.inst:hset(account_set, uid, req.user)
+	db.inst:hset(account_set, name, uid)
 	db.inst:set(sformat(account_name, uid), name)
 	db.inst:set(sformat(account_passwd, uid), passwd)
 	a_accountcreate.uid = tonumber(uid)
 	cmd_send(fd, "a_accountcreate", a_accountcreate)
-	print("[logind] r_accountcreate", user, uid)
+	print("[logind] r_accountcreate", name, uid)
 end)
 
 local a_accountchallenge = {
@@ -101,6 +111,7 @@ local sr_fetchtoken = {
 }
 
 local a_accountlogin = {
+	uid = false,
 	token = false,
 }
 
@@ -134,15 +145,16 @@ end
 
 reg("r_accountlogin", function(fd, req)
 	local uid, err = auth(fd, req.user, req.passwd)
-	print("r_accountlogin", uid)
 	if not uid then
 		return cmd_error(fd, "a_accountlogin", err)
 	end
 	local gateid = req.gateid
 	local ack = rpc.call(gateid, uid, "sr_fetchtoken", sr_fetchtoken)
+	print("[logind] r_accountlogin", uid, ack)
 	if not ack then
-		return cmd_error(fd, "a_accountlogin", err)
+		return cmd_error(fd, "a_accountlogin", errno.ACCOUNT_TOKEN_TIMEOUT)
 	end
+	a_accountlogin.uid = uid
 	a_accountlogin.token = ack.token
 	cmd_send(fd, "a_accountlogin", ack)
 end)
