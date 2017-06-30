@@ -14,6 +14,7 @@ public class LoginState : GameState {
 	public Button register_btn;
 
 	public override void OnEnter() {
+		GameData.mainCamera.gameObject.SetActive(false);
 		Debug.Log("OnEnter");
 	}
 

@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class UICamera : MonoBehaviour {
+public class MainCamera : MonoBehaviour {
 	void Awake() {
 		Start();
 	}
 
 	// Use this for initialization
 	void Start () {
-		GameData.uiCamera = GetComponent<Camera>();
+		GameData.mainCamera = GetComponent<Camera>();
 	}
 }
