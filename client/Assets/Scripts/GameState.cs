@@ -29,12 +29,17 @@ public abstract class GameState : MonoBehaviour {
 	public GameState() {
 		Register(@a_error, ack_error);
 	}
+
 	public void Register(wire obj, cb_t cb) {
 		int cmd = obj._tag();
 		NetInstance.Login.Register(obj);
 		NetInstance.Gate.Register(obj);
 		Debug.Assert(!protocol_cb.ContainsKey(cmd));
 		protocol_cb[cmd] = cb;
+	}
+
+	public void Event(NetProtocol.event_cb_t open, NetProtocol.event_cb_t close) {
+		NetInstance.Gate.Event(open, close);
 	}
 
 	public void Dispatch(int cmd, wire obj) {
