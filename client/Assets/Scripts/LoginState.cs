@@ -75,6 +75,9 @@ public class LoginState : GameState {
 
 	void ack_login(int err, wire obj) {
 		a_accountlogin ack = (a_accountlogin)obj;
-		Debug.Log("[LoginState] ack_login err:" + err);
+		Debug.Log("[LoginState] ack_login err:" + err + "uid:" + ack.uid);
+		if (err == 0)
+			GameData.uid = ack.uid;
+		StateManager.Instance.SwitchState("SelectState");
 	}
 }

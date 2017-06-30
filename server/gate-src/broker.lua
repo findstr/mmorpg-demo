@@ -1,5 +1,6 @@
 local core = require "silly.core"
 local np = require "netpacket"
+local token = require "token"
 local online = require "online"
 local sproto = require "protocol.server"
 local master = require "cluster.master"
@@ -133,11 +134,19 @@ local function sr_register(uid, req, fd)
 end
 
 local function sr_fetchtoken(uid, req, fd)
-	print("fetch token")
+	local tk = token.fetch(uid)
+	req.token = tk
+	send_server(fd, uid, "sa_fetchtoken", req)
+	print("[gate] fetch token", tk)
 end
 
 local function sr_kickout(uid, req, fd)
-	print("fetch kickout")
+	local gatefd = online.gatefd(uid)
+	if gatefd then
+		master.kickmaster(gatefd)
+	end
+	send_server(fd, uid, "sa_kickout", req)
+	print("[gate]fetch kickout uid:", uid, "gatefd", gatefd)
 end
 
 local function s_multicast(uid, req, fd)
