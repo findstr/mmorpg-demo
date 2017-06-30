@@ -11,7 +11,6 @@ local M = {}
 --------router
 local CMD = {}
 local NIL = {}
-local forward_func
 local readonly_mt = {__newindex = function() assert("read only") end}
 setmetatable(NIL, readonly_mt)
 
@@ -30,22 +29,17 @@ local function reg_server(cmd, func)
 	CMD[cmd] = cb
 end
 
-local function reg_forward(func)
-	local cb = function(uid, dat, fd)
-		func(uid, dat:sub(8 + 1), cmd)
-	end
-	forward_func = cb
-end
-
 --------slave router
-local POWER = 10000
+
+local LOGIN_TYPE = 1 * 10000
+local ROLE_TYPE = 2 * 10000
 local slave_type_key = {
 	--login
-	["login"] = 1 * POWER,
-	[1 * POWER] = "login",
+	["login"] = LOGIN_TYPE,
+	[LOGIN_TYPE] = "login",
 	--role
-	["role"] = 2 * POWER,
-	[2 * POWER] = "role"
+	["role"] = ROLE_TYPE,
+	[ROLE_TYPE] = "role"
 }
 
 local slave_fd_typeid = {
@@ -102,7 +96,12 @@ function M.data(fd, d, sz)
 		func(uid, dat, fd)
 		return
 	end
-	forward_func(uid, dat, fd)
+	local a = online.agent(uid)
+	if not a then
+		print("[gate] broker data uid:", uid, " logout")
+		return
+	end
+	a:slavedata(cmd, dat)
 end
 
 --------interface
@@ -113,9 +112,29 @@ local function send_server(fd, uid, cmd, ack)
 	master.sendslave(fd, hdr .. dat)
 end
 
-function M.forward(fd, uid, dat)
+local function forward(fd, uid, dat)
 	local hdr = pack("<I4", uid)
 	master.sendslave(fd, hdr .. dat)
+end
+
+local SERVER_KEY = {
+	[LOGIN_TYPE] = "logins",
+	[ROLE_TYPE] = "roles",
+}
+
+function M.tryforward(agent, cmd, dat) --dat:[cmd][packet]
+	local typeid = slave_cmd_typeid[cmd]
+	if not typeid then
+		return false
+	end
+	local key = SERVER_KEY[typeid]
+	local id = agent[key]
+	typeid = typeid + id
+	local fd = slave_typeid_fd[typeid]
+	if not fd then
+		return false
+	end
+	return forward(fd, agent.uid, dat)
 end
 
 M.reg_server = reg_server
@@ -137,7 +156,7 @@ local function sr_fetchtoken(uid, req, fd)
 	local tk = token.fetch(uid)
 	req.token = tk
 	send_server(fd, uid, "sa_fetchtoken", req)
-	print("[gate] fetch token", tk)
+	print("[gate] fetch token", uid, tk)
 end
 
 local function sr_kickout(uid, req, fd)

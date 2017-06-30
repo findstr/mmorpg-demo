@@ -2,6 +2,7 @@ local core = require "silly.core"
 local slave = require "cluster.slave"
 local router = require "router"
 local sproto = require "protocol.server"
+local cproto = require "protocol.client"
 local pack = string.pack
 
 local M = {}
@@ -118,8 +119,19 @@ function M.send_client(gateid, uid, cmd, ack)
 	return send(cproto, gateid, uid, cmd, ack)
 end
 
+local ERR = {
+	cmd = false,
+	err = false,
+}
+
+function M.send_error(gateid, uid, cmd, err)
+	ERR.cmd = cproto:querytag(cmd)
+	ERR.err = err
+	return send(cproto, gateid, uid, "a_error", ERR)
+end
+
 function M.reg(cmd)
-	router.register(sproto, cmd, rpc_ack)
+	router.regserver(cmd, rpc_ack)
 end
 
 M.send_server = sendserver

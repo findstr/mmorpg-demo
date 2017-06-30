@@ -52,10 +52,12 @@ public class LoginState : GameState {
 		//protocol
 		a_accountcreate create = new a_accountcreate();
 		a_accountchallenge challenge = new a_accountchallenge();
-		a_accountlogin login = new a_accountlogin();
+		a_accountlogin accountlogin = new a_accountlogin();
+		a_gatelogin gatelogin = new a_gatelogin();
 		Register(create, ack_create);
 		Register(challenge, ack_challenge);
-		Register(login, ack_login);
+		Register(accountlogin, ack_accountlogin);
+		Register(gatelogin, ack_gatelogin);
 	}
 
 	/////////////////protocol
@@ -77,11 +79,19 @@ public class LoginState : GameState {
 		NetInstance.Login.Send(req);
 	}
 
-	void ack_login(int err, wire obj) {
+	void ack_accountlogin(int err, wire obj) {
 		a_accountlogin ack = (a_accountlogin)obj;
-		Debug.Log("[LoginState] ack_login err:" + err + "uid:" + ack.uid);
+		Debug.Log("[LoginState] ack_accountlogin err:" + err + "uid:" + ack.uid);
 		if (err == 0)
 			GameData.uid = ack.uid;
-		StateManager.Instance.SwitchState("SelectState");
+		r_gatelogin req = new r_gatelogin();
+		req.uid = ack.uid;
+		req.token = ack.token;
+		NetInstance.Gate.Send(req);
+	}
+	void ack_gatelogin(int err, wire obj) {
+		Debug.Log("[LoginState] GateLogin:" + err);
+		if (err == 0)
+			StateManager.Instance.SwitchState("SelectState");
 	}
 }

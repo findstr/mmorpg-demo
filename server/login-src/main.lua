@@ -22,7 +22,7 @@ local function register_router(gateid)
 		typ = slavetype,
 		handler = h,
 	}
-	for cmd, v in pairs(router) do
+	for cmd, _ in pairs(router.client) do
 		print("[login] cmd:", cmd)
 		h[#h + 1] = cmd
 	end

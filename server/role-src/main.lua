@@ -8,6 +8,7 @@ local tool = require "tool"
 local unpack = string.unpack
 
 require "protocol.rpc"
+require "role"
 
 local slaveid = 1
 local slavetype = "role"
@@ -20,12 +21,12 @@ local function register_router(gateid)
 		typ = slavetype,
 		handler = h,
 	}
-	for cmd, v in pairs(router) do
+	for cmd, _ in pairs(router.client) do
 		print("[role] cmd:", cmd)
 		h[#h + 1] = cmd
 	end
 	local ack = rpc.call(gateid, 0, "sr_register", sr_register)
-	print("register", ack, ack.rpc)
+	print("register", ack, ack and ack.rpc or "")
 end
 
 local EVENT = {

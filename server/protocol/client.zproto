@@ -31,7 +31,50 @@ a_accountlogin 0x2005 {
 	.token:integer 2
 }
 
+#########gate
+
+r_gatelogin 0x20F0 {
+	.uid:integer 1
+	.token:integer 2
+}
+
+a_gatelogin 0x20F1 {
+
+}
 
 ########role
+
+bagitem {
+	.id:integer 1
+	.count:integer 2
+}
+
+r_roleinfo 0x2100 {
+
+}
+
+a_roleinfo 0x2101 {
+	.name:string 1
+	.level:integer 2
+	.exp:integer 3
+	.gold:integer 4
+	.bag:bagitem[] 5
+}
+
+r_createrole 0x2102 {
+
+}
+
+a_createrole 0x2103 {
+	.name:string 1
+	.level:integer 2
+	.exp:integer 3
+	.gold:integer 4
+	.bag:bagitem[] 5
+}
+
+
+
+
 
 

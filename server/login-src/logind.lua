@@ -156,7 +156,7 @@ reg("r_accountlogin", function(fd, req)
 	end
 	a_accountlogin.uid = uid
 	a_accountlogin.token = ack.token
-	cmd_send(fd, "a_accountlogin", ack)
+	cmd_send(fd, "a_accountlogin", a_accountlogin)
 end)
 
 ------------------start
