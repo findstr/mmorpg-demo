@@ -12,6 +12,10 @@ public class SelectState : GameState {
 
 	}
 
+	public override string Name() {
+		return "SelectState";
+	}
+
 	// Use this for initialization
 	void Start () {
 

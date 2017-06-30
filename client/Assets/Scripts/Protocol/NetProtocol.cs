@@ -8,39 +8,19 @@ using zprotobuf;
 
 public class NetProtocol {
 	//delegate
-	public delegate void cb_t(int err, wire obj);
 	public delegate void event_cb_t();
 	//socket
 	private NetSocket socket = new NetSocket();
 	private byte[] buffer = new byte[8];
 	private short length_val = 0;
 	//protocol
-	private a_error error_response = new a_error();
 	private Dictionary<int, wire> protocol_obj = new Dictionary<int, wire>();
-	private Dictionary<int, cb_t> protocol_cb = new Dictionary<int, cb_t>();
 	//event
 	private int socket_status = NetSocket.CLOSE;
 	private event_cb_t event_connect = null;
 	private event_cb_t event_close = null;
 	private string connect_addr;
 	private int connect_port;
-
-	private void error(int err, wire obj) {
-		a_error errobj = (a_error)obj;
-		int cmd = errobj.cmd;
-		int errno = errobj.err;
-		if (!protocol_obj.ContainsKey(cmd)) {
-			Debug.Log("[NetProtocol] can't has handler of cmd[" + cmd + "]");
-			return ;
-		}
-		cb_t cb = protocol_cb[cmd];
-		cb(errno, null);
-		return ;
-	}
-
-	public NetProtocol() {
-		Register(error_response, error);
-	}
 
 	public void Close() {
 		length_val = 0;
@@ -95,13 +75,14 @@ public class NetProtocol {
 		return true;
 	}
 
-	public void Register(wire obj, cb_t cb) {
+	public void Register(wire obj) {
 		int cmd = obj._tag();
 		Debug.Log("[NetProtocol] Register:" + obj._name() + " tag:" + cmd);
-		Debug.Assert(!protocol_obj.ContainsKey(cmd));
-		Debug.Assert(!protocol_cb.ContainsKey(cmd));
+		if (protocol_obj.ContainsKey(cmd)) {
+			Debug.Assert(protocol_obj[cmd]._tag() == obj._tag());
+			return;
+		}
 		protocol_obj[cmd] = obj;
-		protocol_cb[cmd] = cb;
 		return ;
 	}
 
@@ -150,8 +131,7 @@ public class NetProtocol {
 		//Debug.Log("[NetProtocol] Process cmd[" + obj._name() + "]Err:" + err);
 		if (err < 0)
 			return ;
-		cb_t cb = protocol_cb[cmd];
-		cb(0, obj);
+		StateManager.Instance.DispatchState(cmd, obj);
 		return ;
 	}
 }

@@ -21,6 +21,9 @@ public class LoginState : GameState {
 	public override void OnLeave() {
 		Debug.Log("OnLeave");
 	}
+	public override string Name() {
+		return "LoginState";
+	}
 
 	void on_register() {
 		r_accountcreate req = new r_accountcreate();
@@ -50,9 +53,9 @@ public class LoginState : GameState {
 		a_accountcreate create = new a_accountcreate();
 		a_accountchallenge challenge = new a_accountchallenge();
 		a_accountlogin login = new a_accountlogin();
-		NetInstance.Login.Register(create, ack_create);
-		NetInstance.Login.Register(challenge, ack_challenge);
-		NetInstance.Login.Register(login, ack_login);
+		Register(create, ack_create);
+		Register(challenge, ack_challenge);
+		Register(login, ack_login);
 	}
 
 	/////////////////protocol

@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using zprotobuf;
 
 public class StateManager {
 
@@ -36,6 +37,13 @@ public class StateManager {
 			state.OnEnter();
 		}
 		currentState = state;
+		return ;
+	}
+
+	public void DispatchState(int cmd, wire obj) {
+		if (currentState == null)
+			return ;
+		currentState.Dispatch(cmd, obj);
 		return ;
 	}
 
