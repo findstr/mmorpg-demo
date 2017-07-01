@@ -1,7 +1,7 @@
 local env = require "silly.env"
 local M = {}
 
-function M.gatelist()
+function M.hublist()
 	local l = {}
 	for gatei = 1, 100 do
 		port = env.get("brokerport_" .. gatei)

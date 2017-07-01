@@ -1,7 +1,7 @@
 local core = require "silly.core"
 local env = require "silly.env"
 local master = require "cluster.master"
-local broker = require "broker"
+local hub = require "channelhub"
 local agent = require "agent"
 
 core.start(function()
@@ -14,7 +14,7 @@ core.start(function()
 		masterid = tonumber(gateid),
 		openport = openport,
 		slaveport = brokerport,
-		slave = broker,
+		slave = hub,
 		agent = agent,
 	}
 	print("gate start:", ok)

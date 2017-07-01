@@ -26,8 +26,7 @@ master.start {
 
 AGENT {
 	'create' = function(self, fd)
-	'init' = function(self, fd)
-	'kick' = function(self)
+	'free' = function(self)
 	'masterdata' = function(self, fd, d, sz)
 }
 
@@ -39,24 +38,6 @@ SLAVE {
 
 ]]--
 
-local agent_pool = {}
-local weak_mt = {__mode = "kv"}
-setmetatable(agent_pool, weak_mt)
-local function createagent(masterfd)
-	local a = tremove(agent_pool)
-	if not a then
-		a = AGENT:create(masterfd)
-	else
-		a:init(masterfd)
-	end
-	return a
-end
-
-local function freeagent(a)
-	a:kick()
-	tinsert(agent_pool, a)
-end
-
 M.sendslave = function(fd, data)
 	slave_inst:send(fd, data)
 end
@@ -65,10 +46,9 @@ M.sendmaster = function(fd, data)
 	master_inst:send(fd, data)
 end
 
-M.kickmaster = function(fd, data)
+M.kickmaster = function(fd)
 	local a = masterfd_agent[fd]
 	masterfd_agent[masterfd] = nil
-	freeagent(a)
 	master_inst:close(fd)
 end
 
@@ -79,13 +59,13 @@ function M.start(config)
 		addr = config.openport,
 		accept = function(fd, addr)
 			print("[master] client accept", fd, addr)
-			masterfd_agent[fd] = createagent(fd)
+			masterfd_agent[fd] = AGENT:create(fd)
 		end,
 		close = function(fd, errno)
 			print("[master] client close", fd, errno)
 			local a = masterfd_agent[fd]
 			masterfd_agent[fd] = nil
-			freeagent(a)
+			a:logout()
 		end,
 		data = function(fd, d, sz)
 			print("[master] client data", fd)

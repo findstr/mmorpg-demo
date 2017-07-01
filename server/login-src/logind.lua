@@ -4,9 +4,9 @@ local msg = require "saux.msg"
 local np = require "netpacket"
 local crypt = require "crypt"
 local const = require "const"
+local channel = require "channel"
 local proto = require "protocol.client"
 local errno = require "protocol.errno"
-local rpc = require "rpc"
 local db = require "dbinst"
 local sformat = string.format
 
@@ -136,7 +136,7 @@ local function auth(fd, user, passwd)
 		return uid
 	end
 	sr_kickout.uid = uid
-	local ack = rpc.call(kick_gate, uid, "sr_kickout", sr_kickout)
+	local ack = channel.call(kick_gate, uid, "sr_kickout", sr_kickout)
 	if not ack then
 		return nil, errno.ACCOUNT_KICK_TIMEOUT
 	end
@@ -149,7 +149,7 @@ reg("r_accountlogin", function(fd, req)
 		return cmd_error(fd, "a_accountlogin", err)
 	end
 	local gateid = req.gateid
-	local ack = rpc.call(gateid, uid, "sr_fetchtoken", sr_fetchtoken)
+	local ack = channel.call(gateid, uid, "sr_fetchtoken", sr_fetchtoken)
 	print("[logind] r_accountlogin", uid, ack)
 	if not ack then
 		return cmd_error(fd, "a_accountlogin", errno.ACCOUNT_TOKEN_TIMEOUT)

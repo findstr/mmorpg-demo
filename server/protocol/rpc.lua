@@ -1,6 +1,8 @@
-local rpc = require "rpc"
+local l = {
+"sa_register",
+"sa_fetchtoken",
+"sa_kickout",
+}
 
-rpc.reg("sa_register")
-rpc.reg("sa_fetchtoken")
-rpc.reg("sa_kickout")
+return l
 
