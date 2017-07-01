@@ -86,6 +86,11 @@ class Tool {
 		q.x = Mathf.Tan (0.5f * Mathf.Deg2Rad * angleX);
 		return q;
         }
+	public static GameObject InstancePrefab(string name) {
+		GameObject obj = Resources.Load("Prefabs/" + name, typeof(GameObject)) as GameObject;
+		obj = GameObject.Instantiate(obj) as GameObject;
+		return obj;
+	}
 }
 
 

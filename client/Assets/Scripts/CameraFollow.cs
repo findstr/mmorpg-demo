@@ -35,4 +35,26 @@ public class CameraFollow {
 		MainFollow();
 	}
 	*/
+
+	private Vector3 camera_pos;
+	private Character follow_target;
+
+	public void Attach(Character c, Vector3 offset) {
+		follow_target = c;
+		camera_pos = offset;
+	}
+
+	public void OnUpdate() {
+		if (follow_target == null)
+			return ;
+		Camera maincamera = GameData.mainCamera;
+		var pos = follow_target.transform.position;
+		var rot = follow_target.transform.localRotation;
+
+		var src_rot = maincamera.transform.localRotation;
+		var dst_rot = rot * Quaternion.Euler(follow_target.transform.rotation.eulerAngles.x, 0.0f, 0.0f);
+		maincamera.transform.localRotation = Quaternion.Slerp(src_rot, dst_rot, 0.5f);
+		maincamera.transform.position = pos;
+		maincamera.transform.position += maincamera.transform.rotation * camera_pos;
+	}
 }

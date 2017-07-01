@@ -25,6 +25,7 @@ public abstract class GameState : MonoBehaviour {
 	abstract public string Name();
 	abstract public void OnEnter();
 	abstract public void OnLeave();
+	virtual public void OnUpdate() {}
 
 	public GameState() {
 		Register(@a_error, ack_error);

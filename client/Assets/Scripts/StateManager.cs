@@ -30,6 +30,7 @@ public class StateManager {
 			obj = GameObject.Instantiate(obj) as GameObject;
 			Debug.Assert(obj != null);
 			state = obj.GetComponent<GameState>();
+			Debug.Log("XXX:" + name + ":" + state);
 			pool[name] = state;
 			state.OnEnter();
 		} else {
@@ -45,6 +46,11 @@ public class StateManager {
 			return ;
 		currentState.Dispatch(cmd, obj);
 		return ;
+	}
+
+	public void UpdateState() {
+		if (currentState)
+			currentState.OnUpdate();
 	}
 
 }
