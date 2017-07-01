@@ -43,7 +43,6 @@ local ERR = {
 
 local function sendfunc(proto)
 	return function(fd, uid, cmd, ack)
-		print("send func", cmd)
 		cmd = proto:querytag(cmd)
 		local hdr = pack("<I4I4", uid, cmd)
 		local dat = proto:encode(cmd, ack)

@@ -43,6 +43,13 @@ class Tool {
 		dst.w = (float)src.w / (float)RESOLUTION;
 	}
 	*/
+	public static byte[] tobytes(string dat) {
+		return UTF8Encoding.UTF8.GetBytes(dat);
+	}
+
+	public static string tostring(byte[] dat) {
+		return UTF8Encoding.UTF8.GetString(dat);
+	}
 
 	public static byte[] sha1(string passwd) {
 		ASCIIEncoding enc = new ASCIIEncoding();

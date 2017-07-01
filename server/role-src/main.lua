@@ -1,8 +1,6 @@
 local core = require "silly.core"
-local np = require "netpacket"
 local channel = require "channel"
-local slave = require "cluster.slave"
-local sproto = require "protocol.server"
+local db = require "db"
 local rpccmd = require "protocol.rpc"
 local tool = require "tool"
 local unpack = string.unpack
@@ -31,6 +29,7 @@ core.start(function()
 		event = EVENT,
 		rpccmd = rpccmd,
 	}
-	print("[role] server start")
+	local ok = db.start()
+	print("[role] server start", ok)
 end)
 

@@ -13,6 +13,7 @@ function db.start()
 	print("Redis Connect:", db.inst, err)
 	return db.inst and true or false
 end
+function db.
 
 return db
 
