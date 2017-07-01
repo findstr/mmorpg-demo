@@ -8,12 +8,11 @@ public class MainState : GameState {
 	private CameraFollow follow = new CameraFollow();
 
 	public override void OnEnter() {
-		Vector3 camera_offset = new Vector3(0.0f, 1.0f, -2.0f);
 		var obj = Tool.InstancePrefab("Character01");
 		role = obj.GetComponent<Character>();
 		Debug.Assert(role != null);
 		controller = new MoveController(role);
-		follow.Attach(role, camera_offset);
+		follow.Attach(role);
 	}
 
 	public override void OnLeave() {
@@ -36,7 +35,7 @@ public class MainState : GameState {
 	//////////inherit
 
 	void Start() {
-		OnEnter();
+
 	}
 
 	void FixedUpdate() {

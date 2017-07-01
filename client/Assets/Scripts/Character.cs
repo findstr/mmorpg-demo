@@ -15,7 +15,6 @@ public class Character : MonoBehaviour {
 	private Rigidbody RB;
 	private Animator animator;
 	//data
-	private bool turnning = false;
 	private Shadow shadow = new Shadow();
 
 	public void SetShadow(Vector3 pos, Quaternion rot) {

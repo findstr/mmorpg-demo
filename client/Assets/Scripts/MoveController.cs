@@ -24,8 +24,6 @@ public class MoveController {
 		} else if (Input.GetKey(KeyCode.D)) {
 			turn = Time.deltaTime * GameConfig.main_turnspeed;
 		}
-		Vector3 move_pos;
-		Quaternion move_rot;
 		//character rotation
 		Quaternion rotY = Quaternion.Euler(0.0f, turn, 0.0f);
 		rot = rot * rotY;

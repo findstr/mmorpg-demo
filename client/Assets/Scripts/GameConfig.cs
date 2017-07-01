@@ -10,5 +10,6 @@ public class GameConfig {
 	static public int select_rotspeed = 1;
 	static public float main_runspeed = 100.0f;
 	static public float main_turnspeed = 100.0f;
+	static public Vector3 main_cameraoffset = new Vector3(0.0f, 2.0f, -3.5f);
 }
 

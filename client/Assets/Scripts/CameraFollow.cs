@@ -39,9 +39,9 @@ public class CameraFollow {
 	private Vector3 camera_pos;
 	private Character follow_target;
 
-	public void Attach(Character c, Vector3 offset) {
+	public void Attach(Character c) {
 		follow_target = c;
-		camera_pos = offset;
+		camera_pos = GameConfig.main_cameraoffset;
 	}
 
 	public void OnUpdate() {
