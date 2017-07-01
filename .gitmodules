@@ -1,6 +1,6 @@
 [submodule "server/silly"]
 	path = server/silly
 	url = git@github.com:findstr/silly
-[submodule "client/Assets/Resources/Character"]
-	path = client/Assets/Resources/Character
+[submodule "client/Assets/Resources"]
+	path = client/Assets/Resources
 	url = git@git.oschina.net:gotocoding/mmorpg-model.git
