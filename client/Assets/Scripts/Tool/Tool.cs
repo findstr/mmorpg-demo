@@ -87,6 +87,23 @@ class Tool {
 		return q;
         }
 
+	private static string GetiPhoneDocumentsPath() {
+		string path = Application.dataPath.Substring(0, Application.dataPath.Length - 5);
+		path = path.Substring(0, path.LastIndexOf('/'));
+		return path + "/Documents";
+	}
+	public static string GetPath(string fileName){
+	#if UNITY_EDITOR
+		return Application.dataPath +"/Resources/"+fileName;
+	#elif UNITY_ANDROID
+		return Application.persistentDataPath+fileName;
+	#elif UNITY_IPHONE
+		return GetiPhoneDocumentsPath()+"/"+fileName;
+	#else
+		return Application.dataPath +"/"+ fileName;
+	#endif
+	}
+
 	public static GameObject InstancePrefab(string name, Vector3 pos, Quaternion rot) {
 		return GameData.tool.InstancePrefab(name, pos, rot);
 	}

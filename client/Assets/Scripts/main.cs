@@ -20,6 +20,7 @@ public class main : MonoBehaviour {
 		NetInstance.Login.Connect(login_addr, login_port);
 		NetInstance.Gate.Connect(gate_addr, gate_port);
 		StateManager.Instance.SwitchState("LoginState");
+		DB.DB.Load();
 	}
 
 	// Update is called once per frame
