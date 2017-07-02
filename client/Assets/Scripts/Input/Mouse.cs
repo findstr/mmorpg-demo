@@ -17,10 +17,12 @@ public class Mouse {
 	}
 #else
 	static public int GetDown() {
-
+		if (Input.touchCount == 0)
+			return NONE;
+		return 0;
 	}
-	static public int GetPosition(int id) {
-
+	static public Vector3 GetPosition(int id) {
+		return Input.touches[id].position;
 	}
 #endif
 
