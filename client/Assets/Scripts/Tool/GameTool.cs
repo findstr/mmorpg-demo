@@ -5,7 +5,6 @@ using UnityEngine;
 public class GameTool : MonoBehaviour {
 	public GameObject InstancePrefab(string name, Vector3 pos, Quaternion rot) {
 		GameObject obj = Resources.Load("Prefabs/" + name, typeof(GameObject)) as GameObject;
-		Debug.Log("Instance:" + obj + name);
 		obj = GameObject.Instantiate(obj, pos, rot) as GameObject;
 		return obj;
 	}

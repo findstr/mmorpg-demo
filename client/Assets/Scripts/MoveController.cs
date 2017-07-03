@@ -57,7 +57,10 @@ public class MoveController {
 		//var uipos = ui.ScreenToWorldPoint(pos);
 		var ray = main.ScreenPointToRay(pos);
 		Debug.DrawRay(ray.origin, ray.direction *20, Color.yellow);
-		if (!Physics.Raycast(ray, out hitInfo))
+		if (!Physics.Raycast(ray, out hitInfo, Mathf.Infinity, 1 << 9))
+			return false;
+		var hitObj = hitInfo.collider.gameObject;
+		if (hitObj.tag != "Terrian")
 			return false;
 		agent.SetDestination(hitInfo.point);
 		Tool.PlayParticle(GameConfig.move.click_particle, hitInfo.point, 0.3f);
