@@ -20,13 +20,16 @@ public class XmlSet<T, K> : XmlLoad where T:new(){
 		return default(T);
 	}
 	private char[] delim = {','};
-	private IdCount ParseIdCount(string str) {
-		Debug.Log("IdCount");
-		return default(IdCount);
+	private char[] idcount= {':'};
+	private void Parse(ref IdCount o, string str) {
+		string[] a = str.Split(idcount);
+		Debug.Log("ParseIdCount:" + str + a.Length);
+		Debug.Assert(a.Length == 2);
+		o.id = int.Parse(a[0]);
+		o.count = int.Parse(a[1]);
 	}
-	private int ParseInt(string str) {
-		Debug.Log("Int");
-		return default(int);
+	private void Parse(ref int o, string str) {
+		o = int.Parse(str);
 	}
 	public override void Load(string path) {
 		XmlDocument doc = new XmlDocument();
@@ -40,13 +43,22 @@ public class XmlSet<T, K> : XmlLoad where T:new(){
 			FieldInfo[] fi = var.GetType().GetFields();
 			for (int j = 0; j < fi.Length; j++) {
 				var val = n.Attributes.GetNamedItem(fi[j].Name).Value;
+				if (val == "")
+					continue;
 				if (fi[j].FieldType.IsArray) {
 					string[] words = val.Split(delim);
-					Array a = Array.CreateInstance(fi[i].FieldType.GetElementType(), words.Length);
-					for (int k = 0; k < words.Length; k++) {
-						a.SetValue(
-						Parse(ref (fi[i].FieldType.GetElementType())(a[k]), words[k]);
-						Debug.Log("Parse:" + words[k]);
+					if (fi[j].FieldType == typeof(IdCount[])) {
+						IdCount[] l = new IdCount[words.Length];
+						for (int k = 0; k < words.Length; k++)
+							Parse(ref l[k], words[k]);
+						fi[j].SetValue(var, l);
+					} else if (fi[j].FieldType == typeof(int[])) {
+						int[] l = new int[words.Length];
+						for (int k = 0; k < words.Length; k++)
+							Parse(ref l[k], words[k]);
+						fi[j].SetValue(var, l);
+					} else {
+						Debug.Assert(false);
 					}
 				} else {
 					fi[j].SetValue(var, Convert.ChangeType(val, fi[j].FieldType));
@@ -62,6 +74,7 @@ public class XmlSet<T, K> : XmlLoad where T:new(){
 public class DB {
 	public static XmlSet<LanguageItem, string> Language = new XmlSet<LanguageItem, string>();
 	public static XmlSet<RoleLevelItem, int> RoleLevel = new XmlSet<RoleLevelItem, int>();
+	public static XmlSet<ItemUseItem, int> ItemUse = new XmlSet<ItemUseItem, int>();
 
 	public static void Load() {
 		FieldInfo[] fi = typeof(DB).GetFields();
@@ -71,7 +84,8 @@ public class DB {
 			XmlLoad obj = (XmlLoad)fi[j].GetValue(null);
 			obj.Load(Tool.GetPath("DB/" + name + ".xml"));
 		}
-		Debug.Log("RoleLevel:" + RoleLevel.Get(1).Value);
+		var a = ItemUse.Get(10000);
+		Debug.Log("RoleLevel:" + a.Prop.Length + ":" + a.Prop[0].id + a.Prop[1].count);
 	}
 }}
 
