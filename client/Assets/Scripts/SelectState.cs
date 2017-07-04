@@ -108,6 +108,9 @@ public class SelectState : GameState {
 		a_roleinfo ack = (a_roleinfo)obj;
 		if (err == 0) {
 			showUI();
+			Module.Role.name = Tool.tostring(ack.name);
+			Module.Role.exp = ack.exp;
+			Module.Role.level = ack.level;
 			role_name.text = Tool.tostring(ack.name);
 		} else {
 			createUI();

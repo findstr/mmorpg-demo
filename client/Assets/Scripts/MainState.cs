@@ -19,6 +19,7 @@ public class MainState : GameState {
 		Debug.Assert(role != null);
 		controller = new MoveController(role);
 		follow.Attach(role);
+		Module.UI.main.RefreshRole();
 	}
 
 	public override void OnLeave() {
