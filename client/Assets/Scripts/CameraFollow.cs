@@ -22,7 +22,14 @@ public class CameraFollow {
 		pos.y = 0;
 		pos += GameConfig.main_cameraoffset;
 		var src = main.transform.position;
-		main.transform.position = Vector3.Slerp(src, pos, 0.1f);
+		Debug.Log("CameraY:" + pos + src);
+		if (Mathf.Abs(pos.x - src.x) < 1.0f)
+			pos.x = src.x;
+		if (Mathf.Abs(pos.z - src.z) < 1.0f)
+			pos.z = src.z;
+		pos = Vector3.Slerp(src, pos, Time.deltaTime);
+		pos.y = src.y;
+		main.transform.position = pos;
 		main.transform.LookAt(follow_target.transform);
 	}
 }
