@@ -87,11 +87,22 @@ class Tool {
 		return q;
         }
 
+	public static void Filter(ref Vector3 a, Vector3 b, float delta) {
+		if (Mathf.Abs(a.x - b.x) > delta)
+			a.x = b.x;
+		if (Mathf.Abs(a.y - b.y) > delta)
+			a.y = b.y;
+		if (Mathf.Abs(a.z - b.z) > delta)
+			a.z = b.z;
+		return ;
+	}
+
 	private static string GetiPhoneDocumentsPath() {
 		string path = Application.dataPath.Substring(0, Application.dataPath.Length - 5);
 		path = path.Substring(0, path.LastIndexOf('/'));
 		return path + "/Documents";
 	}
+
 	public static string GetPath(string fileName){
 	#if UNITY_EDITOR
 		return Application.dataPath +"/Resources/"+fileName;

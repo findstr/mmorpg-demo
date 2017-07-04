@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class CameraFollow {
+	private Vector3 follow_pos;
 	private Character follow_target;
 
 	public void Attach(Character c) {
@@ -10,6 +11,7 @@ public class CameraFollow {
 		Camera main = GameData.mainCamera;
 		var pos = follow_target.transform.position;
 		pos.y = 0;
+		follow_pos = follow_target.transform.position;
 		main.transform.position = pos + GameConfig.main_cameraoffset;
 		main.transform.LookAt(follow_target.transform);
 	}
@@ -18,18 +20,14 @@ public class CameraFollow {
 		if (follow_target == null)
 			return ;
 		Camera main = GameData.mainCamera;
-		var pos = follow_target.transform.position;
+		Tool.Filter(ref follow_pos, follow_target.transform.position, 0.1f);
+		var pos = follow_pos;
 		pos.y = 0;
 		pos += GameConfig.main_cameraoffset;
 		var src = main.transform.position;
-		Debug.Log("CameraY:" + pos + src);
-		if (Mathf.Abs(pos.x - src.x) < 1.0f)
-			pos.x = src.x;
-		if (Mathf.Abs(pos.z - src.z) < 1.0f)
-			pos.z = src.z;
-		pos = Vector3.Slerp(src, pos, Time.deltaTime);
+		pos = Vector3.Slerp(src, pos, 0.1f);
 		pos.y = src.y;
 		main.transform.position = pos;
-		main.transform.LookAt(follow_target.transform);
+		//main.transform.LookAt(follow_pos);
 	}
 }

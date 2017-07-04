@@ -14,7 +14,7 @@ public class GameConfig {
 	static public int select_rotspeed = 1;
 	static public float main_runspeed = 100.0f;
 	static public float main_turnspeed = 100.0f;
-	static public Vector3 main_cameraoffset = new Vector3(0.0f, 4.0f, -4.0f);
+	static public Vector3 main_cameraoffset = new Vector3(0.0f, 5.0f, -8.0f);
 	static public Quaternion main_camerarot = Quaternion.Euler(0.0f, 0.0f, 0.0f);
 	static public MoveConfig move = new MoveConfig();
 }
