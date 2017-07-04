@@ -116,7 +116,7 @@ class Tool {
 	}
 
 	public static GameObject InstancePrefab(string name, Vector3 pos, Quaternion rot) {
-		return GameData.tool.InstancePrefab(name, pos, rot);
+		return Module.Misc.tool.InstancePrefab(name, pos, rot);
 	}
 
 	public static GameObject InstancePrefab(string name) {
@@ -124,7 +124,7 @@ class Tool {
 	}
 
 	public static void PlayParticle(string name, Vector3 pos, float sec) {
-		GameData.tool.PlayParticle(name, pos, sec);
+		Module.Misc.tool.PlayParticle(name, pos, sec);
 	}
 }
 

@@ -13,7 +13,7 @@ public class MainState : GameState {
 		if (alreadyenter)
 			return ;
 		alreadyenter = true;
-		GameData.state = this;
+		Module.Misc.state = this;
 		var obj = Tool.InstancePrefab("Character01");
 		role = obj.GetComponent<Character>();
 		Debug.Assert(role != null);
@@ -42,7 +42,7 @@ public class MainState : GameState {
 	//////////inherit
 
 	void Awake() {
-		GameData.tool = GetComponent<GameTool>();
+		Module.Misc.tool = GetComponent<GameTool>();
 	}
 
 	void Start() {

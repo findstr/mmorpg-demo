@@ -8,7 +8,7 @@ public class CameraFollow {
 
 	public void Attach(Character c) {
 		follow_target = c;
-		Camera main = GameData.mainCamera;
+		Camera main = Module.Camera.main;
 		var pos = follow_target.transform.position;
 		pos.y = 0;
 		follow_pos = follow_target.transform.position;
@@ -19,7 +19,7 @@ public class CameraFollow {
 	public void OnUpdate() {
 		if (follow_target == null)
 			return ;
-		Camera main = GameData.mainCamera;
+		Camera main = Module.Camera.main;
 		Tool.Filter(ref follow_pos, follow_target.transform.position, 0.1f);
 		var pos = follow_pos;
 		pos.y = 0;

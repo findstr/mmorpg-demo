@@ -9,6 +9,6 @@ public class UICamera : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		GameData.uiCamera = GetComponent<Camera>();
+		Module.Camera.ui = GetComponent<Camera>();
 	}
 }

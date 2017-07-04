@@ -82,7 +82,7 @@ public class LoginState : GameState {
 		a_accountlogin ack = (a_accountlogin)obj;
 		Debug.Log("[LoginState] ack_accountlogin err:" + err + "uid:" + ack.uid);
 		if (err == 0)
-			GameData.uid = ack.uid;
+			Module.Role.uid = ack.uid;
 		r_gatelogin req = new r_gatelogin();
 		req.uid = ack.uid;
 		req.token = ack.token;

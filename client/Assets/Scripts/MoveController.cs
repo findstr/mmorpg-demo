@@ -51,7 +51,7 @@ public class MoveController {
 		}
 		RaycastHit hitInfo;
 		lastClick = id;
-		Camera main = GameData.mainCamera;
+		Camera main = Module.Camera.main;
 		var pos = Mouse.GetPosition(id);
 		//pos.z = ui.nearClipPlane;
 		//var uipos = ui.ScreenToWorldPoint(pos);

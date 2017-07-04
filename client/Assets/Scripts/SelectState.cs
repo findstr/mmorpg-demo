@@ -60,8 +60,8 @@ public class SelectState : GameState {
 		showUI();
 		var offset = new Vector3(0.0f, 1.5f, -3.0f);
 		Debug.Log("GetRoleInfo");
-		GameData.mainCamera.gameObject.SetActive(true);
-		GameData.mainCamera.transform.position = role.transform.position + offset;
+		Module.Camera.main.gameObject.SetActive(true);
+		Module.Camera.main.transform.position = role.transform.position + offset;
 		//protocol
 		r_roleinfo req = new r_roleinfo();
 		NetInstance.Gate.Send(req);

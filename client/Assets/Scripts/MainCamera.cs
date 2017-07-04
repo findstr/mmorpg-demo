@@ -10,11 +10,9 @@ public class MainCamera : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		GameData.mainCamera = GetComponent<Camera>();
+		Module.Camera.main = GetComponent<Camera>();
+		Module.Camera.logicM = this;
 	}
-
-
-
 
 	/////////////blur function
 	[Range(0,4)]

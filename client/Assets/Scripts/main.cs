@@ -16,7 +16,7 @@ public class main : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		GameData.mainCamera.gameObject.SetActive(false);
+		Module.Camera.main.gameObject.SetActive(false);
 		NetInstance.Login.Connect(login_addr, login_port);
 		NetInstance.Gate.Connect(gate_addr, gate_port);
 		StateManager.Instance.SwitchState("LoginState");
