@@ -1,5 +1,10 @@
 namespace DB {
 
+public struct IdCount {
+	public int id;
+	public int count;
+}
+
 public class LanguageItem {
 	//public LanguageItem() {}
 	public string Key;

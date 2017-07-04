@@ -19,7 +19,15 @@ public class XmlSet<T, K> : XmlLoad where T:new(){
 			return pool[key];
 		return default(T);
 	}
-
+	private char[] delim = {','};
+	private IdCount ParseIdCount(string str) {
+		Debug.Log("IdCount");
+		return default(IdCount);
+	}
+	private int ParseInt(string str) {
+		Debug.Log("Int");
+		return default(int);
+	}
 	public override void Load(string path) {
 		XmlDocument doc = new XmlDocument();
 		if (!System.IO.File.Exists(path))
@@ -32,7 +40,17 @@ public class XmlSet<T, K> : XmlLoad where T:new(){
 			FieldInfo[] fi = var.GetType().GetFields();
 			for (int j = 0; j < fi.Length; j++) {
 				var val = n.Attributes.GetNamedItem(fi[j].Name).Value;
-				fi[j].SetValue(var, Convert.ChangeType(val, fi[j].FieldType));
+				if (fi[j].FieldType.IsArray) {
+					string[] words = val.Split(delim);
+					Array a = Array.CreateInstance(fi[i].FieldType.GetElementType(), words.Length);
+					for (int k = 0; k < words.Length; k++) {
+						a.SetValue(
+						Parse(ref (fi[i].FieldType.GetElementType())(a[k]), words[k]);
+						Debug.Log("Parse:" + words[k]);
+					}
+				} else {
+					fi[j].SetValue(var, Convert.ChangeType(val, fi[j].FieldType));
+				}
 				if (fi[j].Name == "Key")
 					pool[(K)fi[j].GetValue(var)] = var;
 			}
