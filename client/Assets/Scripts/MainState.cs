@@ -14,12 +14,14 @@ public class MainState : GameState {
 			return ;
 		alreadyenter = true;
 		Module.Misc.state = this;
-		var obj = Tool.InstancePrefab("Character01");
-		role = obj.GetComponent<Character>();
+		role = CharacterManager.Create(Module.Role.uid,
+				Module.Role.name,
+				Module.Role.hp,
+				Module.Role.pos);
 		Debug.Assert(role != null);
 		controller = new MoveController(role);
 		follow.Attach(role);
-		Module.UI.main.RefreshRole();
+		Module.UI.role.RefreshRole();
 	}
 
 	public override void OnLeave() {

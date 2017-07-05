@@ -5,7 +5,7 @@ using UnityEngine;
 public class Shadow {
 	public Vector3 pos;
 	public Quaternion rot;
-}
+};
 
 [RequireComponent(typeof(Animator))]
 [RequireComponent(typeof(Rigidbody))]
@@ -14,7 +14,9 @@ public class Character : MonoBehaviour {
 	//component
 	private Rigidbody RB;
 	private Animator animator;
+	private CharacterUI UI;
 	//data
+	private int uid = -1;
 	private Shadow shadow = new Shadow();
 
 	public void SetShadow(Vector3 pos, Quaternion rot) {
@@ -45,6 +47,19 @@ public class Character : MonoBehaviour {
 		var dir = transform.InverseTransformDirection(delta);
 		SetRun(dir.z);
 	}
+	///////////property
+	public string Name {
+		get { return UI.Name; }
+		set { UI.Name = value; }
+	}
+	public int HP {
+		get { return UI.HP; }
+		set { UI.HP = value; }
+	}
+	public int UID {
+		get { return uid; }
+		set { uid = value; }
+	}
 
 	////////////iherit
 	void Awake() {
@@ -56,6 +71,7 @@ public class Character : MonoBehaviour {
 			RigidbodyConstraints.FreezeRotationZ;
 		shadow.pos = transform.position;
 		shadow.rot = transform.localRotation;
+		UI = GetComponent<CharacterUI>();
 	}
 
 	void Start() {
@@ -76,10 +92,7 @@ public class Character : MonoBehaviour {
 
 	void FixedUpdate() {
 		FixedAnimator();
+		if (UI != null)
+			UI.OnUpdate();
 	}
-
-
-
-
-
 }

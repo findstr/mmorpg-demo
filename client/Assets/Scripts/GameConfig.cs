@@ -6,6 +6,9 @@ public class MoveConfig {
 	public string click_particle = "GreenCore";
 }
 
+public class RoleConfig {
+}
+
 public class GameConfig {
 	static public string login_addr;
 	static public string gate_addr;
@@ -17,5 +20,6 @@ public class GameConfig {
 	static public Vector3 main_cameraoffset = new Vector3(0.0f, 5.0f, -8.0f);
 	static public Quaternion main_camerarot = Quaternion.Euler(0.0f, 0.0f, 0.0f);
 	static public MoveConfig move = new MoveConfig();
+	static public RoleConfig role = new RoleConfig();
 }
 

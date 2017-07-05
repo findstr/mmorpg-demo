@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class MainUI : MonoBehaviour {
+public class RoleUI : MonoBehaviour {
 	public Text role_name;
 	public Text role_level;
 
 	void Awake() {
-		Module.UI.main = this;
+		Module.UI.role = this;
 	}
 
 	public void RefreshRole() {

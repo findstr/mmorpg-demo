@@ -1,6 +1,6 @@
 namespace Module {
 public class UI {
-	public static MainUI main;
+	public static RoleUI role;
 }
 }
 
