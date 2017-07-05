@@ -1,7 +1,7 @@
 using UnityEngine;
 public class Mouse {
 	public const int NONE = 1000;
-#if UNITY_EDITOR
+#if UNITY_EDITOR || UNITY_STANDALONE
 	static public int GetDown() {
 		if (Input.GetMouseButton(0))
 			return 0;
