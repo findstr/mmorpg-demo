@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[ExecuteInEditMode]
 public class CanvasCamera : MonoBehaviour {
 	void Start () {
 		Canvas c = GetComponent<Canvas>();

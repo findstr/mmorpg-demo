@@ -32,13 +32,15 @@ public class CharacterUI : MonoBehaviour {
 		if (uicamera == null)
 			return ;
 		float scale = role_ui_scale_frac / Vector3.Distance(transform.position, maincamera.transform.position);
-		Vector3 hp_wpos = transform.position + role_hpbar_offset;
-		var hp_uipos = maincamera.WorldToScreenPoint(hp_wpos);
+		var pos = transform.position;
+		pos.y += 1.9f;
+		var hp_uipos = maincamera.WorldToScreenPoint(pos);
 		hp_uipos = uicamera.ScreenToWorldPoint(hp_uipos);
+		hp_uipos += role_hpbar_offset;
 		checkSee(role_hpbar.gameObject, hp_uipos, scale);
-		Vector3 name_wpos = transform.position + role_name_offset;
-		var name_uipos = maincamera.WorldToScreenPoint(name_wpos);
+		var name_uipos = maincamera.WorldToScreenPoint(pos);
 		name_uipos = uicamera.ScreenToWorldPoint(name_uipos);
+		name_uipos += role_name_offset;
 		checkSee(role_name.gameObject, name_uipos, scale);
 	}
 }
