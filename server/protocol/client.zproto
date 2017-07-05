@@ -44,7 +44,7 @@ a_gatelogin 0x20F1 {
 
 ########role
 
-bagitem {
+idcount {
 	.id:integer 1
 	.count:integer 2
 }
@@ -58,7 +58,8 @@ a_roleinfo 0x2101 {
 	.level:integer 2
 	.exp:integer 3
 	.gold:integer 4
-	.bag:bagitem[] 5
+	.bag:idcount[] 5
+	.prop:idcount[] 6
 }
 
 r_rolecreate 0x2102 {
@@ -70,11 +71,8 @@ a_rolecreate 0x2103 {
 	.level:integer 2
 	.exp:integer 3
 	.gold:integer 4
-	.bag:bagitem[] 5
+	.bag:idcount[] 5
+	.prop:idcount[] 6
 }
-
-
-
-
 
 

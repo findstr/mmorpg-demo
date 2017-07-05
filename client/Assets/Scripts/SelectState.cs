@@ -111,7 +111,11 @@ public class SelectState : GameState {
 			Module.Role.name = Tool.tostring(ack.name);
 			Module.Role.exp = ack.exp;
 			Module.Role.level = ack.level;
+			Tool.ToNative(ref Module.Role.prop, ack.prop);
+			Tool.ToNative(ref Module.Role.bag, ack.bag);
 			role_name.text = Tool.tostring(ack.name);
+			var p = Module.Role.prop[Property.HP];
+			Module.Role.hp = p.count;
 		} else {
 			createUI();
 		}

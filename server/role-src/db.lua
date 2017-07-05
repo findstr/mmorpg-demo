@@ -1,5 +1,6 @@
 local env = require "silly.env"
 local zproto = require "zproto"
+local property = require "protocol.property"
 local redis = require "redis"
 
 local M = {}
@@ -14,6 +15,7 @@ local dbproto = zproto:parse [[
 		.name:string 2
 		.level:integer 3
 		.bag:item[] 4
+		.prop:item[] 5
 	}
 ]]
 
@@ -53,6 +55,11 @@ function M.rolecreate(uid, name)
 		name = name,
 		level = 1,
 		bag = {},
+		prop = {
+			[property.ATK] = 100,
+			[property.DEF] = 10,
+			[property.HP] = 90,
+		}
 	}
 	rolecache[uid] = role
 	M.roleupdate(uid)

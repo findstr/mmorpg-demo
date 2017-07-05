@@ -43,6 +43,19 @@ class Tool {
 		dst.w = (float)src.w / (float)RESOLUTION;
 	}
 	*/
+
+	public static DB.IdCount ToNative(idcount i) {
+		DB.IdCount a;
+		a.id = i.id;
+		a.count = i.count;
+		return a;
+	}
+
+	public static void ToNative(ref Dictionary<int, DB.IdCount> o, idcount[] src) {
+		for (int i = 0; i < src.Length; i++)
+			o[src[i].id] = Tool.ToNative(src[i]);
+	}
+
 	public static byte[] tobytes(string dat) {
 		return UTF8Encoding.UTF8.GetBytes(dat);
 	}
