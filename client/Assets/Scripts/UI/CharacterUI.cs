@@ -36,11 +36,10 @@ public class CharacterUI : MonoBehaviour {
 		pos.y += 1.9f;
 		var hp_uipos = maincamera.WorldToScreenPoint(pos);
 		hp_uipos = uicamera.ScreenToWorldPoint(hp_uipos);
-		hp_uipos += role_hpbar_offset;
 		checkSee(role_hpbar.gameObject, hp_uipos, scale);
+		pos.y += 0.3f;
 		var name_uipos = maincamera.WorldToScreenPoint(pos);
 		name_uipos = uicamera.ScreenToWorldPoint(name_uipos);
-		name_uipos += role_name_offset;
 		checkSee(role_name.gameObject, name_uipos, scale);
 	}
 }
