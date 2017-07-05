@@ -1,6 +1,7 @@
 local core = require "silly.core"
 local env = require "silly.env"
 local master = require "cluster.master"
+local db = require "db"
 local hub = require "channelhub"
 local agent = require "agent"
 
@@ -10,6 +11,8 @@ core.start(function()
 	local brokerport = env.get("brokerport_" .. gateid)
 	print(string.format("gateid:%s, openport:%s brokerport:%s",
 		gateid, openport, brokerport))
+	local ok = db.start()
+	print("db start:", ok)
 	local ok = master.start {
 		masterid = tonumber(gateid),
 		openport = openport,

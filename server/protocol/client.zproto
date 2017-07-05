@@ -1,3 +1,12 @@
+idcount {
+	.id:integer 1
+	.count:integer 2
+}
+vector2 {
+	.x:integer 1
+	.z:integer 2
+}
+############common
 a_error 0x1000 {
 	.cmd:integer 1
 	.err:integer 2
@@ -33,27 +42,21 @@ a_accountlogin 0x2005 {
 
 #########gate
 
-r_gatelogin 0x20F0 {
+r_gatelogin 0x20f0 {
 	.uid:integer 1
 	.token:integer 2
 }
 
-a_gatelogin 0x20F1 {
-
+a_gatelogin 0x20f1 {
+	.coord:vector2 1
 }
 
 ########role
-
-idcount {
-	.id:integer 1
-	.count:integer 2
-}
-
-r_roleinfo 0x2100 {
+r_roleinfo 0x3000 {
 
 }
 
-a_roleinfo 0x2101 {
+a_roleinfo 0x3001 {
 	.name:string 1
 	.level:integer 2
 	.exp:integer 3
@@ -62,17 +65,38 @@ a_roleinfo 0x2101 {
 	.prop:idcount[] 6
 }
 
-r_rolecreate 0x2102 {
+r_rolecreate 0x3002 {
 	.name:string 1
 }
 
-a_rolecreate 0x2103 {
+a_rolecreate 0x3003 {
 	.name:string 1
 	.level:integer 2
 	.exp:integer 3
 	.gold:integer 4
 	.bag:idcount[] 5
 	.prop:idcount[] 6
+}
+
+
+########scene
+r_movedir 0x5000 {
+	.coord:vector2 1
+	.dir:vector2 2
+}
+
+r_movepoint 0x5001 {
+	.src:vector2 1
+	.dst:vector2 2
+}
+
+r_movestop 0x5002 {
+	.coord:vector2 1
+}
+
+#used by gate/scene server, not broadcast client
+r_movesync 0x5003 {
+	.coord:vector2 1
 }
 
 

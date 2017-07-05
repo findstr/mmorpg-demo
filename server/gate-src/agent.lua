@@ -1,6 +1,7 @@
 local core = require "silly.core"
 local np = require "netpacket"
 local token = require "token"
+local db = require "db"
 local cproto = require "protocol.client"
 local errno = require "protocol.errno"
 local master = require "cluster.master"
@@ -48,6 +49,8 @@ local function agent_new(self, gatefd)
 		srole = false,	--role server id
 		slogin = false,	--login server id
 		uid = false,
+		coord_x = false,
+		coord_z = false,
 		gatefd = gatefd,
 	}
 	setmetatable(obj, mt)
@@ -58,7 +61,7 @@ end
 local function agent_create(self, gatefd)
 	local a = tremove(agentpool)
 	if not a then
-		a = agent_new(gatefd)
+		a = agent_new(self, gatefd)
 	else
 		a.gatefd = gatefd
 	end
@@ -66,6 +69,9 @@ local function agent_create(self, gatefd)
 end
 
 local function agent_free(self)
+	if self.uid then
+		db.updatecoord(self.uid, self.coord_x, self.coord_z)
+	end
 	for k, _ in pairs(self) do
 		self[k] = false
 	end
@@ -115,8 +121,9 @@ local function r_login(self, req)
 	end
 	local uid = req.uid
 	self.uid = uid
+	self.coord_x, self.coord_z = db.coord(uid)
 	hub.login(uid, self)
-	print("r_login", self.gatefd)
+	print("r_login", self, self.gatefd)
 	sendclient(self.gatefd, "a_gatelogin", a_gatelogin)
 end
 

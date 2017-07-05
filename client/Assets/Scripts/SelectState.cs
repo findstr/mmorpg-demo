@@ -111,11 +111,13 @@ public class SelectState : GameState {
 			Module.Role.name = Tool.tostring(ack.name);
 			Module.Role.exp = ack.exp;
 			Module.Role.level = ack.level;
+			Debug.Log("SetBag:" + ack.bag);
 			Tool.ToNative(ref Module.Role.prop, ack.prop);
 			Tool.ToNative(ref Module.Role.bag, ack.bag);
 			role_name.text = Tool.tostring(ack.name);
 			var p = Module.Role.prop[Property.HP];
 			Module.Role.hp = p.count;
+			Debug.Log("RoleInfoName:" + Module.Role.name);
 		} else {
 			createUI();
 		}
@@ -125,7 +127,14 @@ public class SelectState : GameState {
 		a_rolecreate ack = (a_rolecreate)obj;
 		if (err == 0) {
 			showUI();
+			Module.Role.name = Tool.tostring(ack.name);
+			Module.Role.exp = ack.exp;
+			Module.Role.level = ack.level;
+			Tool.ToNative(ref Module.Role.prop, ack.prop);
+			Tool.ToNative(ref Module.Role.bag, ack.bag);
 			role_name.text = Tool.tostring(ack.name);
+			var p = Module.Role.prop[Property.HP];
+			Module.Role.hp = p.count;
 		}
 		Debug.Log("RoleCreate:" + err);
 	}

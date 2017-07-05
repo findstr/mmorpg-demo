@@ -8,7 +8,6 @@ local function r_roleinfo(uid, req, fd)
 	if not info then
 		return channel.errorclient(fd, uid, "a_roleinfo", errno.ROLE_NONEXIST)
 	end
-	print("r_roleinfo", uid, info.bag)
 	return channel.sendclient(fd, uid, "a_roleinfo", info)
 end
 

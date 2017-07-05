@@ -36,7 +36,11 @@ s_login 0x101 {
 
 }
 
-s_logout 0x102 {
+sr_logout 0x103 {
+	.rpc:integer 1
+}
 
+sa_logout 0x104 {
+	.rpc:integer 1
 }
 

@@ -15,7 +15,7 @@ local dbproto = zproto:parse [[
 		.name:string 2
 		.level:integer 3
 		.bag:item[] 4
-		.prop:item[] 5
+		.prop:item[id] 5
 	}
 ]]
 
@@ -56,9 +56,18 @@ function M.rolecreate(uid, name)
 		level = 1,
 		bag = {},
 		prop = {
-			[property.ATK] = 100,
-			[property.DEF] = 10,
-			[property.HP] = 90,
+			[property.ATK] = {
+				id = property.ATK,
+				count = 100,
+			},
+			[property.DEF] = {
+				id = property.DEF,
+				count = 10,
+			},
+			[property.HP] = {
+				id = property.HP,
+				count = 90,
+			}
 		}
 	}
 	rolecache[uid] = role

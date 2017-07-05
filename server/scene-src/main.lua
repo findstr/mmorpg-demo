@@ -1,16 +1,15 @@
 local core = require "silly.core"
 local env = require "silly.env"
 local channel = require "channel"
-local db = require "db"
 local rpccmd = require "protocol.rpc"
 local tool = require "tool"
 local xml = require "XML"
 local unpack = string.unpack
 
-require "role"
+require "logic"
 
-local slaveid = tonumber(env.get("roleid"))
-local slavetype = "role"
+local slaveid = tonumber(env.get("sceneid"))
+local slavetype = "scene"
 local xmlpath = env.get("xmlconfig")
 
 local EVENT = {
@@ -26,21 +25,13 @@ core.start(function()
 		print(string.format("[role] gateid:%s port:%s", k, v))
 	end
 	local cmd = string.format("find %s -name '*.xml'", xmlpath)
-	local filelist = os.execute(cmd)
-
-	xml.parselist {
-		xmlpath .. "/ItemUse.xml",
-	}
-
-	channel.start {
+	local ok = channel.start {
 		channelid = slaveid,
 		channeltype = slavetype,
 		hublist = l,
 		event = EVENT,
 		rpccmd = rpccmd,
 	}
-
-	local ok = db.start()
 	print("[role] server start", ok)
 end)
 
