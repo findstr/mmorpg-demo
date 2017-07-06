@@ -125,8 +125,11 @@ local function channel_tryforward(agent, cmd, dat) --dat:[cmd][packet]
 	if not typeid then
 		return false
 	end
-	local key = agent_serverkey[typeid]
 	local id = agent[key]
+	if not id then
+		return false
+	end
+	local key = agent_serverkey[typeid]
 	typeid = typeid + id
 	local fd = channel_typeid_fd[typeid]
 	if not fd then
