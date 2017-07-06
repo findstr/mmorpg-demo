@@ -44,6 +44,8 @@ public class MoveController {
 
 	private int lastClick = Mouse.NONE;
 	private bool ClickMove() {
+		if (!Module.Control.input3d)
+			return false;
 		int id = Mouse.GetDown();
 		if (!(lastClick == Mouse.NONE && id != Mouse.NONE)) {
 			lastClick = id;

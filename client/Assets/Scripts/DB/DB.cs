@@ -74,9 +74,13 @@ public class XmlSet<T, K> : XmlLoad where T:new(){
 public class DB {
 	public static XmlSet<LanguageItem, string> Language = new XmlSet<LanguageItem, string>();
 	public static XmlSet<RoleLevelItem, int> RoleLevel = new XmlSet<RoleLevelItem, int>();
+	public static XmlSet<ItemItem, int> Item = new XmlSet<ItemItem, int>();
 	public static XmlSet<ItemUseItem, int> ItemUse = new XmlSet<ItemUseItem, int>();
-
+	private static bool loaded = false;
 	public static void Load() {
+		if (loaded)
+			return ;
+		loaded = true;
 		FieldInfo[] fi = typeof(DB).GetFields();
 		Debug.Log("Load:"+  fi.Length);
 		for (int j = 0; j < fi.Length; j++) {

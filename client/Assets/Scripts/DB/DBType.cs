@@ -20,5 +20,12 @@ public class ItemUseItem {
 	public IdCount[] Prop;
 }
 
+public class ItemItem {
+	public int Key;
+	public string Desc;
+	public string Icon;
 }
 
+
+
+}

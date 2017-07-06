@@ -22,6 +22,14 @@ public class MainState : GameState {
 		controller = new MoveController(role);
 		follow.Attach(role);
 		Module.UI.role.RefreshRole();
+		var i = new DB.IdCount();
+		i.id = 10000;
+		i.count = 3;
+		Module.Role.bag[10000] = i;
+		i.id = 10001;
+		Module.Role.bag[10001] = i;
+		DB.DB.Load();
+		Module.UI.bag.Show();
 	}
 
 	public override void OnLeave() {
