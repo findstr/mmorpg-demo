@@ -15,7 +15,10 @@ public class BagItem : MonoBehaviour {
 
 	public int Count {
 		get { return count; }
-		set { count = value; }
+		set {
+			count = value;
+			item_count.text = count.ToString();
+		}
 	}
 
 	public int Show() {

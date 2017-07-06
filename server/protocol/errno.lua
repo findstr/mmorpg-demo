@@ -9,6 +9,7 @@ ACCOUNT_KICK_TIMEOUT = 7,	--踢除已有玩家超时
 ACCOUNT_TOKEN_INVALID = 8,	--token失效
 
 ROLE_NONEXIST = 100,		--角色不存在
+ROLE_NOITEM = 101,		--道具不足
 
 }
 

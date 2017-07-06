@@ -78,6 +78,14 @@ a_rolecreate 0x3003 {
 	.prop:idcount[] 6
 }
 
+r_itemuse 0x3004 {
+	.id:integer 1
+	.count:integer 2
+}
+
+a_itemuse 0x3005 {
+	.hp:integer 1
+}
 
 ########scene
 r_movedir 0x5000 {

@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using zprotobuf;
+using client_zproto;
 
 public class MainState : GameState {
 	private bool alreadyenter = false;
@@ -22,14 +24,15 @@ public class MainState : GameState {
 		controller = new MoveController(role);
 		follow.Attach(role);
 		Module.UI.role.RefreshRole();
+		/*
 		var i = new DB.IdCount();
 		i.id = 10000;
 		i.count = 3;
 		Module.Role.bag[10000] = i;
 		i.id = 10001;
 		Module.Role.bag[10001] = i;
+		*/
 		DB.DB.Load();
-		Module.UI.bag.Show();
 	}
 
 	public override void OnLeave() {
@@ -50,6 +53,15 @@ public class MainState : GameState {
 			follow.OnUpdate();
 	}
 
+	///////////protocol
+	void ack_itemuse(int err, wire obj) {
+		if (err != 0) //TODO: show messagebox
+			return ;
+		a_itemuse ack = (a_itemuse) obj;
+		Module.Role.hp = ack.hp;
+		Module.UI.role.RefreshRole();
+	}
+
 	//////////inherit
 
 	void Awake() {
@@ -58,6 +70,8 @@ public class MainState : GameState {
 
 	void Start() {
 		OnEnter();
+		a_itemuse itemuse = new a_itemuse();
+		Register(itemuse, ack_itemuse);
 	}
 
 	void FixedUpdate() {

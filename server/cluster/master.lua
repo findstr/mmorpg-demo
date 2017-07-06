@@ -39,11 +39,11 @@ SLAVE {
 ]]--
 
 M.sendslave = function(fd, data)
-	slave_inst:send(fd, data)
+	return slave_inst:send(fd, data)
 end
 
 M.sendmaster = function(fd, data)
-	master_inst:send(fd, data)
+	return master_inst:send(fd, data)
 end
 
 M.kickmaster = function(fd)

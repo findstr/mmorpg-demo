@@ -117,7 +117,7 @@ public class SelectState : GameState {
 			role_name.text = Tool.tostring(ack.name);
 			var p = Module.Role.prop[Property.HP];
 			Module.Role.hp = p.count;
-			Debug.Log("RoleInfoName:" + Module.Role.name);
+			Debug.Log("RoleInfoName:" + Module.Role.name + ":" + Module.Role.hp);
 		} else {
 			createUI();
 		}

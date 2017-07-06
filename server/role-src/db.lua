@@ -14,7 +14,7 @@ local dbproto = zproto:parse [[
 		.uid:integer 1
 		.name:string 2
 		.level:integer 3
-		.bag:item[] 4
+		.bag:item[id] 4
 		.prop:item[id] 5
 	}
 ]]
@@ -41,6 +41,7 @@ function M.roleupdate(uid)
 	if not info then
 		return
 	end
+	print("roleupdate:", uid, info, info.prop)
 	local dat = dbproto:encode(roleinfo_proto, info)
 	return dbinst:hset(roleinfo_dbkey, uid, dat)
 end
@@ -54,7 +55,16 @@ function M.rolecreate(uid, name)
 	local role = {
 		name = name,
 		level = 1,
-		bag = {},
+		bag = {
+			[10000] = {
+				id = 10000,
+				count = 100
+			},
+			[10001] = {
+				id = 10001,
+				count = 101,
+			},
+		},
 		prop = {
 			[property.ATK] = {
 				id = property.ATK,
@@ -73,6 +83,10 @@ function M.rolecreate(uid, name)
 	rolecache[uid] = role
 	M.roleupdate(uid)
 	return role
+end
+
+function M.roleget(uid)
+	return rolecache[uid]
 end
 
 function M.start()

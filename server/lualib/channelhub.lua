@@ -138,9 +138,9 @@ end
 ----------------protocol
 
 local function sr_register(uid, req, fd)
-	print("[gate] sr_register:", req.typ)
-	for k, _ in pairs(req.handler) do
-		print(string.format("[gate] sr_register %s", k))
+	print("[gate] sr_register:", req.typ, req.id)
+	for _, v in pairs(req.handler) do
+		print(string.format("[gate] sr_register %s", v))
 	end
 	channel_regclient(req.typ, req.id, fd, req.handler)
 	sendserver(fd, uid, "sa_register", req)

@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using client_zproto;
 
 public class BagUI : MonoBehaviour {
 	public Text bag_detail;
+	public Button bag_use;
 	public GameObject bag_content;
 	private Dictionary<int, BagItem> pool = new Dictionary<int, BagItem>();
 	private BagItem item_select = null;
@@ -26,10 +28,6 @@ public class BagUI : MonoBehaviour {
 			item_select = item;
 		};
 		item.Show();
-	}
-
-	public void OnCloseClick() {
-		Debug.Log("CloseClick");
 	}
 
 	public void Show() {
@@ -55,11 +53,23 @@ public class BagUI : MonoBehaviour {
 		Debug.Log("Bag Hide");
 	}
 
+	void OnUse() {
+		Debug.Log("OnUse");
+		if (item_select == null)
+			return ;
+		r_itemuse itemuse = new r_itemuse();
+		itemuse.id = item_select.Id;
+		itemuse.count = 1;
+		--item_select.Count;
+		NetInstance.Gate.Send(itemuse);
+	}
+
 	//////////////////////////////inherit
 	void Awake() {
 		Module.UI.bag = this;
 		Module.UI.mask.Enable(false);
 		gameObject.SetActive(false);
+		bag_use.onClick.AddListener(OnUse);
 	}
 }
 
