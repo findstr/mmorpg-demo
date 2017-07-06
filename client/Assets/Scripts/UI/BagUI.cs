@@ -9,6 +9,8 @@ public class BagUI : MonoBehaviour {
 	private Dictionary<int, BagItem> pool = new Dictionary<int, BagItem>();
 	private BagItem item_select = null;
 	private void createItem(int id, int count) {
+		if (pool.ContainsKey(id))
+			return ;
 		var obj = Tool.InstancePrefab("UI/BagItem", bag_content.transform.position, bag_content.transform.rotation);
 		obj.transform.SetParent(bag_content.transform);
 		obj.transform.localScale = Vector3.one;
@@ -31,6 +33,8 @@ public class BagUI : MonoBehaviour {
 	}
 
 	public void Show() {
+		if (gameObject.activeSelf)
+			return ;
 		gameObject.SetActive(true);
 		Module.Control.input3d = false;
 		Module.UI.mask.OnClick = Hide;
@@ -54,6 +58,8 @@ public class BagUI : MonoBehaviour {
 	//////////////////////////////inherit
 	void Awake() {
 		Module.UI.bag = this;
+		Module.UI.mask.Enable(false);
+		gameObject.SetActive(false);
 	}
 }
 
