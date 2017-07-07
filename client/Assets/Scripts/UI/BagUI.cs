@@ -67,7 +67,6 @@ public class BagUI : MonoBehaviour {
 	//////////////////////////////inherit
 	void Awake() {
 		Module.UI.bag = this;
-		Module.UI.mask.Enable(false);
 		gameObject.SetActive(false);
 		bag_use.onClick.AddListener(OnUse);
 	}
