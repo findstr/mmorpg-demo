@@ -1,10 +1,15 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class Shadow {
 	public Vector3 pos;
 	public Quaternion rot;
+};
+public class MoveDir {
+	public Vector3 pos;
+	public Vector3 dir;
 };
 
 [RequireComponent(typeof(Animator))]
@@ -18,7 +23,7 @@ public class Character : MonoBehaviour {
 	//data
 	private int uid = -1;
 	private Shadow shadow = new Shadow();
-
+	///////////////////shadow follow
 	public void SetShadow(Vector3 pos, Quaternion rot) {
 		shadow.pos = pos;
 		shadow.rot = rot;
@@ -61,6 +66,40 @@ public class Character : MonoBehaviour {
 		set { uid = value; }
 	}
 
+	////////////Simulator
+	enum MoveType {
+		MOVE_NONE = 0,
+		MOVE_DIR = 1,
+		MOVE_POINT = 2,
+	};
+	private MoveType move_type = MoveType.MOVE_NONE;
+	private MoveDir move_dir;
+	private UnityEngine.AI.NavMeshAgent agent;
+	public void MoveDir(Vector3 pos, Vector3 dir) {
+
+	}
+
+	public void MovePoint(Vector3 src, Vector3 dst) {
+		agent.SetDestination(dst);
+		move_type = MoveType.MOVE_POINT;
+	}
+
+	private void UpdateMoveDir() {
+		if (move_type != MoveType.MOVE_DIR)
+			return ;
+
+	}
+	private void UpdateMovePoint() {
+		if (move_type != MoveType.MOVE_POINT)
+			return ;
+		SetShadow(agent.nextPosition, transform.localRotation);
+	}
+
+	private void MoveUpdate() {
+		UpdateMoveDir();
+		UpdateMovePoint();
+	}
+
 	////////////iherit
 	void Awake() {
 		RB = GetComponent<Rigidbody>();
@@ -72,6 +111,8 @@ public class Character : MonoBehaviour {
 		shadow.pos = transform.position;
 		shadow.rot = transform.localRotation;
 		UI = GetComponent<CharacterUI>();
+		agent = GetComponent<UnityEngine.AI.NavMeshAgent>();
+		agent.updatePosition = false;
 	}
 
 	void Start() {
@@ -81,17 +122,16 @@ public class Character : MonoBehaviour {
 
 	void OnAnimatorMove()
 	{
-		if (Time.deltaTime > 0.0f) {
-			var src = transform.position;
-			src.y = 0;
-			var pos = Vector3.Slerp(src, shadow.pos, 0.1f);
-			pos.y = transform.position.y;
-			transform.position = pos;
-		}
+		var src = transform.position;
+		src.y = 0;
+		var pos = Vector3.Slerp(src, shadow.pos, 0.3f);
+		pos.y = transform.position.y;
+		transform.position = pos;
 	}
 
 	void FixedUpdate() {
 		FixedAnimator();
+		MoveUpdate();
 		if (UI != null)
 			UI.OnUpdate();
 	}

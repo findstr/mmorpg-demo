@@ -5,6 +5,8 @@ using UnityEngine;
 public class CharacterManager {
 	private static Dictionary<int, Character> pool = new Dictionary<int, Character>();
 	public static Character Create(int uid, string name, int hp, Vector3 pos) {
+		if (pool.ContainsKey(uid))
+			return pool[uid];
 		var obj = Tool.InstancePrefab("Character/Character01", pos, Quaternion.identity);
 		Debug.Assert(obj);
 		Character c = obj.GetComponent<Character>();
@@ -23,7 +25,7 @@ public class CharacterManager {
 		if (c == null)
 			return ;
 		GameObject.Destroy(c.gameObject);
-		pool[uid] = null;
+		pool.Remove(uid);
 		return ;
 	}
 	public static void Clear(int uid) {

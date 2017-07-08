@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using client_zproto;
 
 public class MoveController {
-
-	private NavMeshAgent agent;
 	private Character role;
+	private Vector3 last_position;
 	private bool KeyMove() {
 		bool effect = false;
 		var dst = role.transform.position;
@@ -55,8 +55,6 @@ public class MoveController {
 		lastClick = id;
 		Camera main = Module.Camera.main;
 		var pos = Mouse.GetPosition(id);
-		//pos.z = ui.nearClipPlane;
-		//var uipos = ui.ScreenToWorldPoint(pos);
 		var ray = main.ScreenPointToRay(pos);
 		Debug.DrawRay(ray.origin, ray.direction *20, Color.yellow);
 		if (!Physics.Raycast(ray, out hitInfo, Mathf.Infinity, 1 << 9))
@@ -64,14 +62,14 @@ public class MoveController {
 		var hitObj = hitInfo.collider.gameObject;
 		if (hitObj.tag != "Terrian")
 			return false;
-		agent.SetDestination(hitInfo.point);
 		Tool.PlayParticle(GameConfig.move.click_particle, hitInfo.point, 0.3f);
-		return true;
-	}
-
-	private bool ClickUpdate() {
-		var rot = role.transform.localRotation;
-		role.SetShadow(agent.nextPosition, rot);
+		role.MovePoint(role.transform.position, hitInfo.point);
+		//notify Net
+		r_movepoint movepoint = new r_movepoint();
+		Tool.ToProto(ref movepoint.src_coord_x, ref movepoint.src_coord_z, role.transform.position);
+		Tool.ToProto(ref movepoint.dst_coord_x, ref movepoint.dst_coord_z, hitInfo.point);
+		NetInstance.Gate.Send(movepoint);
+		Debug.Log("MovePoint");
 		return true;
 	}
 
@@ -79,16 +77,28 @@ public class MoveController {
 	public MoveController(Character c) {
 		Debug.Assert(c != null);
 		role = c;
-		agent = role.gameObject.GetComponent<NavMeshAgent>();
-		agent.updatePosition = false;
+		last_position = role.transform.position;
+		last_position.y = 0;
 		return ;
 	}
 
-
+	void ServerUpdate() {
+		var pos = role.transform.position;
+		pos.y = 0;
+		if (Vector3.Distance(pos, last_position) < 1.0f)
+			return ;
+		last_position = pos;
+		r_movesync sync = new r_movesync();
+		Tool.ToProto(ref sync.coord_x, ref sync.coord_z, pos);
+		NetInstance.Gate.Send(sync);
+		Debug.Log("ServerUpdate" + pos);
+	}
 
 	public void OnUpdate() {
 		ClickMove();
-		ClickUpdate();
 		//KeyMove();
+		ServerUpdate();
+		Module.Role.pos = role.transform.position;
+		Module.UI.coord.Refresh();
 	}
 }

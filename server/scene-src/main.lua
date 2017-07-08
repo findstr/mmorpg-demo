@@ -3,6 +3,7 @@ local env = require "silly.env"
 local channel = require "channel"
 local rpccmd = require "protocol.rpc"
 local tool = require "tool"
+local scene = require "scene"
 local xml = require "XML"
 local unpack = string.unpack
 
@@ -24,6 +25,7 @@ core.start(function()
 	for k, v in pairs(l) do
 		print(string.format("[role] gateid:%s port:%s", k, v))
 	end
+	scene.start(1000, 1000)
 	local cmd = string.format("find %s -name '*.xml'", xmlpath)
 	local ok = channel.start {
 		channelid = slaveid,

@@ -35,6 +35,17 @@ local function router_regclient(cmd, func)
 	router_client[cmd] = true
 end
 
+------------------user from gate
+
+local user_gate = {}
+local function user_attach(uid, fd)
+	print("attach", uid, fd)
+	user_gate[uid] = fd
+end
+local function user_detach(uid)
+	user_gate[uid] = nil
+end
+
 ------------------protocol socket function
 local ERR = {
 	cmd = false,
@@ -50,13 +61,90 @@ local function sendfunc(proto)
 	end
 end
 
+local function senduidfunc(proto)
+	return function(uid, cmd, ack)
+		local fd = user_gate[uid]
+		cmd = proto:querytag(cmd)
+		local hdr = pack("<I4I4", uid, cmd)
+		local dat = proto:encode(cmd, ack)
+		return slave.send(fd, hdr .. dat)
+	end
+end
+
 local sendserver = sendfunc(sproto)
 local sendclient = sendfunc(cproto)
+local senduid = senduidfunc(cproto)
 local function senderror(fd, uid, cmd, err)
 	cmd = cproto:querytag(cmd)
 	ERR.cmd = cmd
 	ERR.err = err
 	sendclient(fd, uid, "a_error", ERR)
+end
+
+local s_multicast = {
+	uid = {},
+	data = false,
+}
+
+local function multicastgate(gatelist, cmd, ack)
+	local cmd = cproto:querytag(cmd)
+	local hdr = pack("<I4", cmd)
+	local dat = cproto:encode(cmd, ack)
+	dat = hdr .. dat
+	s_multicast.data = dat
+	for fd, uids in pairs(gatelist) do
+		s_multicast.uid = uids
+		sendserver(fd, 0, "s_multicast", s_multicast)
+		gatelist[fd] = nil
+	end
+	s_multicast.data = false
+end
+
+local gate = {}
+local function multicastmap(cmd, ack, map)
+	for uid, _ in pairs(map) do
+		local fd = user_gate[uid]
+		print("multicast uid", uid, fd)
+		local g = gate[fd]
+		if not g then
+			g = {}
+			gate[fd] = g
+		end
+		g[#g + 1] = uid
+	end
+	return multicastgate(gate, cmd, ack)
+end
+
+local function multicastarr(cmd, ack, arr)
+	local i = 1
+	for i = 1, #arr do
+		local uid = arr[i]
+		local fd = user_gate[uid]
+		local g = gate[fd]
+		if not g then
+			g = {}
+			gate[fd] = g
+		end
+		g[#g + 1] = uid
+	end
+	return multicastgate(gate, cmd, ack)
+end
+
+local function multicastarrclr(cmd, ack, arr)
+	local i = 1
+	for i = 1, #arr do
+		local uid = arr[i]
+		arr[i] = nil
+		local fd = user_gate[uid]
+		local g = gate[fd]
+		if not g then
+			g = {}
+			gate[fd] = g
+		end
+		g[#g + 1] = uid
+	end
+	return multicastgate(gate, cmd, ack)
+
 end
 
 ------------------rpc
@@ -206,9 +294,15 @@ local M = {
 call = rpc_call,
 sendserver = sendserver,
 sendclient = sendclient,
+senduid = senduid,
+multicastmap = multicastmap,
+multicastarr = multicastarr,
+multicastarrclr = multicastarrclr,
 errorclient = senderror,
 regclient = router_regclient,
 regserver = router_regserver,
+attach = user_attach,
+detach = user_detach,
 start = function(config)
 	local hook = config.event
 	local channelid = config.channelid

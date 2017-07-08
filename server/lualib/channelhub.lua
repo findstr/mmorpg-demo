@@ -42,16 +42,19 @@ end
 ----------------online
 local LOGIN_TYPE = 1 * 10000
 local ROLE_TYPE = 2 * 10000
-
+local SCENE_TYPE = 3 * 10000
+local SCENE_KEY = "sscene"
 local agent_serverkey = {
 	[LOGIN_TYPE] = "slogin",
 	[ROLE_TYPE] = "srole",
+	[SCENE_TYPE] = "sscene",
 }
 local online_agent = {}
 local function online_login(uid, agent)
 	online_agent[uid] = agent
 	agent.slogin = 1
 	agent.srole = 1
+	agent.sscene = 1
 end
 
 local function online_logout(uid)
@@ -77,12 +80,9 @@ end
 
 --------------channel forward
 local channel_type_key = {
-	--login
 	["login"] = LOGIN_TYPE,
-	[LOGIN_TYPE] = "login",
-	--role
 	["role"] = ROLE_TYPE,
-	[ROLE_TYPE] = "role"
+	["scene"] = SCENE_TYPE,
 }
 
 local channel_fd_typeid = {
@@ -138,6 +138,16 @@ local function channel_tryforward(agent, cmd, dat) --dat:[cmd][packet]
 	return forwardserver(fd, agent.uid, dat)
 end
 
+local function channel_sendscene(agent, cmd, req)
+	local id = agent[SCENE_KEY]
+	local typeid = id + SCENE_TYPE
+	local fd = channel_typeid_fd[typeid]
+	if not fd then
+		return false
+	end
+	return sendserver(fd, agent.uid, cmd, req)
+end
+
 ----------------protocol
 
 local function sr_register(uid, req, fd)
@@ -146,24 +156,45 @@ local function sr_register(uid, req, fd)
 		print(string.format("[gate] sr_register %s", v))
 	end
 	channel_regclient(req.typ, req.id, fd, req.handler)
-	sendserver(fd, uid, "sa_register", req)
+	return sendserver(fd, uid, "sa_register", req)
 end
 
 local function sr_fetchtoken(uid, req, fd)
 	local tk = token.fetch(uid)
 	req.token = tk
-	sendserver(fd, uid, "sa_fetchtoken", req)
 	print("[gate] fetch token", uid, tk)
+	return sendserver(fd, uid, "sa_fetchtoken", req)
 end
 
 local function sr_kickout(uid, req, fd)
 	online_kickout(uid)
-	sendserver(fd, uid, "sa_kickout", req)
 	print("[gate]fetch kickout uid:", uid, "gatefd", gatefd)
+	return sendserver(fd, uid, "sa_kickout", req)
 end
 
 local function s_multicast(uid, req, fd)
-	print("muticast")
+	local uids = req.uid
+	local dat = req.data
+	local count = #uids
+	print("muticast", count)
+	if count == 1 then
+		local agent = online_agent[uids[1]]
+		if not agent then
+			return
+		end
+		return master.sendmaster(agent.gatefd, dat)
+	end
+	local pk, sz = np.pack(dat)
+	local mp = core.packmulti(pk, sz, #uids)
+	np.drop(pk)
+	for _, uid in pairs(uids) do
+		local agent = online_agent[uid]
+		if not agent then
+			core.freemulti(mp, sz)
+		else
+			master.multicastmaster(agent.gatefd, mp, sz)
+		end
+	end
 end
 
 router_regserver("sr_register", sr_register)
@@ -177,6 +208,7 @@ local M = {
 login = online_login,
 logout = online_logout,
 tryforward = channel_tryforward,
+sendscene = channel_sendscene,
 --event
 accept = function(fd, addr)
 end,

@@ -6,43 +6,37 @@ using UnityEngine;
 using client_zproto;
 
 class Tool {
+	private const int RESOLUTION = 10;
+	public static void ToProto(ref int x, ref int z, Vector2 src) {
+		x = (int)(src.x * RESOLUTION);
+		z = (int)(src.y * RESOLUTION);
+	}
+
+	public static void ToProto(ref int x, ref int z, Vector3 src) {
+		x = (int)(src.x * RESOLUTION);
+		z = (int)(src.z * RESOLUTION);
+	}
+
 	/*
-	private const int RESOLUTION = 100;
-	public static void ToProto(ref vector2 dst, Vector2 src) {
-		dst.x = (int)(src.x * RESOLUTION);
-		dst.z = (int)(src.y * RESOLUTION);
-	}
-
-	public static void ToProto(ref vector2 dst, Vector3 src) {
-		dst.x = (int)(src.x * RESOLUTION);
-		dst.z = (int)(src.z * RESOLUTION);
-	}
-
 	public static void ToProto(ref rotation dst, Quaternion src) {
 		dst.x = (int)(src.x * RESOLUTION);
 		dst.y = (int)(src.y * RESOLUTION);
 		dst.z = (int)(src.z * RESOLUTION);
 		dst.w = (int)(src.w * RESOLUTION);
-	}
+	}*/
 
-	public static void ToNative(ref Vector2 dst, vector2 src) {
-		dst.x = (float)src.x / (float)RESOLUTION;
-		dst.y = (float)src.z / (float)RESOLUTION;
-	}
-
-	public static void ToNative(ref Vector3 dst, vector2 src) {
-		dst.x = (float)src.x / (float)RESOLUTION;
-		dst.z = (float)src.z / (float)RESOLUTION;
+	public static void ToNative(ref Vector3 dst, int x, int z) {
+		dst.x = (float)x / (float)RESOLUTION;
+		dst.z = (float)z / (float)RESOLUTION;
 		dst.y = 0.0f;
 	}
-
+	/*
 	public static void ToNative(ref Quaternion dst, rotation src) {
 		dst.x = (float)src.x / (float)RESOLUTION;
 		dst.y = (float)src.y / (float)RESOLUTION;
 		dst.z = (float)src.z / (float)RESOLUTION;
 		dst.w = (float)src.w / (float)RESOLUTION;
-	}
-	*/
+	}*/
 
 	public static DB.IdCount ToNative(idcount i) {
 		DB.IdCount a;

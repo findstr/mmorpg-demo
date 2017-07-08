@@ -53,13 +53,24 @@ public class SelectState : GameState {
 		Debug.Log("State Start");
 		StateManager.Instance.SwitchState("MainState");
 	}
+	private bool register_proto = false;
+	void try_register() {
+		if (register_proto)
+			return ;
+		register_proto = true;
+		a_roleinfo roleinfo = new a_roleinfo();
+		a_rolecreate rolecreate = new a_rolecreate();
+		Register(roleinfo, ack_roleinfo);
+		Register(rolecreate, ack_rolecreate);
+	}
 
 	///////state machine
 	public override void OnEnter() {
 		disableUI();
 		showUI();
+		try_register();
 		var offset = new Vector3(0.0f, 1.5f, -3.0f);
-		Debug.Log("GetRoleInfo");
+		Debug.Log("[MainState]GetRoleInfo");
 		Module.Camera.main.gameObject.SetActive(true);
 		Module.Camera.main.transform.position = role.transform.position + offset;
 		//protocol
@@ -81,10 +92,8 @@ public class SelectState : GameState {
 		eventUI();
 	}
 	void Start() {
-		a_roleinfo roleinfo = new a_roleinfo();
-		a_rolecreate rolecreate = new a_rolecreate();
-		Register(roleinfo, ack_roleinfo);
-		Register(rolecreate, ack_rolecreate);
+		try_register();
+		Debug.Log("[MainState] Start!");
 	}
 
 	private int mouseId = Mouse.NONE;

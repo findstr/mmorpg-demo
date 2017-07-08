@@ -33,7 +33,8 @@ s_multicast 0x100 {
 }
 
 s_login 0x101 {
-
+	.coord_x:integer 1
+	.coord_z:integer 2
 }
 
 sr_logout 0x103 {

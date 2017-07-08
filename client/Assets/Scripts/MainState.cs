@@ -62,6 +62,44 @@ public class MainState : GameState {
 		Module.UI.role.RefreshRole();
 	}
 
+	void ack_movepoint(int err, wire obj) {
+		Debug.Assert(err == 0);
+		a_movepoint ack = (a_movepoint)obj;
+		var c = CharacterManager.Get(ack.uid);
+		var src = Vector3.zero;
+		var dst = Vector3.zero;
+		Tool.ToNative(ref src, ack.src_coord_x, ack.src_coord_z);
+		Tool.ToNative(ref dst, ack.dst_coord_x, ack.dst_coord_z);
+		if (c == null)
+			c = CharacterManager.Create(ack.uid, ack.uid.ToString(), 10, src);
+		Debug.Log("[MainState] AckMovePoint:" + ack.uid);
+		c.MovePoint(src, dst);
+	}
+
+	void ack_movediff(int err, wire obj) {
+		a_movediff ack = (a_movediff)obj;
+		for (int i = 0; i < ack.enter.Length; i++) {
+			var p = ack.enter[i];
+			var src = Vector3.zero;
+			Tool.ToNative(ref src, p.coord_x, p.coord_z);
+			CharacterManager.Create(p.uid, p.uid.ToString(), 10, src);
+		}
+		for (int i = 0; i < ack.leave.Length; i++)
+			CharacterManager.Remove(ack.leave[i]);
+	}
+
+	void ack_moveenter(int err, wire obj) {
+		a_moveenter ack = (a_moveenter)obj;
+		Vector3 src = new Vector3();
+		Tool.ToNative(ref src, ack.coord_x, ack.coord_z);
+		CharacterManager.Create(ack.uid, ack.uid.ToString(), 10, src);
+	}
+
+	void ack_moveleave(int err, wire obj) {
+		a_moveleave ack = (a_moveleave)obj;
+		CharacterManager.Remove(ack.uid);
+	}
+
 	//////////inherit
 
 	void Awake() {
@@ -71,7 +109,15 @@ public class MainState : GameState {
 	void Start() {
 		OnEnter();
 		a_itemuse itemuse = new a_itemuse();
+		a_movepoint movepoint = new a_movepoint();
+		a_movediff movediff = new a_movediff();
+		a_moveenter moveenter = new a_moveenter();
+		a_moveleave moveleave = new a_moveleave();
 		Register(itemuse, ack_itemuse);
+		Register(movepoint, ack_movepoint);
+		Register(movediff, ack_movediff);
+		Register(moveenter, ack_moveenter);
+		Register(moveleave, ack_moveleave);
 	}
 
 	void FixedUpdate() {

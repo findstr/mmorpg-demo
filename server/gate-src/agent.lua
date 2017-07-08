@@ -107,10 +107,24 @@ local function agent_masterdata(self, fd, d, sz)
 end
 
 local function agent_slavedata(self, cmd, data)
+	print("agent_slavedata:", #data - 4)
 	master.sendmaster(self.gatefd, data:sub(4+1))
 end
 
+local function agent_multicast(self, m, sz)
+
+end
+
 ------------protocol
+local s_login = {
+	coord_x = false,
+	coord_z = false,
+}
+local function notify_login(self)
+	s_login.coord_x = self.coord_x
+	s_login.coord_z = self.coord_z
+	hub.sendscene(self, "s_login", s_login)
+end
 
 local a_gatelogin = {}
 local function r_login(self, req)
@@ -123,8 +137,9 @@ local function r_login(self, req)
 	self.uid = uid
 	self.coord_x, self.coord_z = db.coord(uid)
 	hub.login(uid, self)
+	notify_login(self)
 	print("r_login", self, self.gatefd)
-	sendclient(self.gatefd, "a_gatelogin", a_gatelogin)
+	return sendclient(self.gatefd, "a_gatelogin", a_gatelogin)
 end
 
 register("r_gatelogin", r_login)
@@ -138,6 +153,7 @@ agent {
 	masterdata -- master data process [used by master]
 	slavedata -- slave data process [used by channelhub]
 	uid	-- roleid [used by channelhub]
+	gatefd  -- masterfd [used by channelhub]
 }
 ]]--
 
@@ -146,6 +162,5 @@ M.logout = agent_logout
 M.kickout = agent_kickout
 M.masterdata = agent_masterdata
 M.slavedata = agent_slavedata
-
 return M
 

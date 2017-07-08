@@ -46,6 +46,10 @@ M.sendmaster = function(fd, data)
 	return master_inst:send(fd, data)
 end
 
+M.multicastmaster = function(fd, m, sz)
+	return master_inst:multicast(fd, m, sz)
+end
+
 M.kickmaster = function(fd)
 	local a = masterfd_agent[fd]
 	masterfd_agent[masterfd] = nil
