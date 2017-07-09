@@ -70,8 +70,6 @@ public class MainState : GameState {
 		var dst = Vector3.zero;
 		Tool.ToNative(ref src, ack.src_coord_x, ack.src_coord_z);
 		Tool.ToNative(ref dst, ack.dst_coord_x, ack.dst_coord_z);
-		if (c == null)
-			c = CharacterManager.Create(ack.uid, ack.uid.ToString(), 10, src);
 		Debug.Log("[MainState] AckMovePoint:" + ack.uid);
 		c.MovePoint(src, dst);
 	}
@@ -82,7 +80,7 @@ public class MainState : GameState {
 			var p = ack.enter[i];
 			var src = Vector3.zero;
 			Tool.ToNative(ref src, p.coord_x, p.coord_z);
-			CharacterManager.Create(p.uid, p.uid.ToString(), 10, src);
+			CharacterManager.Create(p.uid, Tool.tostring(p.name), p.hp, src);
 		}
 		for (int i = 0; i < ack.leave.Length; i++)
 			CharacterManager.Remove(ack.leave[i]);
@@ -92,7 +90,7 @@ public class MainState : GameState {
 		a_moveenter ack = (a_moveenter)obj;
 		Vector3 src = new Vector3();
 		Tool.ToNative(ref src, ack.coord_x, ack.coord_z);
-		CharacterManager.Create(ack.uid, ack.uid.ToString(), 10, src);
+		CharacterManager.Create(ack.uid, Tool.tostring(ack.name), ack.hp, src);
 	}
 
 	void ack_moveleave(int err, wire obj) {
