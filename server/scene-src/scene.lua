@@ -1,3 +1,5 @@
+local db = require "db"
+local property = require "protocol.property"
 local channel = require "channel"
 
 local M = {}
@@ -42,7 +44,7 @@ local function subscribe(gi, uid)
 	g.subscribe[uid] = uid
 end
 
-function M.leave(uid)
+local function sceneleave(uid)
 	local gi = playergrid[uid]
 	if not gi then
 		return
@@ -50,7 +52,10 @@ function M.leave(uid)
 	around(uid, gi, unsubscribe)
 	local g = scenegrid[gi]
 	g.home[uid] = nil
+	playergrid[uid] = nil
 end
+
+M.leave = sceneleave
 
 local move_buffer = {}
 --1 -> origin, 2 --> new 3 -> same
@@ -78,6 +83,8 @@ end
 
 local a_moveenter = {
 	uid = false,
+	name = false,
+	hp = false,
 	coord_x = false,
 	coord_z = false,
 }
@@ -98,7 +105,6 @@ function M.movesync(uid, coord_x, coord_z)
 	local z = coord_z // GRID
 	local ngi = x * XPOWER + z
 	local gi = playergrid[uid]
-	print("movesync:", gi, ngi)
 	if gi then
 		if gi == ngi then
 			return
@@ -127,13 +133,17 @@ function M.movesync(uid, coord_x, coord_z)
 		elseif v == 2 then
 			local home = scenegrid[k].home
 			for uid, _ in pairs(home) do
+				local r = db.roleload(uid)
 				local idx = playergrid[uid]
 				local x = idx // XPOWER * GRID
 				local z = idx % XPOWER * GRID
+				print("type:", r.prop[property.HP])
 				add[#add + 1] = {
 					uid = uid,
 					coord_x = x,
 					coord_z = z,
+					name = r.name,
+					hp = assert(r.prop[property.HP].count),
 				}
 				visible_array[#visible_array + 1] = uid
 			end
@@ -150,7 +160,10 @@ function M.movesync(uid, coord_x, coord_z)
 		channel.multicastarrclr("a_moveleave", a_moveleave, invasible_array)
 	end
 	--notify vasible person addition
+	local r = db.roleload(uid)
 	a_moveenter.uid = uid
+	a_moveenter.name = r.name
+	a_moveenter.hp = assert(r.prop[property.HP].count)
 	a_moveenter.coord_x = coord_x
 	a_moveenter.coord_z = coord_z
 	return channel.multicastarrclr("a_moveenter", a_moveenter, visible_array)
@@ -177,6 +190,14 @@ function M.start(region_x, region_z)
 		end
 	end
 	print("scene region", regionx, regionz)
+end
+
+function M.onlinepatch(list)
+	for uid, typ in pairs(list) do
+		if typ == "offline" then
+			sceneleave(uid)
+		end
+	end
 end
 
 return M

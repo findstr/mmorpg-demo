@@ -4,13 +4,13 @@ local scene = require "scene"
 
 local function s_login(uid, req, fd)
 	print("xxlogin", uid, fd, req.coord_x, req.coord_z)
-	channel.attach(uid, fd)
+	channel.onlineattach(uid, fd)
 	--scene.movesync(uid, req.coord_x, req.coord_z)
 end
 
-local function sr_logout(uid, req, fd)
+local function s_logout(uid, req, fd)
 	print("logout")
-	channel.detach(uid)
+	channel.onlinedetach(uid)
 	scene.leave(uid)
 end
 
@@ -28,7 +28,7 @@ end
 
 
 channel.regserver("s_login", s_login)
-channel.regserver("sr_logout", sr_logout)
+channel.regserver("s_logout", s_logout)
 channel.regclient("r_movepoint", r_movepoint)
 --channel.regclient("r_movedir", r_movedir)
 --channel.regclient("r_movestop", r_movestop)

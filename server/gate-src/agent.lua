@@ -14,6 +14,8 @@ local pack = string.pack
 local M = {}
 local mt = {__index = M}
 
+local notify_logout
+
 ------------agent router
 local CMD = {}
 local function register(cmd, func)
@@ -79,11 +81,17 @@ local function agent_free(self)
 end
 
 local function agent_logout(self)
+	if self.uid then
+		notify_logout(self)
+	end
 	hub.logout(self)
 	agent_free(self)
 end
 
 local function agent_kickout(self)
+	if self.uid then
+		notify_logout(self)
+	end
 	master.kickmaster(self)
 	agent_free(self)
 end
@@ -111,10 +119,6 @@ local function agent_slavedata(self, cmd, data)
 	master.sendmaster(self.gatefd, data:sub(4+1))
 end
 
-local function agent_multicast(self, m, sz)
-
-end
-
 ------------protocol
 local s_login = {
 	coord_x = false,
@@ -124,6 +128,13 @@ local function notify_login(self)
 	s_login.coord_x = self.coord_x
 	s_login.coord_z = self.coord_z
 	hub.sendscene(self, "s_login", s_login)
+end
+
+local s_logout = {
+
+}
+notify_logout = function (self)
+	hub.sendscene(self, "s_logout", s_logout)
 end
 
 local a_gatelogin = {}

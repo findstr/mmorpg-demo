@@ -12,6 +12,7 @@ local router_handler = {}
 local router_client = {}
 
 local function router_register(proto, cmd, func)
+	assert(func, cmd)
 	local cb = function(uid, dat, fd)
 		local req
 		if #dat > 0 then
@@ -45,6 +46,23 @@ end
 local function user_detach(uid)
 	user_gate[uid] = nil
 end
+
+local function user_patch(uidmap, onlinefd)
+	for uid, fd in pairs(user_gate) do
+		if fd == onlinefd then
+			if not uidmap[uid] then
+				uidmap[uid] = "offline"
+			else
+				uidmap[uid] = nil
+			end
+		end
+	end
+	for uid, _ in pairs(uidmap) do
+		user_gate[uid] = onlinefd
+	end
+	return uidmap
+end
+
 
 ------------------protocol socket function
 local ERR = {
@@ -283,7 +301,7 @@ local function register_router(fd, channelid, channeltype)
 		local ack = rpc_call(fd, 0, "sr_register", sr_register)
 		print("register", ack, ack and ack.rpc or "")
 		if ack then
-			break
+			return ack.online
 		end
 	end
 end
@@ -301,8 +319,9 @@ multicastarrclr = multicastarrclr,
 errorclient = senderror,
 regclient = router_regclient,
 regserver = router_regserver,
-attach = user_attach,
-detach = user_detach,
+onlineattach = user_attach,
+onlinedetach = user_detach,
+onlinepatch = user_patch,
 start = function(config)
 	local hook = config.event
 	local channelid = config.channelid
@@ -314,8 +333,8 @@ start = function(config)
 			connected = function(fd)
 				print("[channel] connected", fd)
 				rpc_connected(fd)
-				register_router(fd, channelid, channeltype)
-				hook.connected(fd)
+				local online = register_router(fd, channelid, channeltype)
+				hook.connected(fd, online)
 			end,
 			close = function(fd)
 				print("[channel] close", fd)

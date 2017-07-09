@@ -41,12 +41,10 @@ end
 
 ----------------online
 local LOGIN_TYPE = 1 * 10000
-local ROLE_TYPE = 2 * 10000
 local SCENE_TYPE = 3 * 10000
 local SCENE_KEY = "sscene"
 local agent_serverkey = {
 	[LOGIN_TYPE] = "slogin",
-	[ROLE_TYPE] = "srole",
 	[SCENE_TYPE] = "sscene",
 }
 local online_agent = {}
@@ -79,10 +77,10 @@ local function online_kickout(uid)
 end
 
 --------------channel forward
+local SCENE_NAME = "scene"
 local channel_type_key = {
 	["login"] = LOGIN_TYPE,
-	["role"] = ROLE_TYPE,
-	["scene"] = SCENE_TYPE,
+	[SCENE_NAME] = SCENE_TYPE,
 }
 
 local channel_fd_typeid = {
@@ -156,6 +154,15 @@ local function sr_register(uid, req, fd)
 		print(string.format("[gate] sr_register %s", v))
 	end
 	channel_regclient(req.typ, req.id, fd, req.handler)
+	if req.typ == SCENE_NAME then
+		local l = {}
+		for uid, agent in pairs(online_agent) do
+			if agent[SCENE_KEY] == req.id then
+				l[#l + 1] = uid
+			end
+		end
+		req.online = l
+	end
 	return sendserver(fd, uid, "sa_register", req)
 end
 

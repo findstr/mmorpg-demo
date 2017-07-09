@@ -122,8 +122,10 @@ r_moveenter 0x5004 {
 
 a_moveenter 0x5005 {
 	.uid:integer 1
-	.coord_x:integer 2
-	.coord_z:integer 3
+	.name:string 2
+	.hp:integer 3
+	.coord_x:integer 4
+	.coord_z:integer 5
 }
 
 r_moveleave 0x5006 {
@@ -140,6 +142,8 @@ a_movediff 0x5008 {
 		.uid:integer 1
 		.coord_x:integer 2
 		.coord_z:integer 3
+		.name:string 4
+		.hp:integer 5
 	}
 	.enter:player[] 1
 	.leave:integer[] 2

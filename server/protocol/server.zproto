@@ -8,6 +8,7 @@ sr_register 0x01 {
 
 sa_register 0x02 {
 	.rpc:integer 1
+	.online:integer[] 2
 }
 
 sr_fetchtoken 0x03 {
@@ -37,11 +38,11 @@ s_login 0x101 {
 	.coord_z:integer 2
 }
 
-sr_logout 0x103 {
-	.rpc:integer 1
+s_logout 0x103 {
+#.rpc:integer 1
 }
 
-sa_logout 0x104 {
-	.rpc:integer 1
-}
+#sa_logout 0x104 {
+#	.rpc:integer 1
+#}
 

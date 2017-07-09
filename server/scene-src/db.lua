@@ -26,6 +26,10 @@ local roleinfo_proto = "roleinfo"
 local rolecache = {}
 
 function M.roleload(uid)
+	local r = rolecache[uid]
+	if r then
+		return r
+	end
 	local ok, dat = dbinst:hget(roleinfo_dbkey, uid)
 	if not ok then
 		return
@@ -83,10 +87,6 @@ function M.rolecreate(uid, name)
 	rolecache[uid] = role
 	M.roleupdate(uid)
 	return role
-end
-
-function M.roleget(uid)
-	return rolecache[uid]
 end
 
 function M.start()
