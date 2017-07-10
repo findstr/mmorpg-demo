@@ -170,4 +170,16 @@ a_movesync 0x500a {
 	.coord_z:integer 3
 }
 
+#######################battle
+r_attack 0x6000 {
+	.skillid:integer 1
+	.target:integer 3
+}
+
+a_attack 0x6001 {
+	.attacker:integer 1
+	.target:integer 2
+	.skillid:integer 3
+	.targethp:integer 4
+}
 

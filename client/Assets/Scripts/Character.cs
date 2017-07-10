@@ -65,6 +65,9 @@ public class Character : MonoBehaviour {
 		get { return uid; }
 		set { uid = value; }
 	}
+	public Vector3 Position {
+		get { return transform.position; }
+	}
 
 	////////////Simulator
 	enum MoveType {

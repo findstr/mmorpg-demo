@@ -13,11 +13,24 @@ public class CharacterManager {
 		pool[uid] = c;
 		c.Name = name;
 		c.HP = hp;
+		c.UID = uid;
 		return c;
 	}
 	public static Character Get(int uid) {
 		if (pool.ContainsKey(uid))
 			return pool[uid];
+		return null;
+	}
+	public static Character AutoAim(int uid, float radius) {
+		var atk = Get(uid);
+		foreach (KeyValuePair<int, Character> entry in pool) {
+			if (entry.Value == atk)
+				continue;
+			float dist = Vector3.Distance(atk.Position, entry.Value.Position);
+			Debug.Log("Dist:" + dist);
+			if (dist < radius)
+				return entry.Value;
+		}
 		return null;
 	}
 	public static void Remove(int uid) {

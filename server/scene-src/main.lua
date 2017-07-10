@@ -39,7 +39,9 @@ core.start(function()
 	local cmd = string.format("find %s -name '*.xml'", xmlpath)
 	xml.parselist {
 		xmlpath .. "/ItemUse.xml",
+		xmlpath .. "/SkillEffect.xml",
 	}
+
 	scene.start(1000, 1000)
 	local dbok = db.start()
 	local channelok = channel.start {

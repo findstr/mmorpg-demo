@@ -104,7 +104,7 @@ local a_movediff = {
 
 local visible_array = {}
 local invasible_array = {}
-function M.movesync(uid, coord_x, coord_z)
+local function scene_movesync(uid, coord_x, coord_z)
 	playercoordx[uid] = coord_x
 	playercoordz[uid] = coord_z
 	local x = coord_x // GRID
@@ -174,14 +174,30 @@ function M.movesync(uid, coord_x, coord_z)
 	a_moveenter.coord_z = coord_z
 	return channel.multicastarrclr("a_moveenter", a_moveenter, visible_array)
 end
-
-function M.grid(uid)
+local function scene_grid(uid)
 	local gi = playergrid[uid]
 	local g = scenegrid[gi]
 	if not g then
 		return nil
 	end
 	return g.subscribe
+end
+
+local function scene_publish(uid, cmd, ack)
+	local grid = scene_grid(uid)
+	return channel.multicastmap(cmd, ack, grid)
+end
+
+M.movesync = scene_movesync
+M.grid = scene_grid
+M.publish = scene_publish
+
+function M.onlinepatch(list)
+	for uid, typ in pairs(list) do
+		if typ == "offline" then
+			sceneleave(uid)
+		end
+	end
 end
 
 function M.start(region_x, region_z)
@@ -198,13 +214,22 @@ function M.start(region_x, region_z)
 	print("scene region", regionx, regionz)
 end
 
-function M.onlinepatch(list)
-	for uid, typ in pairs(list) do
-		if typ == "offline" then
-			sceneleave(uid)
-		end
-	end
+-----------------protocol
+
+local function r_movepoint(uid, req, fd)
+	scene_movesync(uid, req.src_coord_x, req.src_coord_z)
+	req.uid = uid
+	scene_publish(uid, "a_movepoint", req)
 end
+
+local function r_movesync(uid, req, fd)
+	scene_movesync(uid, req.coord_x, req.coord_z)
+	print("movesync")
+end
+
+channel.regclient("r_movepoint", r_movepoint)
+channel.regclient("r_movesync", r_movesync)
+
 
 return M
 

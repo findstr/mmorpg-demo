@@ -20,6 +20,7 @@ local dbproto = zproto:parse [[
 		.level:integer 4
 		.gold:integer 5
 		.hp:integer 6
+		.magic:integer 7
 	}
 	role_bag {
 		.list:idcount[id] 1
@@ -30,6 +31,14 @@ local dbproto = zproto:parse [[
 		.matk:integer 3
 		.mdef:integer 4
 	}
+	role_skill {
+		skill {
+			.skillid:integer 1
+			.skilllv:integer 2
+		}
+		.active:skill[skillid] 2
+		.passive:skill[skillid] 3
+	}
 ]]
 
 local dbinst
@@ -37,16 +46,19 @@ local dbinst
 local proto_role_basic = "role_basic"
 local proto_role_bag = "role_bag"
 local proto_role_prop = "role_prop"
+local proto_role_skill = "role_skill"
 
 local dbk_role = "role:%s"
 local dbk_role_basic = "basic"
 local dbk_role_bag = "bag"
 local dbk_role_prop = "prop"
+local dbk_role_skill = "skill"
 
 local DIRTY_BASIC = 0x01
 local DIRTY_BAG = 0x02
 local DIRTY_PROP = 0x04
-local DIRTY_ALL = DIRTY_BASIC | DIRTY_BAG | DIRTY_PROP
+local DIRTY_SKILL = 0x05
+local DIRTY_ALL = DIRTY_BASIC | DIRTY_BAG | DIRTY_PROP | DIRTY_SKILL
 
 local rolecache = {}
 local roledirtycount = 0
@@ -56,12 +68,66 @@ local part_proto = {
 	[dbk_role_basic] = proto_role_basic,
 	[dbk_role_bag] = proto_role_bag,
 	[dbk_role_prop] = proto_role_prop,
+	[dbk_role_skill] = proto_role_skill,
 }
 local part_flag = {
 	[dbk_role_basic] = DIRTY_BASIC,
 	[dbk_role_bag] = DIRTY_BAG,
 	[dbk_role_prop] = DIRTY_PROP,
+	[dbk_role_skill] = DIRTY_SKILL,
 }
+
+function M.rolecreate(uid, name)
+	local basic = {
+		uid = uid,
+		name = name,
+		exp = 0,
+		level = 0,
+		gold = 100,
+		hp = 90,
+		magic = 100,
+	}
+	local bag = {
+		list = {
+			[10000] = {
+				id = 10000,
+				count = 100
+			},
+			[10001] = {
+				id = 10001,
+				count = 101,
+			}
+		}
+	}
+	local prop = {
+		atk = 99,
+		def = 98,
+		matk = 89,
+		mdef = 88,
+	}
+	local skill = {
+		active = {
+			[10000000] = {
+				skillid = 10000000,
+				skilllv = 1,
+			},
+			[10001000] = {
+				skillid = 10001000,
+				skilllv = 1,
+			},
+		}
+	}
+	role = {
+		basic = basic,
+		bag = bag,
+		prop = prop,
+		skill = skill,
+	}
+	rolecache[uid] = role
+	roledirty[uid] = DIRTY_ALL
+	return role
+end
+
 
 local cmdbuffer = {}
 function M.roleload(uid)
@@ -165,47 +231,11 @@ end
 M.rolebasic = try_get(dbk_role_basic)
 M.rolebag = try_get(dbk_role_bag)
 M.roleprop = try_get(dbk_role_prop)
+M.roleskill = try_get(dbk_role_skill)
 M.roledirtybasic = role_dirty(DIRTY_BASIC)
 M.roledirtybag = role_dirty(DIRTY_BAG)
-M.roledirtyprop = role_dirty(DIRTY_BATTLE)
-
-function M.rolecreate(uid, name)
-	local basic = {
-		uid = uid,
-		name = name,
-		exp = 0,
-		level = 0,
-		gold = 100,
-		hp = 90,
-	}
-	local bag = {
-		list = {
-			[10000] = {
-				id = 10000,
-				count = 100
-			},
-			[10001] = {
-				id = 10001,
-				count = 101,
-			}
-		}
-	}
-	local prop = {
-		atk = 99,
-		def = 98,
-		matk = 89,
-		mdef = 88,
-	}
-	role = {
-		basic = basic,
-		bag = bag,
-		prop = prop,
-	}
-	rolecache[uid] = role
-	roledirty[uid] = DIRTY_ALL
-	return role
-end
-
+M.roledirtyprop = role_dirty(DIRTY_PROP)
+M.roledirtyskill = role_dirty(DIRTY_SKILL)
 local timer_sec = 10000
 local function dbtimer()
 	local ok, err = core.pcall(writedb)

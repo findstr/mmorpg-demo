@@ -5,5 +5,7 @@ const.EVENT_CLOSE = 0x02
 
 const.EMPTY = {}
 
+const.PERCENT100 = 100000
+
 return const
 
