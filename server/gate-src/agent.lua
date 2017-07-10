@@ -14,6 +14,7 @@ local pack = string.pack
 
 local M = {}
 local mt = {__index = M}
+local NIL = {}
 
 local notify_logout
 
@@ -24,15 +25,15 @@ local function regclient(cmd, func)
 	CMD[cmd] = func
 end
 
-local function regserver(cmd, func)
-	cmd = sproto:querytag(cmd)
-	CMD[cmd] = func
-end
-
 local function protowrapper(proto, cb)
 	return function(self, cmd, data)
-		data = data:sub(8 + 1)
-		local pk = proto:decode(cmd, data)
+		local pk
+		if #data > 8 then
+			data = data:sub(8 + 1)
+			req = proto:decode(cmd, data)
+		else
+			req = NIL
+		end
 		cb(self, pk)
 	end
 end
@@ -128,18 +129,6 @@ local function agent_masterdata(self, fd, d, sz)
 	func(self, req)
 end
 
-local function agent_slavedata(self, cmd, data)
-	print("agent_slavedata:", #data - 4)
-	local cb = CMD[cmd]
-	if cb then
-		data = data:sub(8 + 1)
-		local req = cproto:decode(cmd, data)
-		cb(self, req)
-	else
-		master.sendmaster(self.gatefd, data:sub(4+1))
-	end
-end
-
 ------------protocol
 local s_login = {
 	coord_x = false,
@@ -185,8 +174,8 @@ local function s_forcepoint(self, req)
 	self.coord_z = req.coord_z
 end
 
-regclient("r_gatelogin", protowrapper(cproto, r_login))
-regserver("s_forcepoint", protowrapper(sproto, s_forcepoint))
+regclient("r_gatelogin", r_login)
+hub.regagent(sproto, "s_forcepoint", s_forcepoint)
 
 -----------interface
 --[[ agent interface
@@ -205,6 +194,6 @@ M.create = agent_create
 M.logout = agent_logout
 M.kickout = agent_kickout
 M.masterdata = agent_masterdata
-M.slavedata = agent_slavedata
+
 return M
 

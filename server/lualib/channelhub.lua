@@ -23,7 +23,7 @@ end
 local NIL = {}
 local CMD = {}
 local readonly = {__newindex = function() assert("read only table") end}
-local router_handler = {}
+
 local function router_regserver(cmd, func)
 	local cmd = sproto:querytag(cmd)
 	local cb = function(uid, dat, fd)
@@ -35,6 +35,26 @@ local function router_regserver(cmd, func)
 			req = NIL
 		end
 		func(uid, req, fd)
+	end
+	CMD[cmd] = cb
+end
+
+local function router_regagent(proto, cmd, func)
+	local cmd = proto:querytag(cmd)
+	local cb = function(uid, dat, fd)
+		local a = online_agent[uid]
+		if not a then
+			print("[gate] hub data uid:", uid, " logout")
+			return
+		end
+		local req
+		if #dat > 8 then
+			dat = dat:sub(8 + 1)
+			req = proto:decode(cmd, dat)
+		else
+			req = NIL
+		end
+		func(self, req, fd)
 	end
 	CMD[cmd] = cb
 end
@@ -214,6 +234,7 @@ router_regserver("s_multicast", s_multicast)
 local M = {
 login = online_login,
 logout = online_logout,
+regagent = router_regagent,
 tryforward = channel_tryforward,
 sendscene = channel_sendscene,
 --event
@@ -228,15 +249,12 @@ data = function(fd, d, sz)
 	local uid, cmd = unpack("<I4I4", dat)
 	local func = CMD[cmd]
 	if func then
-		func(uid, dat, fd)
-		return
+		return func(uid, dat, fd)
 	end
 	local a = online_agent[uid]
-	if not a then
-		print("[gate] broker data uid:", uid, " logout")
-		return
+	if a then
+		return master.sendmaster(a.gatefd, dat:sub(4+1))
 	end
-	a:slavedata(cmd, dat)
 end,
 
 }
