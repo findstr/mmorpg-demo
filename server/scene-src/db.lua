@@ -1,65 +1,185 @@
+local core = require "silly.core"
 local env = require "silly.env"
 local zproto = require "zproto"
 local property = require "protocol.property"
 local redis = require "redis"
+local format = string.format
+local tunpack = table.unpack
 
 local M = {}
 
 local dbproto = zproto:parse [[
-	roleinfo {
-		item {
-			.id:integer 1
-			.count:integer 2
-		}
+	idcount {
+		.id:integer 1
+		.count:integer 2
+	}
+	role_basic {
 		.uid:integer 1
 		.name:string 2
-		.level:integer 3
-		.bag:item[id] 4
-		.prop:item[id] 5
+		.exp:integer 3
+		.level:integer 4
+		.gold:integer 5
+		.hp:integer 6
+	}
+	role_bag {
+		.list:idcount[id] 1
+	}
+	role_prop {
+		.atk:integer 1
+		.def:integer 2
+		.matk:integer 3
+		.mdef:integer 4
 	}
 ]]
 
 local dbinst
-local roleinfo_dbkey = "role:info"
-local roleinfo_proto = "roleinfo"
+
+local proto_role_basic = "role_basic"
+local proto_role_bag = "role_bag"
+local proto_role_prop = "role_prop"
+
+local dbk_role = "role:%s"
+local dbk_role_basic = "basic"
+local dbk_role_bag = "bag"
+local dbk_role_prop = "prop"
+
+local DIRTY_BASIC = 0x01
+local DIRTY_BAG = 0x02
+local DIRTY_PROP = 0x04
+local DIRTY_ALL = DIRTY_BASIC | DIRTY_BAG | DIRTY_PROP
 
 local rolecache = {}
+local roledirtycount = 0
+local roledirty = {}
 
+local part_proto = {
+	[dbk_role_basic] = proto_role_basic,
+	[dbk_role_bag] = proto_role_bag,
+	[dbk_role_prop] = proto_role_prop,
+}
+local part_flag = {
+	[dbk_role_basic] = DIRTY_BASIC,
+	[dbk_role_bag] = DIRTY_BAG,
+	[dbk_role_prop] = DIRTY_PROP,
+}
+
+local cmdbuffer = {}
 function M.roleload(uid)
-	local r = rolecache[uid]
-	if r then
-		return r
+	local role = rolecache[uid]
+	if role then
+		return role
 	end
-	local ok, dat = dbinst:hget(roleinfo_dbkey, uid)
-	if not ok then
+	local k = format(dbk_role, uid)
+	local ok, dat = dbinst:hgetall(k)
+	if not ok or #dat == 0 then
 		return
 	end
-	local info = dbproto:decode(roleinfo_proto, dat)
-	assert(info, roleinfo_proto)
-	rolecache[uid] = info
-	return info
+	rolecache[uid] = dat
+	for i = 1, #dat, 2 do
+		local j = i + 1
+		local k = dat[i]
+		local v = dat[j]
+		dat[i] = nil
+		dat[j] = nil
+		local protok = part_proto[k]
+		local info = dbproto:decode(protok, v)
+		dat[k] = info
+	end
+	return dat
 end
 
-function M.roleupdate(uid)
-	local info = rolecache[uid]
-	if not info then
+local function roleupdate(uid, role, dirty)
+	local count = 0
+	local k = format(dbk_role, uid)
+	for k, flag in pairs(part_flag) do
+		print("dirty", dirty, flag)
+		if dirty & flag ~= 0 then
+			count = count + 1
+			cmdbuffer[count] = k
+			count = count + 1
+			cmdbuffer[count] = dbproto:encode(part_proto[k], role[k])
+		end
+	end
+	print("roleupdate", count)
+	if count == 0 then
 		return
 	end
-	print("roleupdate:", uid, info, info.prop)
-	local dat = dbproto:encode(roleinfo_proto, info)
-	return dbinst:hset(roleinfo_dbkey, uid, dat)
+	local ok, err = dbinst:hmset(k, tunpack(cmdbuffer, 1, count))
+	for i = 1, count do
+		cmdbuffer[i] = nil
+	end
+	if not ok then
+		print("roleupdate", err)
+	end
 end
 
 function M.roleland(uid)
-	M.roleupdate(uid)
+	local role = rolecache[uid]
+	if not role then
+		return
+	end
 	rolecache[uid] = nil
+	local dirty = roledirty[uid]
+	roledirty[uid] = nil
+	if dirty == 0 then
+		return
+	end
+	roleupdate(uid, role, dirty)
 end
 
+local function writedb()
+	roledirtycount = 0
+	for uid, dirty in pairs(roledirty) do
+		local role = rolecache[uid]
+		roledirty[uid] = nil
+		roleupdate(uid, role, dirty)
+	end
+end
+
+local function try_get(dbk)
+	return function(uid)
+		local role = rolecache[uid]
+		if not role then
+			return nil
+		end
+		return role[dbk]
+	end
+end
+
+local function role_dirty(flag)
+	return function(uid)
+		local origin = roledirty[uid]
+		if not origin then
+			roledirty[uid] = flag
+		else
+			roledirty[uid] = origin | flag
+		end
+		roledirtycount = roledirtycount + 1
+		if roledirtycount > 300 then
+			roledirtycount = 0
+			core.fork(writedb)
+		end
+	end
+end
+
+M.rolebasic = try_get(dbk_role_basic)
+M.rolebag = try_get(dbk_role_bag)
+M.roleprop = try_get(dbk_role_prop)
+M.roledirtybasic = role_dirty(DIRTY_BASIC)
+M.roledirtybag = role_dirty(DIRTY_BAG)
+M.roledirtyprop = role_dirty(DIRTY_BATTLE)
+
 function M.rolecreate(uid, name)
-	local role = {
+	local basic = {
+		uid = uid,
 		name = name,
-		level = 1,
-		bag = {
+		exp = 0,
+		level = 0,
+		gold = 100,
+		hp = 90,
+	}
+	local bag = {
+		list = {
 			[10000] = {
 				id = 10000,
 				count = 100
@@ -67,26 +187,32 @@ function M.rolecreate(uid, name)
 			[10001] = {
 				id = 10001,
 				count = 101,
-			},
-		},
-		prop = {
-			[property.ATK] = {
-				id = property.ATK,
-				count = 100,
-			},
-			[property.DEF] = {
-				id = property.DEF,
-				count = 10,
-			},
-			[property.HP] = {
-				id = property.HP,
-				count = 90,
 			}
 		}
 	}
+	local prop = {
+		atk = 99,
+		def = 98,
+		matk = 89,
+		mdef = 88,
+	}
+	role = {
+		basic = basic,
+		bag = bag,
+		prop = prop,
+	}
 	rolecache[uid] = role
-	M.roleupdate(uid)
+	roledirty[uid] = DIRTY_ALL
 	return role
+end
+
+local timer_sec = 10000
+local function dbtimer()
+	local ok, err = core.pcall(writedb)
+	if not ok then
+		print(err)
+	end
+	core.timeout(timer_sec, dbtimer)
 end
 
 function M.start()
@@ -94,6 +220,8 @@ function M.start()
 	dbinst, err = redis:connect {
 		addr = env.get("dbport")
 	}
+	dbinst:select(9)
+	dbtimer()
 	return dbinst and true or false
 end
 

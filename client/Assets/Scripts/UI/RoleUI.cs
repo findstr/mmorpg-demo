@@ -14,10 +14,10 @@ public class RoleUI : MonoBehaviour {
 	}
 
 	public void RefreshRole() {
-		role_name.text = Module.Role.name;
-		role_level.text = Module.Role.level.ToString();
-		role_hp_bar.value = Module.Role.hp;
-		role_hp_text.text = Module.Role.hp.ToString() + "/100";
+		role_name.text = Module.Role.Basic.name;
+		role_level.text = Module.Role.Basic.level.ToString();
+		role_hp_bar.value = Module.Role.Basic.hp;
+		role_hp_text.text = Module.Role.Basic.hp.ToString() + "/100";
 	}
 
 }

@@ -21,9 +21,10 @@ local EVENT = {
 		for i = 1, #online do
 			local uid = online[i]
 			tbl[uid] = "online"
+			db.roleload(uid)
 			print("[scene] online", uid)
 		end
-		channel.onlinepatch(tbl)
+		channel.onlinepatch(tbl, fd)
 		scene.onlinepatch(tbl)
 	end,
 	close = function(gateid)

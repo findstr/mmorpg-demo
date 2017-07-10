@@ -75,7 +75,6 @@ public class DB {
 	public static XmlSet<LanguageItem, string> Language = new XmlSet<LanguageItem, string>();
 	public static XmlSet<RoleLevelItem, int> RoleLevel = new XmlSet<RoleLevelItem, int>();
 	public static XmlSet<ItemItem, int> Item = new XmlSet<ItemItem, int>();
-	public static XmlSet<ItemUseItem, int> ItemUse = new XmlSet<ItemUseItem, int>();
 	private static bool loaded = false;
 	public static void Load() {
 		if (loaded)
@@ -88,8 +87,6 @@ public class DB {
 			XmlLoad obj = (XmlLoad)fi[j].GetValue(null);
 			obj.Load(Tool.GetPath("DB/" + name + ".xml"));
 		}
-		var a = ItemUse.Get(10000);
-		Debug.Log("RoleLevel:" + a.Prop.Length + ":" + a.Prop[0].id + a.Prop[1].count);
 	}
 }}
 

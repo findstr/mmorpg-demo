@@ -117,16 +117,19 @@ public class SelectState : GameState {
 		a_roleinfo ack = (a_roleinfo)obj;
 		if (err == 0) {
 			showUI();
-			Module.Role.name = Tool.tostring(ack.name);
-			Module.Role.exp = ack.exp;
-			Module.Role.level = ack.level;
+			Module.Role.Basic.name = Tool.tostring(ack.name);
+			Module.Role.Basic.exp = ack.exp;
+			Module.Role.Basic.level = ack.level;
+			Module.Role.Basic.gold = ack.gold;
+			Module.Role.Basic.hp = ack.hp;
+			Module.Role.Prop.atk = ack.prop.atk;
+			Module.Role.Prop.def = ack.prop.def;
+			Module.Role.Prop.matk = ack.prop.matk;
+			Module.Role.Prop.mdef = ack.prop.mdef;
 			Debug.Log("SetBag:" + ack.bag);
-			Tool.ToNative(ref Module.Role.prop, ack.prop);
 			Tool.ToNative(ref Module.Role.bag, ack.bag);
-			role_name.text = Tool.tostring(ack.name);
-			var p = Module.Role.prop[Property.HP];
-			Module.Role.hp = p.count;
-			Debug.Log("RoleInfoName:" + Module.Role.name + ":" + Module.Role.hp);
+			role_name.text = Module.Role.Basic.name;
+			Debug.Log("RoleInfoName:" + Module.Role.Basic.name + ":" + Module.Role.Basic.hp);
 		} else {
 			createUI();
 		}
@@ -136,14 +139,18 @@ public class SelectState : GameState {
 		a_rolecreate ack = (a_rolecreate)obj;
 		if (err == 0) {
 			showUI();
-			Module.Role.name = Tool.tostring(ack.name);
-			Module.Role.exp = ack.exp;
-			Module.Role.level = ack.level;
-			Tool.ToNative(ref Module.Role.prop, ack.prop);
+			Module.Role.Basic.name = Tool.tostring(ack.name);
+			Module.Role.Basic.exp = ack.exp;
+			Module.Role.Basic.level = ack.level;
+			Module.Role.Basic.gold = ack.gold;
+			Module.Role.Basic.hp = ack.hp;
+			Module.Role.Prop.atk = ack.prop.atk;
+			Module.Role.Prop.def = ack.prop.def;
+			Module.Role.Prop.matk = ack.prop.matk;
+			Module.Role.Prop.mdef = ack.prop.mdef;
+			Debug.Log("SetBag:" + ack.bag);
 			Tool.ToNative(ref Module.Role.bag, ack.bag);
-			role_name.text = Tool.tostring(ack.name);
-			var p = Module.Role.prop[Property.HP];
-			Module.Role.hp = p.count;
+			role_name.text = Module.Role.Basic.name;
 		}
 		Debug.Log("RoleCreate:" + err);
 	}

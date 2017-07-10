@@ -17,8 +17,8 @@ public class MainState : GameState {
 		alreadyenter = true;
 		Module.Misc.state = this;
 		role = CharacterManager.Create(Module.Role.uid,
-				Module.Role.name,
-				Module.Role.hp,
+				Module.Role.Basic.name,
+				Module.Role.Basic.hp,
 				Module.Role.pos);
 		Debug.Assert(role != null);
 		controller = new MoveController(role);
@@ -58,7 +58,7 @@ public class MainState : GameState {
 		if (err != 0) //TODO: show messagebox
 			return ;
 		a_itemuse ack = (a_itemuse) obj;
-		Module.Role.hp = ack.hp;
+		Module.Role.Basic.hp = ack.hp;
 		Module.UI.role.RefreshRole();
 	}
 

@@ -1,15 +1,36 @@
 using System.Collections.Generic;
 using UnityEngine;
 namespace Module {
+public struct BasicSt {
+	/*
+	BasicSt() {
+		uid = 0;
+		name = "hello";
+		exp = 0;
+		level = 0;
+		gold = 0;
+		hp = 0;
+	}*/
+	public string name;
+	public int exp;
+	public int level;
+	public int gold;
+	public int hp;
+}
+
+public struct PropSt {
+	public int atk;
+	public int def;
+	public int matk;
+	public int mdef;
+}
+
 public class Role {
-	public static int uid = 0;
-	public static string name = "hello";
-	public static int level = 0;
-	public static int exp = 0;
-	public static int hp = 0;
-	public static Vector3 pos = Vector3.zero;
-	public static Dictionary<int, DB.IdCount> prop = new Dictionary<int, DB.IdCount>();
+	public static int uid;
+	public static BasicSt Basic;
+	public static PropSt Prop;
 	public static Dictionary<int, DB.IdCount> bag = new Dictionary<int, DB.IdCount>();
+	public static Vector3 pos = Vector3.zero;
 }
 }
 

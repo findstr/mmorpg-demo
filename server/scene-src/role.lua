@@ -4,6 +4,26 @@ local property = require "protocol.property"
 local db = require "db"
 local errno = require "protocol.errno"
 
+local a_roleinfo = {
+	name = false,
+	level = false,
+	exp = false,
+	gold = false,
+	bag = false,
+	prop = false,
+	hp = false,
+}
+local function a_roleinfo_fill(role)
+	local basic = role.basic
+	a_roleinfo.name = basic.name
+	a_roleinfo.level = basic.level
+	a_roleinfo.exp = basic.exp
+	a_roleinfo.gold = basic.gold
+	a_roleinfo.bag = role.bag.list
+	a_roleinfo.prop = role.prop
+	a_roleinfo.hp = basic.hp
+end
+
 local function r_roleinfo(uid, req, fd)
 	print("r_roleinfo", uid)
 	local info = db.roleload(uid)
@@ -11,7 +31,8 @@ local function r_roleinfo(uid, req, fd)
 		return channel.errorclient(fd, uid, "a_roleinfo", errno.ROLE_NONEXIST)
 	end
 	print("r_roleinfo", uid, info.bag)
-	return channel.sendclient(fd, uid, "a_roleinfo", info)
+	a_roleinfo_fill(info)
+	return channel.sendclient(fd, uid, "a_roleinfo", a_roleinfo)
 end
 
 local function r_rolecreate(uid, req, fd)
@@ -21,8 +42,9 @@ local function r_rolecreate(uid, req, fd)
 		return channel.sendclient(fd, uid, "a_rolecreate", info)
 	end
 	info = db.rolecreate(uid, req.name)
-	print("realy create", info)
-	return channel.sendclient(fd, uid, "a_rolecreate", info)
+	a_roleinfo_fill(info)
+	print("realy create", info.basic)
+	return channel.sendclient(fd, uid, "a_rolecreate", a_roleinfo)
 end
 
 local a_itemuse = {
@@ -31,11 +53,12 @@ local a_itemuse = {
 local function r_itemuse(uid, req, fd)
 	local id = req.id
 	local count = req.count
-	local info = db.roleload(uid)
-	for k, v in pairs(info.bag) do
+	local bag = db.rolebag(uid)
+	local basic = db.rolebasic(uid)
+	for k, v in pairs(bag) do
 		print('itemuse bag', k, v)
 	end
-	local item = info.bag[id]
+	local item = bag[id]
 	print("itemuse", id, item)
 	if not item or item.count < count then
 		return channel.errorclient(fd, uid, "a_itemuse", errno.ROLE_NOITEM)
@@ -43,12 +66,14 @@ local function r_itemuse(uid, req, fd)
 	local x = xml.getkey("ItemUse.xml", id)
 	print("r_itemuse", uid, id, count)
 	item.count = item.count - count;
-	local prop = info.prop
-	for k, v in pairs(x.Prop) do
-		prop[k].count = prop[k].count + v
+	if item.count == 0 then
+		bag[id] = nil
 	end
-	db.roleupdate(uid)
-	a_itemuse.hp = assert(prop[property.HP].count)
+	local hp = basic.hp + item.hp
+	basic.hp = hp
+	db.roledirtybag(uid)
+	db.roledirtybasic(uid)
+	a_itemuse.hp = hp
 	return channel.sendclient(fd, uid, "a_itemuse", a_itemuse)
 end
 

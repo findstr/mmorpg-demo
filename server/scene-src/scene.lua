@@ -7,8 +7,7 @@ local M = {}
 --GRID = RESOLUTION * CELL
 local regionx
 local regionz
-local scenegrid = {}
-local playergrid = {}
+
 local GRID = 100
 local XPOWER = 100
 local EMPTY = {}
@@ -16,6 +15,11 @@ local DEFAULT_MOVEPOINT = {
 	dst_coord_x = 0,
 	dst_coord_z = 0,
 }
+
+local scenegrid = {}
+local playergrid = {}
+local playercoordx = {}
+local playercoordz = {}
 
 local function around(uid, gi, func)
 	local z = gi % XPOWER
@@ -101,6 +105,8 @@ local a_movediff = {
 local visible_array = {}
 local invasible_array = {}
 function M.movesync(uid, coord_x, coord_z)
+	playercoordx[uid] = coord_x
+	playercoordz[uid] = coord_z
 	local x = coord_x // GRID
 	local z = coord_z // GRID
 	local ngi = x * XPOWER + z
@@ -133,17 +139,17 @@ function M.movesync(uid, coord_x, coord_z)
 		elseif v == 2 then
 			local home = scenegrid[k].home
 			for uid, _ in pairs(home) do
-				local r = db.roleload(uid)
+				local r = db.rolebasic(uid)
+				print("basic:", r)
 				local idx = playergrid[uid]
-				local x = idx // XPOWER * GRID
-				local z = idx % XPOWER * GRID
-				print("type:", r.prop[property.HP])
+				local x = playercoordx[uid]
+				local z = playercoordz[uid]
 				add[#add + 1] = {
 					uid = uid,
 					coord_x = x,
 					coord_z = z,
 					name = r.name,
-					hp = assert(r.prop[property.HP].count),
+					hp = r.hp,
 				}
 				visible_array[#visible_array + 1] = uid
 			end
@@ -160,10 +166,10 @@ function M.movesync(uid, coord_x, coord_z)
 		channel.multicastarrclr("a_moveleave", a_moveleave, invasible_array)
 	end
 	--notify vasible person addition
-	local r = db.roleload(uid)
+	local r = db.rolebasic(uid)
 	a_moveenter.uid = uid
 	a_moveenter.name = r.name
-	a_moveenter.hp = assert(r.prop[property.HP].count)
+	a_moveenter.hp = r.hp
 	a_moveenter.coord_x = coord_x
 	a_moveenter.coord_z = coord_z
 	return channel.multicastarrclr("a_moveenter", a_moveenter, visible_array)
