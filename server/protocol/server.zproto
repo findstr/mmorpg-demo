@@ -46,3 +46,8 @@ s_logout 0x103 {
 #	.rpc:integer 1
 #}
 
+s_forcepoint 0x1005 {
+	.coord_x:integer 1
+	.coord_z:integer 2
+}
+

@@ -28,6 +28,14 @@ local function regserver(cmd, func)
 	cmd = sproto:querytag(cmd)
 	CMD[cmd] = func
 end
+
+local function protowrapper(proto, cb)
+	return function(self, cmd, data)
+		data = data:sub(8 + 1)
+		local pk = proto:decode(cmd, data)
+		cb(self, pk)
+	end
+end
 -----------socket
 local ERR = {
 	cmd = false,
@@ -150,7 +158,10 @@ notify_logout = function (self)
 	hub.sendscene(self, "s_logout", s_logout)
 end
 
-local a_gatelogin = {}
+local a_gatelogin = {
+	coord_x = false,
+	coord_z = false,
+}
 local function r_login(self, req)
 	local ok = token.validate(req.uid, req.token)
 	if not ok then
@@ -159,22 +170,23 @@ local function r_login(self, req)
 	end
 	local uid = req.uid
 	self.uid = uid
-	self.coord_x, self.coord_z = db.coord(uid)
+	local x, z = db.coord(uid)
+	self.coord_x, self.coord_z = x, z
+	a_gatelogin.coord_x = x
+	a_gatelogin.coord_z = z
 	hub.login(uid, self)
 	notify_login(self)
 	print("r_login", self, self.gatefd)
 	return sendclient(self.gatefd, "a_gatelogin", a_gatelogin)
 end
 
-local function a_rebirth(self, cmd, data)
-	data = data:sub(8 + 1)
-	local ack = cproto:decode(cmd, data)
-	self.coord_x, self.coord_z = ack.coord_x, ack.coord_z
-	master.sendmaster(self.gatefd, data:sub(4+1))
+local function s_forcepoint(self, req)
+	self.coord_x = req.coord_x
+	self.coord_z = req.coord_z
 end
 
-regclient("r_gatelogin", r_login)
-regclient("a_rebirth", a_rebirth)
+regclient("r_gatelogin", protowrapper(cproto, r_login))
+regserver("s_forcepoint", protowrapper(sproto, s_forcepoint))
 
 -----------interface
 --[[ agent interface
