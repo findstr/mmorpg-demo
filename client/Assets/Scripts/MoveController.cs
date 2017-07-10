@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.AI;
 using client_zproto;
 
@@ -51,6 +52,7 @@ public class MoveController {
 			lastClick = id;
 			return false;
 		}
+
 		RaycastHit hitInfo;
 		lastClick = id;
 		Camera main = Module.Camera.main;

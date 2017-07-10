@@ -70,7 +70,7 @@ public class SelectState : GameState {
 		showUI();
 		try_register();
 		var offset = new Vector3(0.0f, 1.5f, -3.0f);
-		Debug.Log("[MainState]GetRoleInfo");
+		Debug.Log("[SelectState]GetRoleInfo");
 		Module.Camera.main.gameObject.SetActive(true);
 		Module.Camera.main.transform.position = role.transform.position + offset;
 		//protocol
@@ -114,6 +114,7 @@ public class SelectState : GameState {
 
 	////////////protocol
 	private void ack_roleinfo(int err, wire obj) {
+		Debug.Log("RoleInfo");
 		a_roleinfo ack = (a_roleinfo)obj;
 		if (err == 0) {
 			showUI();

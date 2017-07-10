@@ -79,10 +79,11 @@ public class LoginState : GameState {
 	}
 
 	void ack_accountlogin(int err, wire obj) {
+		Debug.Log("[LoginState] ack_accountlogin err:" + err);
+		if (err != 0)
+			return ;
 		a_accountlogin ack = (a_accountlogin)obj;
-		Debug.Log("[LoginState] ack_accountlogin err:" + err + "uid:" + ack.uid);
-		if (err == 0)
-			Module.Role.uid = ack.uid;
+		Module.Role.uid = ack.uid;
 		r_gatelogin req = new r_gatelogin();
 		req.uid = ack.uid;
 		req.token = ack.token;
