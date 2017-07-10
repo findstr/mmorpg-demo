@@ -3,6 +3,7 @@ local np = require "netpacket"
 local token = require "token"
 local db = require "db"
 local cproto = require "protocol.client"
+local sproto = require "protocol.server"
 local errno = require "protocol.errno"
 local master = require "cluster.master"
 local hub = require "channelhub"
@@ -18,8 +19,13 @@ local notify_logout
 
 ------------agent router
 local CMD = {}
-local function register(cmd, func)
+local function regclient(cmd, func)
 	cmd = cproto:querytag(cmd)
+	CMD[cmd] = func
+end
+
+local function regserver(cmd, func)
+	cmd = sproto:querytag(cmd)
 	CMD[cmd] = func
 end
 -----------socket
@@ -116,7 +122,14 @@ end
 
 local function agent_slavedata(self, cmd, data)
 	print("agent_slavedata:", #data - 4)
-	master.sendmaster(self.gatefd, data:sub(4+1))
+	local cb = CMD[cmd]
+	if cb then
+		data = data:sub(8 + 1)
+		local req = cproto:decode(cmd, data)
+		cb(self, req)
+	else
+		master.sendmaster(self.gatefd, data:sub(4+1))
+	end
 end
 
 ------------protocol
@@ -124,15 +137,15 @@ local s_login = {
 	coord_x = false,
 	coord_z = false,
 }
+
+local s_logout = {}
+
 local function notify_login(self)
 	s_login.coord_x = self.coord_x
 	s_login.coord_z = self.coord_z
 	hub.sendscene(self, "s_login", s_login)
 end
 
-local s_logout = {
-
-}
 notify_logout = function (self)
 	hub.sendscene(self, "s_logout", s_logout)
 end
@@ -153,7 +166,15 @@ local function r_login(self, req)
 	return sendclient(self.gatefd, "a_gatelogin", a_gatelogin)
 end
 
-register("r_gatelogin", r_login)
+local function a_rebirth(self, cmd, data)
+	data = data:sub(8 + 1)
+	local ack = cproto:decode(cmd, data)
+	self.coord_x, self.coord_z = ack.coord_x, ack.coord_z
+	master.sendmaster(self.gatefd, data:sub(4+1))
+end
+
+regclient("r_gatelogin", r_login)
+regclient("a_rebirth", a_rebirth)
 
 -----------interface
 --[[ agent interface

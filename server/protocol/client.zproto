@@ -183,3 +183,9 @@ a_attack 0x6001 {
 	.targethp:integer 4
 }
 
+a_rebirth 0x6003 {
+	.uid:integer 1
+	.coord_x:integer 2
+	.coord_z:integer 3
+}
+
