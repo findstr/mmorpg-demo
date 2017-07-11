@@ -15,7 +15,10 @@ public class CharacterUI : MonoBehaviour {
 	private int hp = 100;
 	public int HP {
 		get { return hp; }
-		set { hp = value; }
+		set {
+			hp = value;
+			role_hpbar.value = hp;
+		}
 	}
 	public string Name {
 		get { return role_name.text; }

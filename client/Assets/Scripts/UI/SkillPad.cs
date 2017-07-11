@@ -6,6 +6,8 @@ using client_zproto;
 
 public class SkillPad: MonoBehaviour {
 	public Button skill1;
+	public GameObject src;
+	public GameObject dst;
 	void Start () {
 		skill1.onClick.AddListener(Skill1);
 	}

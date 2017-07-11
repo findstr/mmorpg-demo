@@ -98,6 +98,22 @@ public class MainState : GameState {
 		CharacterManager.Remove(ack.uid);
 	}
 
+	void ack_attack(int err, wire o) {
+		a_attack ack = (a_attack) o;
+		var atk = CharacterManager.Get(ack.attacker);
+		var target = CharacterManager.Get(ack.target);
+		if (atk == null || target == null)
+			return ;
+		GameObject obj = Tool.InstancePrefab("Effect/EffectAtk");
+		EffectAtk effect = obj.GetComponent<EffectAtk>();
+		effect.SRC = atk.gameObject;
+		effect.DST = target.gameObject;
+		effect.Fire();
+		target.HP = ack.targethp;
+		Debug.Log("TargetHP:" + target.HP);
+		return ;
+	}
+
 	//////////inherit
 
 	void Awake() {
@@ -111,11 +127,13 @@ public class MainState : GameState {
 		a_movediff movediff = new a_movediff();
 		a_moveenter moveenter = new a_moveenter();
 		a_moveleave moveleave = new a_moveleave();
+		a_attack attack = new a_attack();
 		Register(itemuse, ack_itemuse);
 		Register(movepoint, ack_movepoint);
 		Register(movediff, ack_movediff);
 		Register(moveenter, ack_moveenter);
 		Register(moveleave, ack_moveleave);
+		Register(attack, ack_attack);
 	}
 
 	void FixedUpdate() {
