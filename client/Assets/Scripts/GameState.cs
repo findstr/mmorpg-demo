@@ -15,8 +15,12 @@ public abstract class GameState : MonoBehaviour {
 			Debug.Log("[NetProtocol] can't has handler of cmd[" + cmd + "]");
 			return ;
 		}
+
+		Module.UI.mb.Show(DB.DB.errno.Get(errno).Value);
+
 		cb_t cb = protocol_cb[cmd];
 		cb(errno, null);
+
 		return ;
 	}
 

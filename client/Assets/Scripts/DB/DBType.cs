@@ -26,6 +26,9 @@ public class ItemItem {
 	public string Icon;
 }
 
-
+public class ErrnoItem {
+	public int Key;
+	public string Value;
+}
 
 }
