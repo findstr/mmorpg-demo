@@ -12,6 +12,7 @@ public class SelectState : GameState {
 	public InputField role_name;
 	public Button role_create;
 	public Button role_start;
+	public Button return_btn;
 
 	//////ui
 	void disableUI() {
@@ -70,10 +71,12 @@ public class SelectState : GameState {
 		disableUI();
 		showUI();
 		try_register();
-		var offset = new Vector3(0.0f, 1.5f, -3.0f);
+		var offset = new Vector3(0.0f, 1.25f, -2.4f);
 		Debug.Log("[SelectState]GetRoleInfo");
 		Module.Camera.main.gameObject.SetActive(true);
 		Module.Camera.main.transform.position = role.transform.position + offset;
+		Module.Camera.main.transform.rotation = Quaternion.Euler(10.0f, 2.0f, -2.0f);
+
 		//protocol
 		r_roleinfo req = new r_roleinfo();
 		NetInstance.Gate.Send(req);
@@ -105,7 +108,7 @@ public class SelectState : GameState {
 			Vector3 pos = Mouse.GetPosition(id);
 			if (mouseId == Mouse.NONE)
 				lastPosition = pos;
-			var delta = pos.x - lastPosition.x;
+			var delta = lastPosition.x - pos.x;
 			Quaternion rot = Quaternion.Euler(0.0f, delta / GameConfig.select_rotspeed, 0.0f);
 			role.transform.rotation *= rot;
 			lastPosition = pos;
