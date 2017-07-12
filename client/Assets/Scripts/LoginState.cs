@@ -46,7 +46,7 @@ public class LoginState : GameState {
 	}
 
 	void do_login() {
-		Module.UI.mb.Show("正在登录，请稍等...");
+		//Module.UI.mb.Show("正在登录，请稍等...");
 
 		r_accountchallenge req = new r_accountchallenge();
 		NetInstance.Login.Send(req);

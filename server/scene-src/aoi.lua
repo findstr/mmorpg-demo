@@ -7,8 +7,10 @@ local regionz
 local GRID = 10
 local XPOWER = 1000
 
---TODO:split tower into threee global table'watch, sense, entity'
 local map = {}
+local tower_watch = {}
+local tower_sense = {}
+local tower_entity = {}
 local entities = {}
 
 local function clamp(x, radius, region)
@@ -32,28 +34,28 @@ local function mark(towerx, towerz, radius, markvalue)
 	for x = startx, stopx do
 		local xi = x * XPOWER
 		for z = startz, stopz do
-			local mi = xi + z
-			if not mark_buffer[mi] then
-				mark_buffer[mi] = markvalue
+			local ti = xi + z
+			if not mark_buffer[ti] then
+				mark_buffer[ti] = markvalue
 			else
-				mark_buffer[mi] = MARK_KEEP
+				mark_buffer[ti] = MARK_KEEP
 			end
 		end
 	end
 end
 
-local function collectentity(mi, tbl)
-	local entity = map[mi].entity
+local function collectentity(ti, tbl)
+	local entity = tower_entity[ti]
 	local i = 1
 	for id, v in pairs(entity) do
-		assert(v == mi)
+		assert(v == ti)
 		tbl[i] = id
 		i = i + 1
 	end
 end
 
-local function senseaction(actid, mi, action)
-	local sense = map[mi].sense
+local function senseaction(actid, ti, action)
+	local sense = tower_sense[ti]
 	for id, cb in pairs(sense) do
 		cb(id, actid, action)
 	end
@@ -76,29 +78,30 @@ function M.move(id, coordx, coordz, enter, leave)
 	mark(towerx, towerz, radius, MARK_LEAVE)
 	p.towerx = ntowerx
 	p.towerz = ntowerz
+	local monitor = mode == "watch" and tower_watch or tower_sense
 	for k, v in pairs(mark_buffer) do
 		if v == MARK_LEAVE then
 			collectentity(k, leave)
-			map[k][mode][id] = nil
+			monitor[k][id] = nil
 			senseaction(id, k, "leave")
 		elseif v == MARK_ENTER then
 			collectentity(k, enter)
-			map[k][mode][id] = true
+			monitor[k][id] = true
 			senseaction(id, k, "enter")
 		elseif v == MARK_KEEP then
 			senseaction(id, k, "move")
 		end
 		mark_buffer[k] = nil
 	end
-	map[ti].entity[id] = nil
-	map[nti].entity[id] = nti
+	tower_entity[ti][id] = nil
+	tower_entity[nti][id] = nti
 	return true
 end
 
 function M.watcher(id)
 	local p = entities[id]
 	local ti = p.towerx * XPOWER + p.towerz
-	return map[ti].watch
+	return tower_watch[ti]
 end
 
 function M.enter(id, coordx, coordz, mode, radius, ud)
@@ -107,26 +110,26 @@ function M.enter(id, coordx, coordz, mode, radius, ud)
 	ud = ud or true
 	assert(towerx <= regionx)
 	assert(towerz <= regionz)
-	local mi = towerx * XPOWER + towerz
+	local ti = towerx * XPOWER + towerz
 	local p = {
 		towerx = coordx,
 		towerz = coordz,
 		mode = mode,	--'sense, watch'
 		radius = radius,
 	}
-	map[mi].entity[id] = mi
+	tower_entity[ti][id] = ti
 	entities[id] = p
 	local startx, stopx = clamp(towerx, radius, regionx)
 	local startz, stopz = clamp(towerz, radius, regionz)
+	local monitor = mode == "watch" and tower_watch or tower_sense
 	for x = startx, stopx do
 		local xi = x * XPOWER
 		for z = startz, stopz do
-			local mi = xi + z
-			local tower = map[mi]
-			tower[p.mode][id] = ud
+			local ti = xi + z
+			monitor[ti][id] = ud
 		end
 	end
-	senseaction(id, mi, "enter")
+	senseaction(id, ti, "enter")
 end
 
 
@@ -142,12 +145,12 @@ function M.leave(id)
 	local ti = towerx * XPOWER + towerz
 	local startx, stopx = clamp(towerx, radius, regionx)
 	local startz, stopz = clamp(towerz, radius, regionz)
+	local monitor = p.mode == "watch" and tower_watch or tower_sense
 	for x = startx, stopx do
 		local xi = x * XPOWER
 		for z = startz, stopz do
-			local mi = xi + z
-			local tower = map[mi]
-			tower[p.mode][id] = nil
+			local ti = xi + z
+			monitor[ti][id] = nil
 		end
 	end
 end
@@ -159,11 +162,9 @@ function M.start(x, z)
 	for i = 0.0, regionx do
 		for j = 0.0, regionz do
 			local ti = i * XPOWER + j
-			map[ti] = {
-				entity = {},
-				watch = {},
-				sense = {},
-			}
+			tower_watch[ti] = {}
+			tower_sense[ti] = {}
+			tower_entity[ti] = {}
 		end
 	end
 end
