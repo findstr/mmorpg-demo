@@ -13,8 +13,7 @@ public class MessageBox : MonoBehaviour {
     private call g_ok;
     private call g_cancel;
 
-    void on_ok()
-    {
+    void on_ok() {
         Hide();
         if (g_ok != null)
             g_ok();
@@ -22,8 +21,7 @@ public class MessageBox : MonoBehaviour {
         Debug.Log("message box, press OK !");
     }
 
-    void on_cl()
-    {
+    void on_cl() {
         Hide();
         if (g_cancel != null)
             g_cancel();
@@ -31,8 +29,7 @@ public class MessageBox : MonoBehaviour {
         Debug.Log("message box, press Cancel !");
     }
 
-    public void Show(string str, call ok = null, call cancel = null)
-    {
+    public void Show(string str, call ok = null, call cancel = null) {
         mb_tt.text = str;
         g_ok = ok;
         g_cancel = cancel;
@@ -46,8 +43,7 @@ public class MessageBox : MonoBehaviour {
         gameObject.SetActive(true);
     }
 
-    public void Hide()
-    {
+    public void Hide() {
         if (Module.UI.mask) {
             Module.UI.mask.OnClick = null;
             Module.UI.mask.Enable(false);
@@ -57,8 +53,7 @@ public class MessageBox : MonoBehaviour {
         gameObject.SetActive(false);
     }
 
-    void Awake()
-    {
+    void Awake() {
         Module.UI.mb = this;
         Hide();
     }
@@ -67,10 +62,5 @@ public class MessageBox : MonoBehaviour {
 	void Start () {
         btn_ok.onClick.AddListener(on_ok);
         btn_cl.onClick.AddListener(on_cl);
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
 	}
 }

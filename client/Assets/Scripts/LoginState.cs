@@ -30,8 +30,7 @@ public class LoginState : GameState {
         Module.UI.mb.Show("你确定要注册账号\" " + user_name.text + "\" 吗? ", do_register);
 	}
 
-    void do_register()
-    {
+    void do_register() {
         Module.UI.mb.Show("正在注册，请稍等...");
 
         r_accountcreate req = new r_accountcreate();
@@ -46,8 +45,7 @@ public class LoginState : GameState {
         Module.UI.mb.Show("你确定要登录吗? ", do_login);
 	}
 
-    void do_login()
-    {
+    void do_login() {
         Module.UI.mb.Show("正在登录，请稍等...");
 
         r_accountchallenge req = new r_accountchallenge();
