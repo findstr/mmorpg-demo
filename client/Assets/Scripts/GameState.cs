@@ -16,7 +16,7 @@ public abstract class GameState : MonoBehaviour {
 			return ;
 		}
 
-        Module.UI.mb.Show(DB.DB.errno.Get(errno).Value);
+		Module.UI.mb.Show(DB.DB.errno.Get(errno).Value);
 
 		cb_t cb = protocol_cb[cmd];
 		cb(errno, null);

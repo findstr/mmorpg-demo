@@ -12,10 +12,10 @@ public class MainState : GameState {
 	private CameraFollow follow = new CameraFollow();
 
 	public override void OnEnter() {
-        if (alreadyenter)
+		if (alreadyenter)
 			return ;
-        Module.UI.mb.Hide();
-        alreadyenter = true;
+		Module.UI.mb.Hide();
+		alreadyenter = true;
 		Module.Misc.state = this;
 		role = CharacterManager.Create(Module.Role.uid,
 				Module.Role.Basic.name,
@@ -37,8 +37,8 @@ public class MainState : GameState {
 	}
 
 	public override void OnLeave() {
-        Module.UI.mb.Hide();
-        controller = null;
+		Module.UI.mb.Hide();
+		controller = null;
 		alreadyenter = false;
 	}
 
