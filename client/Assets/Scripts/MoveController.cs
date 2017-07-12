@@ -68,8 +68,10 @@ public class MoveController {
 		role.MovePoint(role.transform.position, hitInfo.point);
 		//notify Net
 		r_movepoint movepoint = new r_movepoint();
-		Tool.ToProto(ref movepoint.src_coord_x, ref movepoint.src_coord_z, role.transform.position);
-		Tool.ToProto(ref movepoint.dst_coord_x, ref movepoint.dst_coord_z, hitInfo.point);
+		movepoint.src_coord_x = role.transform.position.x;
+		movepoint.src_coord_z = role.transform.position.z;
+		movepoint.dst_coord_x = hitInfo.point.x;
+		movepoint.dst_coord_z = hitInfo.point.z;
 		NetInstance.Gate.Send(movepoint);
 		Debug.Log("MovePoint");
 		return true;
@@ -91,7 +93,8 @@ public class MoveController {
 			return ;
 		last_position = pos;
 		r_movesync sync = new r_movesync();
-		Tool.ToProto(ref sync.coord_x, ref sync.coord_z, pos);
+		sync.coord_x = pos.x;
+		sync.coord_z = pos.z;
 		NetInstance.Gate.Send(sync);
 		Debug.Log("ServerUpdate" + pos);
 	}

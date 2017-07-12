@@ -4,7 +4,7 @@ local channel = require "channel"
 local rpccmd = require "protocol.rpc"
 local tool = require "tool"
 local db = require "db"
-local scene = require "scene"
+local aoi = require "aoi"
 local xml = require "XML"
 local unpack = string.unpack
 
@@ -25,7 +25,6 @@ local EVENT = {
 			print("[scene] online", uid)
 		end
 		channel.onlinepatch(tbl, fd)
-		scene.onlinepatch(tbl)
 	end,
 	close = function(gateid)
 	end,
@@ -42,7 +41,7 @@ core.start(function()
 		xmlpath .. "/SkillEffect.xml",
 	}
 
-	scene.start(1000, 1000)
+	aoi.start(100.0, 100.0)
 	local dbok = db.start()
 	local channelok = channel.start {
 		channelid = slaveid,

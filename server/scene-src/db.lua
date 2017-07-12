@@ -86,6 +86,8 @@ function M.rolecreate(uid, name)
 		gold = 100,
 		hp = 90,
 		magic = 100,
+		coord_x = 10,
+		coord_z = 10,
 	}
 	local bag = {
 		list = {
@@ -187,7 +189,7 @@ function M.roleland(uid)
 	rolecache[uid] = nil
 	local dirty = roledirty[uid]
 	roledirty[uid] = nil
-	if dirty == 0 then
+	if not dir or dirty == 0 then
 		return
 	end
 	roleupdate(uid, role, dirty)

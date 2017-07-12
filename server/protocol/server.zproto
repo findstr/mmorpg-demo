@@ -34,8 +34,8 @@ s_multicast 0x100 {
 }
 
 s_login 0x101 {
-	.coord_x:integer 1
-	.coord_z:integer 2
+	.coord_x:float 1
+	.coord_z:float 2
 }
 
 s_logout 0x103 {
@@ -47,7 +47,7 @@ s_logout 0x103 {
 #}
 
 s_forcepoint 0x1005 {
-	.coord_x:integer 1
-	.coord_z:integer 2
+	.coord_x:float 1
+	.coord_z:float 2
 }
 

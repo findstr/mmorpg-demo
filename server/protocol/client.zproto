@@ -45,8 +45,8 @@ r_gatelogin 0x20f0 {
 }
 
 a_gatelogin 0x20f1 {
-	.coord_x:integer 1
-	.coord_z:integer 2
+	.coord_x:float 1
+	.coord_z:float 2
 }
 
 ########role
@@ -96,32 +96,32 @@ a_itemuse 0x3005 {
 
 ########scene
 r_movedir 0x5000 {
-	.coord_x:integer 1
-	.coord_z:integer 2
+	.coord_x:float 1
+	.coord_z:float 2
 	.dir_x:integer 3
 	.dir_z:integer 4
 }
 
 a_movedir 0x5001 {
 	.uid:integer 1
-	.coord_x:integer 2
-	.coord_z:integer 3
+	.coord_x:float 2
+	.coord_z:float 3
 	.dir_x:integer 4
 	.dir_z:integer 5
 }
 
 r_movepoint 0x5002 {
-	.src_coord_x:integer 1
-	.src_coord_z:integer 2
-	.dst_coord_x:integer 3
-	.dst_coord_z:integer 4
+	.src_coord_x:float 1
+	.src_coord_z:float 2
+	.dst_coord_x:float 3
+	.dst_coord_z:float 4
 }
 
 a_movepoint 0x5003 {
-	.src_coord_x:integer 1
-	.src_coord_z:integer 2
-	.dst_coord_x:integer 3
-	.dst_coord_z:integer 4
+	.src_coord_x:float 1
+	.src_coord_z:float 2
+	.dst_coord_x:float 3
+	.dst_coord_z:float 4
 	.uid:integer 5
 }
 
@@ -133,8 +133,8 @@ a_moveenter 0x5005 {
 	.uid:integer 1
 	.name:string 2
 	.hp:integer 3
-	.coord_x:integer 4
-	.coord_z:integer 5
+	.coord_x:float 4
+	.coord_z:float 5
 }
 
 r_moveleave 0x5006 {
@@ -149,8 +149,8 @@ a_moveleave 0x5007 {
 a_movediff 0x5008 {
 	player {
 		.uid:integer 1
-		.coord_x:integer 2
-		.coord_z:integer 3
+		.coord_x:float 2
+		.coord_z:float 3
 		.name:string 4
 		.hp:integer 5
 	}
@@ -160,14 +160,14 @@ a_movediff 0x5008 {
 
 #used by gate/scene server, not broadcast client
 r_movesync 0x5009 {
-	.coord_x:integer 1
-	.coord_z:integer 2
+	.coord_x:float 1
+	.coord_z:float 2
 }
 
 a_movesync 0x500a {
 	.uid:integer 1
-	.coord_x:integer 2
-	.coord_z:integer 3
+	.coord_x:float 2
+	.coord_z:float 3
 }
 
 #######################battle
