@@ -42,11 +42,11 @@ public class LoginState : GameState {
 	}
 
 	void on_login() {
-		Module.UI.mb.Show("你确定要登录吗? ", do_login);
+		Module.UI.mb.Show("你确定要登陆吗? ", do_login);
 	}
 
 	void do_login() {
-		Module.UI.mb.Show("正在登录，请稍等...");
+		Module.UI.mb.Show("正在登陆，请稍等...");
 
 		r_accountchallenge req = new r_accountchallenge();
 		NetInstance.Login.Send(req);

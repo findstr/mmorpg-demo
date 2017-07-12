@@ -42,6 +42,7 @@ public class SelectState : GameState {
 	void eventUI() {
 		role_create.onClick.AddListener(on_create);
 		role_start.onClick.AddListener(on_start);
+		return_btn.onClick.AddListener(on_return);
 	}
 
 	void on_create() {
@@ -54,6 +55,15 @@ public class SelectState : GameState {
 		Debug.Log("State Start");
 		StateManager.Instance.SwitchState("MainState");
 	}
+
+	void on_return() {
+		Module.UI.mb.Show("你确定要返回登陆界面吗? ", do_return);
+	}
+	void do_return() {
+		Module.UI.mb.Show("正在返回登陆界面，请稍等...");
+		StateManager.Instance.SwitchState("LoginState");
+	}
+
 	private bool register_proto = false;
 	void try_register() {
 		if (register_proto)
