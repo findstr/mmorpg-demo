@@ -66,6 +66,7 @@ public class SelectState : GameState {
 
 	///////state machine
 	public override void OnEnter() {
+        Module.UI.mb.Hide();
 		disableUI();
 		showUI();
 		try_register();
@@ -79,7 +80,7 @@ public class SelectState : GameState {
 	}
 
 	public override void OnLeave() {
-
+        Module.UI.mb.Hide();
 	}
 
 	public override string Name() {

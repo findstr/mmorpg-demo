@@ -75,6 +75,8 @@ public class DB {
 	public static XmlSet<LanguageItem, string> Language = new XmlSet<LanguageItem, string>();
 	public static XmlSet<RoleLevelItem, int> RoleLevel = new XmlSet<RoleLevelItem, int>();
 	public static XmlSet<ItemItem, int> Item = new XmlSet<ItemItem, int>();
+    public static XmlSet<ErrnoItem, int> errno = new XmlSet<ErrnoItem, int>();
+
 	private static bool loaded = false;
 	public static void Load() {
 		if (loaded)

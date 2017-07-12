@@ -8,6 +8,7 @@ public class UI {
 	public static BagItem bagsel;
 	public static CoordUI coord;
 	public static ScreenMask mask;
+    public static MessageBox mb;
 }
 }
 
