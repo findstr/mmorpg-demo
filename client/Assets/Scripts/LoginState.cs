@@ -14,44 +14,44 @@ public class LoginState : GameState {
 	public Button register_btn;
 
 	public override void OnEnter() {
-        Module.UI.mb.Hide();
+		Module.UI.mb.Hide();
 		Debug.Log("OnEnter");
 	}
 
 	public override void OnLeave() {
-        Module.UI.mb.Hide();
-        Debug.Log("OnLeave");
+		Module.UI.mb.Hide();
+		Debug.Log("OnLeave");
 	}
 	public override string Name() {
 		return "LoginState";
 	}
 
 	void on_register() {
-        Module.UI.mb.Show("你确定要注册账号\" " + user_name.text + "\" 吗? ", do_register);
+		Module.UI.mb.Show("你确定要注册账号\" " + user_name.text + "\" 吗? ", do_register);
 	}
 
-    void do_register() {
-        Module.UI.mb.Show("正在注册，请稍等...");
+	void do_register() {
+		Module.UI.mb.Show("正在注册，请稍等...");
 
-        r_accountcreate req = new r_accountcreate();
-        byte[] str = Tool.sha1(user_passwd.text);
-        req.user = Encoding.Default.GetBytes(user_name.text);
-        req.passwd = str;
-        NetInstance.Login.Send(req);
-        Debug.Log("[LoginState] Register:" + user_name.text + ":" + BitConverter.ToString(str));
-    }
+		r_accountcreate req = new r_accountcreate();
+		byte[] str = Tool.sha1(user_passwd.text);
+		req.user = Encoding.Default.GetBytes(user_name.text);
+		req.passwd = str;
+		NetInstance.Login.Send(req);
+		Debug.Log("[LoginState] Register:" + user_name.text + ":" + BitConverter.ToString(str));
+	}
 
 	void on_login() {
-        Module.UI.mb.Show("你确定要登录吗? ", do_login);
+		Module.UI.mb.Show("你确定要登录吗? ", do_login);
 	}
 
-    void do_login() {
-        Module.UI.mb.Show("正在登录，请稍等...");
+	void do_login() {
+		Module.UI.mb.Show("正在登录，请稍等...");
 
-        r_accountchallenge req = new r_accountchallenge();
-        NetInstance.Login.Send(req);
-        Debug.Log("[LoginState] Challenge");
-    }
+		r_accountchallenge req = new r_accountchallenge();
+		NetInstance.Login.Send(req);
+		Debug.Log("[LoginState] Challenge");
+	}
 
 
 	// Use this for initialization
@@ -74,8 +74,8 @@ public class LoginState : GameState {
 
 	/////////////////protocol
 	void ack_create(int err, wire obj) {
-        if (err == 0)
-            Module.UI.mb.Show("恭喜你，注册成功！\n 现在登陆吗？", do_login);
+		if (err == 0)
+			Module.UI.mb.Show("恭喜你，注册成功！\n 现在登陆吗？", do_login);
 
 		a_accountcreate ack = (a_accountcreate) obj;
 		Debug.Log("[LoginState] Create:" + ack.uid);
