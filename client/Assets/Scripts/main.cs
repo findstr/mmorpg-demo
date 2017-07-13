@@ -4,24 +4,26 @@ using UnityEngine;
 
 public class main : MonoBehaviour {
 
-	public string login_addr;
-	public int login_port;
-	public string gate_addr;
-	public int gate_port;
+	//public string login_addr;
+	//public int login_port;
+	//public string gate_addr;
+	//public int gate_port;
 
 	void Awake() {
-		GameConfig.login_addr = login_addr;
-		GameConfig.gate_addr = gate_addr;
+		//GameConfig.login_addr = login_addr;
+		//GameConfig.gate_addr = gate_addr;
 	}
 
 	// Use this for initialization
 	void Start () {
 		Module.Camera.main.gameObject.SetActive(false);
-		NetInstance.Login.Connect(login_addr, login_port);
-		NetInstance.Gate.Connect(gate_addr, gate_port);
 		StateManager.Instance.SwitchState("LoginState");
 		DB.DB.Load();
-		Debug.Log("SizeOfFloat:" + sizeof(float));
+		var login = DB.DB.IpConfig.Get("login");
+		var gate = DB.DB.IpConfig.Get("gate");
+
+		NetInstance.Login.Connect(login.IP, login.Port);
+		NetInstance.Gate.Connect(gate.IP, gate.Port);
 	}
 
 	// Update is called once per frame
