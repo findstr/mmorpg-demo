@@ -72,7 +72,7 @@ function M.start(config)
 			a:logout()
 		end,
 		data = function(fd, d, sz)
-			print("[master] client data", fd)
+			--print("[master] client data", fd)
 			local a = assert(masterfd_agent[fd], fd)
 			a:masterdata(fd, d, sz)
 		end
@@ -88,7 +88,7 @@ function M.start(config)
 			slave.close(fd, errno)
 		end,
 		data = function(fd, d, sz)
-			print("[master] slave data", fd)
+			--print("[master] slave data", fd)
 			slave.data(fd, d, sz)
 		end
 	}
