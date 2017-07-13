@@ -22,6 +22,7 @@ core.start(function()
 	end
 	db.start()
 	logind.start(env.get("loginport"))
+	--logind.create(1000)
 	channel.start {
 		channelid = 1,
 		channeltype = "login",

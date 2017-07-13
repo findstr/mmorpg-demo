@@ -50,7 +50,7 @@ local function fillinfo(enter)
 	local add = {}
 	for i = 1, #enter do
 		local uid = enter[i]
-		print("enter", uid)
+		--print("enter", uid)
 		if uid < const.UIDSTART then
 			local r = npc.info(uid)
 			add[i] = {
@@ -83,10 +83,11 @@ local function notifyenter(uid, base, coord_x, coord_z, enter)
 end
 
 local function r_startgame(uid, req, fd)
-	print("start game")
+	--print("start game", uid)
 	local role = db.roleget(uid)
 	local basic = role.basic
-	local x, z = basic.coord_x, basic.coord_z
+	local x = basic.coord_x or 1.0
+	local z = basic.coord_z or 1.0
 	aoi.enter(uid, x, z, "watch", 1)
 	aoi.around(uid, enter)
 	a_movediff.enter = fillinfo(enter)
@@ -118,10 +119,11 @@ local function role_movesync(uid, coord_x, coord_z)
 	--notify enter
 	notifyenter(uid, role.basic, coord_x, coord_z, enter)
 	assert(#enter == 0)
+	assert(#leave == 0)
 end
 
 local function r_movepoint(uid, req, fd)
-	print("r_movepoint", uid, req.src_coord_x, req.src_coord_z)
+	--print("r_movepoint", uid, req.src_coord_x, req.src_coord_z)
 	role_movesync(uid, req.src_coord_x, req.src_coord_z)
 	local watch = aoi.watcher(uid)
 	req.uid = uid
@@ -130,7 +132,7 @@ end
 
 
 local function r_movesync(uid, req, fd)
-	print("r_movesync", uid, req.coord_x, req.coord_z)
+	--print("r_movesync", uid, req.coord_x, req.coord_z)
 	role_movesync(uid, req.coord_x, req.coord_z)
 end
 
@@ -138,7 +140,7 @@ local function r_attack(uid, req)
 	local target = req.target
 	local atk_role = db.roleload(uid)
 	local def_role = db.roleload(target)
-	print("r_attack", target, def_role)
+	--print("r_attack", target, def_role)
 	local atk_basic, atk_prop = atk_role.basic, atk_role.prop
 	local def_basic, def_prop = def_role.basic, def_role.prop
 	local atk_skill = atk_role.skill.active[req.skillid]

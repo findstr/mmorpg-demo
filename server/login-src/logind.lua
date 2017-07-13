@@ -66,6 +66,20 @@ end
 local a_accountcreate = {
 	uid = false,
 }
+
+local function account_create(name, passwd)
+	local ok, uid = db.inst:incr(account_idx)
+	print("create", ok, uid)
+	if not ok then
+		print("[logind] create user fail", uid)
+		return cmd_error(fd, cmd, errno.ACCOUNT_CREATE)
+	end
+	db.inst:hset(account_set, name, uid)
+	db.inst:set(sformat(account_name, uid), name)
+	db.inst:set(sformat(account_passwd, uid), passwd)
+	return uid
+end
+
 reg("r_accountcreate", function(fd, req)
 	local name = req.user
 	local passwd = req.passwd
@@ -77,15 +91,7 @@ reg("r_accountcreate", function(fd, req)
 		print("[logind] r_accountcreate", name, uid)
 		return
 	end
-	local ok, uid = db.inst:incr(account_idx)
-	print("create", ok, uid)
-	if not ok then
-		print("[logind] create user fail", uid)
-		return cmd_error(fd, cmd, errno.ACCOUNT_CREATE)
-	end
-	db.inst:hset(account_set, name, uid)
-	db.inst:set(sformat(account_name, uid), name)
-	db.inst:set(sformat(account_passwd, uid), passwd)
+	local uid = account_create(name, passwd)
 	a_accountcreate.uid = tonumber(uid)
 	cmd_send(fd, "a_accountcreate", a_accountcreate)
 	print("[logind] r_accountcreate", name, uid)
@@ -159,6 +165,15 @@ reg("r_accountlogin", function(fd, req)
 	cmd_send(fd, "a_accountlogin", a_accountlogin)
 end)
 
+------------------test
+function M.create(cnt)
+	local name = "robot"
+	local passwd = crypt.sha1("123456")
+	for i = 1, cnt do
+		account_create(name .. i, passwd)
+	end
+end
+
 ------------------start
 function M.start(port)
 	S = msg.createserver {
@@ -184,6 +199,7 @@ function M.start(port)
 			assert(CMD[cmd], cmd)(fd, data)
 		end
 	}
+	db.inst:select(8)
 	local ok, uid = db.inst:get(account_idx)
 	if not ok then
 		db.inst:set(account_idx, 1000000)

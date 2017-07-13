@@ -5,7 +5,7 @@ local M = {}
 local NPC = {}
 
 local function npc_sense(npcid, actid, action)
-	print("npc", npcid, "actid", actid,  action)
+	--print("npc", npcid, "actid", actid,  action)
 end
 
 function M.info(uid)
