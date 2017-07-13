@@ -122,7 +122,6 @@ local gate = {}
 local function multicastmap(cmd, ack, map)
 	for uid, _ in pairs(map) do
 		local fd = user_gate[uid]
-		print("multicast uid", uid, fd)
 		local g = gate[fd]
 		if not g then
 			g = {}

@@ -53,7 +53,6 @@ public class LoginState : GameState {
 		Debug.Log("[LoginState] Challenge");
 	}
 
-
 	// Use this for initialization
 	void Start () {
 		user_name.text = "findstr";

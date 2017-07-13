@@ -44,6 +44,10 @@ namespace zprotobuf
 			byte[] src = BitConverter.GetBytes(val);
 			return write(ref arg, src);
 		}
+		protected int write(ref dll.args arg, float val) {
+			byte[] src = BitConverter.GetBytes(val);
+			return write(ref arg, src);
+		}
 
 		private byte[] read(ref dll.args arg) {
 			byte[] ret = new byte[arg.buffsz];
@@ -62,6 +66,13 @@ namespace zprotobuf
 			if (arg.buffsz < sizeof(int))
 				return dll.ERROR;
 			val = BitConverter.ToInt32(read(ref arg), 0);
+			return arg.buffsz;
+		}
+		protected int read(ref dll.args arg, out float val) {
+			val = 0.0f;
+			if (arg.buffsz < sizeof(float))
+				return dll.ERROR;
+			val = BitConverter.ToSingle(read(ref arg), 0);
 			return arg.buffsz;
 		}
 		protected int read(ref dll.args arg, out byte[] val) {

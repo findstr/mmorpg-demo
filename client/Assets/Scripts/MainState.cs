@@ -68,6 +68,8 @@ public class MainState : GameState {
 		Debug.Assert(err == 0);
 		a_movepoint ack = (a_movepoint)obj;
 		var c = CharacterManager.Get(ack.uid);
+		if (c == null)
+			return ;
 		var src = Vector3.zero;
 		var dst = Vector3.zero;
 		Tool.ToNative(ref src, ack.src_coord_x, ack.src_coord_z);
