@@ -160,6 +160,7 @@ reg("r_accountlogin", function(fd, req)
 	if not ack then
 		return cmd_error(fd, "a_accountlogin", errno.ACCOUNT_TOKEN_TIMEOUT)
 	end
+	uid_online_gate[uid] = gateid
 	a_accountlogin.uid = uid
 	a_accountlogin.token = ack.token
 	cmd_send(fd, "a_accountlogin", a_accountlogin)

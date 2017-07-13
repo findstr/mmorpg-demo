@@ -13,7 +13,7 @@ public class SkillPad: MonoBehaviour {
 	}
 
 	void Skill1() {
-		var hit = CharacterManager.AutoAim(Module.Role.uid, 10.0f);
+		var hit = EntityManager.AutoAimCharacter(Module.Role.uid, 10.0f);
 		Debug.Log("Skill1:" + hit);
 		if (hit == null)
 			return ;

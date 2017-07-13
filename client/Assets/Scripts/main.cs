@@ -3,17 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class main : MonoBehaviour {
-
-	//public string login_addr;
-	//public int login_port;
-	//public string gate_addr;
-	//public int gate_port;
-
-	void Awake() {
-		//GameConfig.login_addr = login_addr;
-		//GameConfig.gate_addr = gate_addr;
-	}
-
 	// Use this for initialization
 	void Start () {
 		Module.Camera.main.gameObject.SetActive(false);

@@ -195,7 +195,7 @@ end
 
 local function sr_kickout(uid, req, fd)
 	online_kickout(uid)
-	print("[gate]fetch kickout uid:", uid, "gatefd", gatefd)
+	print("[gate] kickout uid:", uid, "gatefd", fd)
 	return sendserver(fd, uid, "sa_kickout", req)
 end
 
