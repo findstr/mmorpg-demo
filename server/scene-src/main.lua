@@ -6,6 +6,7 @@ local tool = require "tool"
 local db = require "db"
 local aoi = require "aoi"
 local xml = require "XML"
+local npc = require "npc"
 local unpack = string.unpack
 
 require "role"
@@ -42,9 +43,10 @@ core.start(function()
 	xml.parselist {
 		xmlpath .. "/ItemUse.xml",
 		xmlpath .. "/SkillEffect.xml",
+		xmlpath .. "/NPC.xml",
 	}
-
 	aoi.start(100.0, 100.0)
+	npc.start()
 	local dbok = db.start()
 	local channelok = channel.start {
 		channelid = slaveid,

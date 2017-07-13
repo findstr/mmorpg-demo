@@ -184,6 +184,10 @@ function M.start(port)
 			assert(CMD[cmd], cmd)(fd, data)
 		end
 	}
+	local ok, uid = db.inst:get(account_idx)
+	if not ok then
+		db.inst:set(account_idx, 1000000)
+	end
 	local ok = S:start()
 	print("[logind] start", ok)
 end

@@ -87,7 +87,12 @@ public class MainState : GameState {
 				var p = ack.enter[i];
 				var src = Vector3.zero;
 				Tool.ToNative(ref src, p.coord_x, p.coord_z);
-				CharacterManager.Create(p.uid, Tool.tostring(p.name), p.hp, src);
+				string name;
+				if (p.name == null)
+					name = "我是怪";
+				else
+					name = Tool.tostring(p.name);
+				CharacterManager.Create(p.uid, name, p.hp, src);
 			}
 		}
 		if (ack.leave != null) {
@@ -146,8 +151,26 @@ public class MainState : GameState {
 		Register(attack, ack_attack);
 	}
 
+	void DebugGrid() {
+		var src = Vector3.zero;
+		var dst = Vector3.zero;
+		dst.z = 100;
+		for (int i = 0; i < 100; i += 10) {
+			src.x = i;
+			dst.x = i;
+			Debug.DrawLine(src, dst, Color.white);
+		}
+		dst.x = 100;
+		for (int j = 0; j < 10; j++) {
+			src.z = j;
+			dst.z = j;
+			Debug.DrawLine(src, dst, Color.white);
+		}
+	}
+
 	void FixedUpdate() {
 		OnUpdate();
+		DebugGrid();
 	}
 
 }
