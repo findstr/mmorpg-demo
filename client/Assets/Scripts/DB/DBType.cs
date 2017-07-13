@@ -31,4 +31,10 @@ public class ErrnoItem {
 	public string Value;
 }
 
+public class IPConfigItem {
+	public string Key;
+	public string IP;
+	public int Port;
+}
+
 }
