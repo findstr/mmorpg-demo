@@ -16,7 +16,6 @@ local function s_login(uid, req, fd)
 	end
 	role.basic.coord_x = x
 	role.basic.coord_z = z
-	aoi.enter(uid, x, z, "watch", 1)
 end
 
 local function s_logout(uid, req, fd)
@@ -45,12 +44,8 @@ local a_movediff = {
 
 local enter = {}
 local leave = {}
-local function role_movesync(uid, coord_x, coord_z)
-	local role = db.roleload(uid)
-	local move = aoi.move(uid, coord_x, coord_z, enter, leave)
-	if not move then
-		return
-	end
+
+local function fillinfo(enter)
 	local add = {}
 	for i = 1, #enter do
 		local uid = enter[i]
@@ -64,21 +59,46 @@ local function role_movesync(uid, coord_x, coord_z)
 			hp = r.hp,
 		}
 	end
-	--notify myself
-	a_movediff.enter = add
-	a_movediff.leave = leave
-	channel.senduid(uid, "a_movediff", a_movediff)
-	--notify leave
-	a_moveleave.uid = uid
-	channel.multicastarrclr("a_moveleave", a_moveleave,  leave)
-	--notify enter
-	local base = role.basic
+	return add
+end
+
+local function notifyenter(uid, base, coord_x, coord_z, enter)
 	a_moveenter.uid = uid
 	a_moveenter.name = base.name
 	a_moveenter.hp = base.hp
 	a_moveenter.coord_x = coord_x
 	a_moveenter.coord_z = coord_z
 	return channel.multicastarrclr("a_moveenter", a_moveenter, enter)
+end
+
+local function r_startgame(uid, req, fd)
+	print("start game")
+	local role = db.roleget(uid)
+	local basic = role.basic
+	local x, z = basic.coord_x, basic.coord_z
+	aoi.enter(uid, x, z, "watch", 1)
+	aoi.around(uid, enter)
+	a_movediff.enter = fillinfo(enter)
+	a_movediff.leave = nil
+	channel.senduid(uid, "a_movediff", a_movediff)
+	notifyenter(uid, basic, x, z, enter)
+end
+
+local function role_movesync(uid, coord_x, coord_z)
+	local role = db.roleload(uid)
+	local move = aoi.move(uid, coord_x, coord_z, enter, leave)
+	if not move then
+		return
+	end
+	--notify myself
+	a_movediff.enter = fillinfo(enter)
+	a_movediff.leave = leave
+	channel.senduid(uid, "a_movediff", a_movediff)
+	--notify leave
+	a_moveleave.uid = uid
+	channel.multicastarrclr("a_moveleave", a_moveleave,  leave)
+	--notify enter
+	notifyenter(uid, role.basic, coord_x, coord_z, enter)
 end
 
 local function r_movepoint(uid, req, fd)
@@ -134,6 +154,7 @@ end
 
 channel.regserver("s_login", s_login)
 channel.regserver("s_logout", s_logout)
+channel.regclient("r_startgame", r_startgame)
 channel.regclient("r_movepoint", r_movepoint)
 channel.regclient("r_movesync", r_movesync)
 channel.regclient("r_attack", r_attack)

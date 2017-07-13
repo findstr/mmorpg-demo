@@ -33,6 +33,8 @@ public class MainState : GameState {
 		i.id = 10001;
 		Module.Role.bag[10001] = i;
 		*/
+		r_startgame req = new r_startgame();
+		NetInstance.Gate.Send(req);
 		DB.DB.Load();
 	}
 
@@ -80,14 +82,18 @@ public class MainState : GameState {
 
 	void ack_movediff(int err, wire obj) {
 		a_movediff ack = (a_movediff)obj;
-		for (int i = 0; i < ack.enter.Length; i++) {
-			var p = ack.enter[i];
-			var src = Vector3.zero;
-			Tool.ToNative(ref src, p.coord_x, p.coord_z);
-			CharacterManager.Create(p.uid, Tool.tostring(p.name), p.hp, src);
+		if (ack.enter != null) {
+			for (int i = 0; i < ack.enter.Length; i++) {
+				var p = ack.enter[i];
+				var src = Vector3.zero;
+				Tool.ToNative(ref src, p.coord_x, p.coord_z);
+				CharacterManager.Create(p.uid, Tool.tostring(p.name), p.hp, src);
+			}
 		}
-		for (int i = 0; i < ack.leave.Length; i++)
-			CharacterManager.Remove(ack.leave[i]);
+		if (ack.leave != null) {
+			for (int i = 0; i < ack.leave.Length; i++)
+				CharacterManager.Remove(ack.leave[i]);
+		}
 	}
 
 	void ack_moveenter(int err, wire obj) {

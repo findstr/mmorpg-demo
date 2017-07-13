@@ -25,6 +25,9 @@ local EVENT = {
 			print("[scene] online", uid)
 		end
 		channel.onlinepatch(tbl, fd)
+		for k, v in pairs(tbl) do
+			aoi.leave(k)
+		end
 	end,
 	close = function(gateid)
 	end,

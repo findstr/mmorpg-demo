@@ -49,6 +49,15 @@ a_gatelogin 0x20f1 {
 	.coord_z:float 2
 }
 
+r_startgame 0x20f2 {
+
+}
+
+#dummy
+a_startgame 0x20f3 {
+
+}
+
 ########role
 roleprop {
 	.atk:integer 1

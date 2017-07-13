@@ -156,6 +156,10 @@ function M.roleload(uid)
 	return dat
 end
 
+function M.roleget(uid)
+	return rolecache[uid]
+end
+
 local function roleupdate(uid, role, dirty)
 	local count = 0
 	local k = format(dbk_role, uid)

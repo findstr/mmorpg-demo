@@ -21,6 +21,7 @@ public class main : MonoBehaviour {
 		NetInstance.Gate.Connect(gate_addr, gate_port);
 		StateManager.Instance.SwitchState("LoginState");
 		DB.DB.Load();
+		Debug.Log("SizeOfFloat:" + sizeof(float));
 	}
 
 	// Update is called once per frame

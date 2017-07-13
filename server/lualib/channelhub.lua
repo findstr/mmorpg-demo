@@ -203,7 +203,7 @@ local function s_multicast(uid, req, fd)
 	local uids = req.uid
 	local dat = req.data
 	local count = #uids
-	print("muticast", count)
+	print("muticast", count, #dat)
 	if count == 1 then
 		local agent = online_agent[uids[1]]
 		if not agent then
