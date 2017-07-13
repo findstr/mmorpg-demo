@@ -46,11 +46,9 @@ end
 
 local function collectentity(ti, tbl)
 	local entity = tower_entity[ti]
-	local i = 1
 	for id, v in pairs(entity) do
 		assert(v == ti)
-		tbl[i] = id
-		i = i + 1
+		tbl[#tbl + 1] = id
 	end
 end
 
@@ -70,6 +68,8 @@ function M.move(id, coordx, coordz, enter, leave)
 	if ntowerx == towerx and ntowerz == towerz then
 		return false
 	end
+	assert(#enter == 0)
+	assert(#leave == 0)
 	local ti = towerx * XPOWER + towerz
 	local nti = ntowerx * XPOWER + ntowerz
 	local mode = p.mode
@@ -88,14 +88,35 @@ function M.move(id, coordx, coordz, enter, leave)
 			collectentity(k, enter)
 			monitor[k][id] = true
 			senseaction(id, k, "enter")
-		elseif v == MARK_KEEP then
-			senseaction(id, k, "move")
+		else
+			--senseaction(id, k, "move")
 		end
 		mark_buffer[k] = nil
 	end
+	--print('tower_entity[ti]', ti, tower_entity[ti])
+	--print('tower_entity[nti]', nti, ntowerx, ntowerz, tower_entity[nti])
 	tower_entity[ti][id] = nil
 	tower_entity[nti][id] = nti
 	return true
+end
+
+function M.around(id, enter)
+	local p = entities[id]
+	if not p then
+		return
+	end
+	local towerx = p.towerx
+	local towerz = p.towerz
+	local radius = p.radius
+	local startx, stopx = clamp(towerx, radius, regionx)
+	local startz, stopz = clamp(towerz, radius, regionz)
+	for x = startx, stopx do
+		local xi = x * XPOWER
+		for z = startz, stopz do
+			local ti = xi + z
+			collectentity(ti, enter)
+		end
+	end
 end
 
 function M.watcher(id)
@@ -118,6 +139,7 @@ function M.enter(id, coordx, coordz, mode, radius, ud)
 		radius = radius,
 	}
 	tower_entity[ti][id] = ti
+	assert(not entities[id], id)
 	entities[id] = p
 	local startx, stopx = clamp(towerx, radius, regionx)
 	local startz, stopz = clamp(towerz, radius, regionz)

@@ -73,7 +73,7 @@ public class MoveController {
 		movepoint.dst_coord_x = hitInfo.point.x;
 		movepoint.dst_coord_z = hitInfo.point.z;
 		NetInstance.Gate.Send(movepoint);
-		Debug.Log("MovePoint");
+		Debug.Log("MovePoint:" + role.transform.position + " to " + hitInfo.point);
 		return true;
 	}
 

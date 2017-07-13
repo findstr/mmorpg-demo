@@ -153,12 +153,14 @@ local function multicastarrclr(cmd, ack, arr)
 		local uid = arr[i]
 		arr[i] = nil
 		local fd = user_gate[uid]
-		local g = gate[fd]
-		if not g then
-			g = {}
-			gate[fd] = g
+		if fd then
+			local g = gate[fd]
+			if not g then
+				g = {}
+				gate[fd] = g
+			end
+			g[#g + 1] = uid
 		end
-		g[#g + 1] = uid
 	end
 	return multicastgate(gate, cmd, ack)
 

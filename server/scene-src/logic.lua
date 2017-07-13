@@ -4,6 +4,7 @@ local xml = require "XML"
 local const = require "const"
 local errno = require "protocol.errno"
 local aoi = require "aoi"
+local npc = require "npc"
 
 local function s_login(uid, req, fd)
 	local x = req.coord_x
@@ -16,7 +17,6 @@ local function s_login(uid, req, fd)
 	end
 	role.basic.coord_x = x
 	role.basic.coord_z = z
-	aoi.enter(uid, x, z, "watch", 1)
 end
 
 local function s_logout(uid, req, fd)
@@ -45,34 +45,35 @@ local a_movediff = {
 
 local enter = {}
 local leave = {}
-local function role_movesync(uid, coord_x, coord_z)
-	local role = db.roleload(uid)
-	local move = aoi.move(uid, coord_x, coord_z, enter, leave)
-	if not move then
-		return
-	end
+
+local function fillinfo(enter)
 	local add = {}
 	for i = 1, #enter do
 		local uid = enter[i]
 		print("enter", uid)
-		local r = db.rolebasic(uid)
-		add[i] = {
-			uid = uid,
-			coord_x = r.x,
-			coord_z = r.z,
-			name = r.name,
-			hp = r.hp,
-		}
+		if uid < const.UIDSTART then
+			local r = npc.info(uid)
+			add[i] = {
+				uid = uid,
+				coord_x = r.coord_x,
+				coord_z = r.coord_z,
+				hp = r.hp,
+			}
+		else
+			local r = db.rolebasic(uid)
+			add[i] = {
+				uid = uid,
+				coord_x = r.coord_x,
+				coord_z = r.coord_z,
+				name = r.name,
+				hp = r.hp,
+			}
+		end
 	end
-	--notify myself
-	a_movediff.enter = add
-	a_movediff.leave = leave
-	channel.senduid(uid, "a_movediff", a_movediff)
-	--notify leave
-	a_moveleave.uid = uid
-	channel.multicastarrclr("a_moveleave", a_moveleave,  leave)
-	--notify enter
-	local base = role.basic
+	return add
+end
+
+local function notifyenter(uid, base, coord_x, coord_z, enter)
 	a_moveenter.uid = uid
 	a_moveenter.name = base.name
 	a_moveenter.hp = base.hp
@@ -81,7 +82,46 @@ local function role_movesync(uid, coord_x, coord_z)
 	return channel.multicastarrclr("a_moveenter", a_moveenter, enter)
 end
 
+local function r_startgame(uid, req, fd)
+	print("start game")
+	local role = db.roleget(uid)
+	local basic = role.basic
+	local x, z = basic.coord_x, basic.coord_z
+	aoi.enter(uid, x, z, "watch", 1)
+	aoi.around(uid, enter)
+	a_movediff.enter = fillinfo(enter)
+	a_movediff.leave = nil
+	channel.senduid(uid, "a_movediff", a_movediff)
+	notifyenter(uid, basic, x, z, enter)
+	assert(#enter == 0)
+end
+
+local function role_movesync(uid, coord_x, coord_z)
+	local role = db.roleload(uid)
+	if coord_x < 0 then
+		coord_x = 0.0
+	end
+	if coord_z < 0 then
+		coord_z = 0.0
+	end
+	local move = aoi.move(uid, coord_x, coord_z, enter, leave)
+	if not move then
+		return
+	end
+	--notify myself
+	a_movediff.enter = fillinfo(enter)
+	a_movediff.leave = leave
+	channel.senduid(uid, "a_movediff", a_movediff)
+	--notify leave
+	a_moveleave.uid = uid
+	channel.multicastarrclr("a_moveleave", a_moveleave,  leave)
+	--notify enter
+	notifyenter(uid, role.basic, coord_x, coord_z, enter)
+	assert(#enter == 0)
+end
+
 local function r_movepoint(uid, req, fd)
+	print("r_movepoint", uid, req.src_coord_x, req.src_coord_z)
 	role_movesync(uid, req.src_coord_x, req.src_coord_z)
 	local watch = aoi.watcher(uid)
 	req.uid = uid
@@ -90,6 +130,7 @@ end
 
 
 local function r_movesync(uid, req, fd)
+	print("r_movesync", uid, req.coord_x, req.coord_z)
 	role_movesync(uid, req.coord_x, req.coord_z)
 end
 
@@ -134,6 +175,7 @@ end
 
 channel.regserver("s_login", s_login)
 channel.regserver("s_logout", s_logout)
+channel.regclient("r_startgame", r_startgame)
 channel.regclient("r_movepoint", r_movepoint)
 channel.regclient("r_movesync", r_movesync)
 channel.regclient("r_attack", r_attack)

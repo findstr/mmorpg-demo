@@ -184,7 +184,6 @@ agent {
 	logout  -- logout [used by master]
 	kickout	-- kickout [used by channelhub]
 	masterdata -- master data process [used by master]
-	slavedata -- slave data process [used by channelhub]
 	uid	-- roleid [used by channelhub]
 	gatefd  -- masterfd [used by channelhub]
 }

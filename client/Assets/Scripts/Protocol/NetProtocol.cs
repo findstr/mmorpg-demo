@@ -118,6 +118,7 @@ public class NetProtocol {
 			buffer = new byte[length_val];
 		socket.Read(buffer, 4);
 		int cmd = BitConverter.ToInt32(buffer, 0);
+		Debug.Log("LengthValue:" + length_val);
 		Debug.Assert(length_val > 4);
 		length_val -= sizeof(int);
 		socket.Read(buffer, length_val);
