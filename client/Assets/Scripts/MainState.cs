@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.UI;
 using zprotobuf;
 using client_zproto;
 
@@ -10,6 +11,8 @@ public class MainState : GameState {
 	private Character role;
 	private MoveController controller;
 	private CameraFollow follow = new CameraFollow();
+
+	public Button return_btn;
 
 	public override void OnEnter() {
 		if (alreadyenter)
@@ -118,10 +121,18 @@ public class MainState : GameState {
 		return ;
 	}
 
-	//////////inherit
+	void on_return() {
+		Module.UI.mb.Show("你确定要返回选择角色界面吗? ", do_return);
+	}
+	void do_return() {
+		Module.UI.mb.Show("正在返回选择角色界面，请稍等...");
+		StateManager.Instance.SwitchState("SelectState");
+	}
 
+	//////////inherit
 	void Awake() {
 		Module.Misc.tool = GetComponent<GameTool>();
+		return_btn.onClick.AddListener(on_return);
 	}
 
 	void Start() {
