@@ -113,6 +113,7 @@ public class LoginState : GameState {
 	}
 
 	void ack_accountlogin(int err, wire obj) {
+		NetInstance.Login.Close();
 		Debug.Log("[LoginState] ack_accountlogin err:" + err);
 		if (err != 0)
 			return ;
