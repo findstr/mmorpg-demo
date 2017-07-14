@@ -133,7 +133,6 @@ public class MainState : GameState {
 		return ;
 	}
 
-<<<<<<< HEAD
 	void on_return() {
 		Module.UI.mb.Show("你确定要返回选择角色界面吗? ", do_return);
 	}
@@ -141,14 +140,11 @@ public class MainState : GameState {
 		Module.UI.mb.Show("正在返回选择角色界面，请稍等...");
 		StateManager.Instance.SwitchState("SelectState");
 	}
-=======
+
 	void ack_gatekick(int err, wire obj) {
 		Debug.Log("GateKick");
 		StateManager.Instance.SwitchState("LoginState");
 	}
-
-	//////////inherit
->>>>>>> upstream/master
 
 	//////////inherit
 	void Awake() {
