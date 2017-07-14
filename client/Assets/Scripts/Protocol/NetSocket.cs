@@ -82,9 +82,6 @@ public class NetSocket {
 			Debug.Log("RecvCB: Disconnect");
 			obj.status = DISCONNECT;
 			obj.s.Close();
-			lock (obj.readstream) {
-				obj.readstream.Clear();
-			}
 		}
 	}
 

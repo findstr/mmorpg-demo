@@ -89,24 +89,25 @@ public class NetProtocol {
 	public void Update() {
 		if (socket_status == NetSocket.CLOSE)
 			return ;
-		if (socket.Status == NetSocket.DISCONNECT) {
-			if (event_close != null)
-				event_close();
-			socket_status = NetSocket.DISCONNECT;
-			Debug.Log("[NetProtocol] Reconnect addr " + connect_addr + ":" + connect_port);
-			socket.Connect(connect_addr, connect_port);
-		}
-		switch (socket_status) {
-		case NetSocket.DISCONNECT:
-			if (socket.Status == NetSocket.CONNECTED) {
-				socket_status = NetSocket.CONNECTED;
-				if (event_connect != null)
-					event_connect();
+		if (socket.Length < 2) {
+			if (socket.Status == NetSocket.DISCONNECT) {
+				if (event_close != null)
+					event_close();
+				socket_status = NetSocket.DISCONNECT;
+				Debug.Log("[NetProtocol] Reconnect addr " + connect_addr + ":" + connect_port);
+				socket.Connect(connect_addr, connect_port);
 			}
-			break;
-		}
-		if (socket.Length < 2)
+			switch (socket_status) {
+			case NetSocket.DISCONNECT:
+				if (socket.Status == NetSocket.CONNECTED) {
+					socket_status = NetSocket.CONNECTED;
+					if (event_connect != null)
+						event_connect();
+				}
+				break;
+			}
 			return ;
+		}
 		if (length_val == 0) {
 			socket.Read(buffer, 2);
 			length_val = BitConverter.ToInt16(buffer, 0);
