@@ -12,8 +12,16 @@ public class LoginState : GameState {
 	public InputField user_passwd;
 	public Button login_btn;
 	public Button register_btn;
+	private bool isFirst  = true;
 
 	public override void OnEnter() {
+		if (isFirst)
+			isFirst = false;
+		else {
+			NetInstance.Login.Reconnect();
+			NetInstance.Gate.Reconnect();
+		}
+
 		Module.UI.mb.Hide();
 		Debug.Log("OnEnter");
 	}

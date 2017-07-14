@@ -36,4 +36,5 @@ client/Library
 client/Temp
 server/protocol/client_zproto.cs
 server/protocol/zproto
+client/obj
 
