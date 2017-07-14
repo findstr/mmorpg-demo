@@ -26,7 +26,7 @@ end
 
 local MARK_LEAVE = 1
 local MARK_ENTER = 2
-local MARK_KEEP = 3
+local MARK_KEEP = nil
 local mark_buffer = {}
 local function mark(towerx, towerz, radius, markvalue)
 	local startx, stopx = clamp(towerx, radius, regionx)
@@ -93,8 +93,6 @@ function M.move(id, coordx, coordz, enter, leave)
 		end
 		mark_buffer[k] = nil
 	end
-	--print('tower_entity[ti]', ti, tower_entity[ti])
-	--print('tower_entity[nti]', nti, ntowerx, ntowerz, tower_entity[nti])
 	tower_entity[ti][id] = nil
 	tower_entity[nti][id] = nti
 	return true
@@ -165,6 +163,7 @@ function M.leave(id)
 	local towerx = p.towerx
 	local towerz = p.towerz
 	local ti = towerx * XPOWER + towerz
+	tower_entity[ti][id] = nil
 	local startx, stopx = clamp(towerx, radius, regionx)
 	local startz, stopz = clamp(towerz, radius, regionz)
 	local monitor = p.mode == "watch" and tower_watch or tower_sense
@@ -175,6 +174,7 @@ function M.leave(id)
 			monitor[ti][id] = nil
 		end
 	end
+	senseaction(id, ti, "enter")
 end
 
 function M.start(x, z)

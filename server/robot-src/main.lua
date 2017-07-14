@@ -153,8 +153,8 @@ end
 
 core.start(function()
 	local id = 1
-	for j = 1, 100 do
-		for i = 1, 10 do
+	--for j = 1, 100 do
+		for i = 1, 2 do
 			core.fork(function()
 				oneuser(id)
 			end)
@@ -162,7 +162,7 @@ core.start(function()
 			core.sleep(300)
 		end
 		core.sleep(1000)
-	end
+	--end
 	print("=============================")
 end)
 

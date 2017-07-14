@@ -58,6 +58,7 @@ local DIRTY_BASIC = 0x01
 local DIRTY_BAG = 0x02
 local DIRTY_PROP = 0x04
 local DIRTY_SKILL = 0x05
+local DIRTY_LAND = 0x06
 local DIRTY_ALL = DIRTY_BASIC | DIRTY_BAG | DIRTY_PROP | DIRTY_SKILL
 
 local rolecache = {}
@@ -135,6 +136,10 @@ local cmdbuffer = {}
 function M.roleload(uid)
 	local role = rolecache[uid]
 	if role then
+		local dirty = roledirty[uid]
+		if dirty then
+			roledirty[uid] = dirty & (~DIRTY_LAND)
+		end
 		return role
 	end
 	local k = format(dbk_role, uid)
@@ -164,7 +169,6 @@ local function roleupdate(uid, role, dirty)
 	local count = 0
 	local k = format(dbk_role, uid)
 	for k, flag in pairs(part_flag) do
-		print("dirty", dirty, flag)
 		if dirty & flag ~= 0 then
 			count = count + 1
 			cmdbuffer[count] = k
@@ -172,7 +176,6 @@ local function roleupdate(uid, role, dirty)
 			cmdbuffer[count] = dbproto:encode(part_proto[k], role[k])
 		end
 	end
-	print("roleupdate", count)
 	if count == 0 then
 		return
 	end
@@ -190,13 +193,17 @@ function M.roleland(uid)
 	if not role then
 		return
 	end
-	rolecache[uid] = nil
 	local dirty = roledirty[uid]
-	roledirty[uid] = nil
-	if not dir or dirty == 0 then
+	if not dirty then
+		rolecache[uid] = nil
 		return
 	end
-	roleupdate(uid, role, dirty)
+	if dirty == 0 then
+		rolecache[uid] = nil
+		roledirty[uid] = nil
+		return
+	end
+	roledirty[uid] = dirty | DIRTY_LAND
 end
 
 local function writedb()
@@ -205,6 +212,9 @@ local function writedb()
 		local role = rolecache[uid]
 		roledirty[uid] = nil
 		roleupdate(uid, role, dirty)
+		if dirty & DIRTY_LAND ~= 0 then
+			roledirty[uid] = nil
+		end
 	end
 end
 
