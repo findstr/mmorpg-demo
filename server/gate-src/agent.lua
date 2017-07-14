@@ -82,10 +82,12 @@ local function agent_create(self, gatefd)
 	else
 		a.gatefd = gatefd
 	end
+	print("agent_create", gatefd, a)
 	return a
 end
 
 local function agent_free(self)
+	print("agent_free", self)
 	if self.uid then
 		db.updatecoord(self.uid, self.coord_x, self.coord_z)
 	end
@@ -103,11 +105,14 @@ local function agent_logout(self)
 	agent_free(self)
 end
 
+local a_gatekick = {}
 local function agent_kickout(self)
 	if self.uid then
+		print("agent_kickout", self)
+		sendclient(self.gatefd, "a_gatekick", a_gatekick)
 		notify_logout(self)
 	end
-	master.kickmaster(self)
+	master.kickmaster(self.gatefd)
 	agent_free(self)
 end
 
@@ -126,6 +131,7 @@ local function agent_masterdata(self, fd, d, sz)
 		print("[gate] forward fail cmd:", cmd)
 		return
 	end
+	print("cmd", cmd)
 	func(self, req)
 end
 
@@ -152,6 +158,7 @@ local a_gatelogin = {
 	coord_z = false,
 }
 local function r_login(self, req)
+	print("r_login", self)
 	local ok = token.validate(req.uid, req.token)
 	if not ok then
 		return errorclient(self.gatefd, "a_gatelogin",
@@ -165,7 +172,6 @@ local function r_login(self, req)
 	a_gatelogin.coord_z = z
 	hub.login(uid, self)
 	notify_login(self)
-	print("r_login", self, self.gatefd)
 	return sendclient(self.gatefd, "a_gatelogin", a_gatelogin)
 end
 

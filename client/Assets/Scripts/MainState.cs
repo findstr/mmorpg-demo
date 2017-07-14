@@ -20,7 +20,7 @@ public class MainState : GameState {
 		Module.UI.mb.Hide();
 		alreadyenter = true;
 		Module.Misc.state = this;
-		role = CharacterManager.Create(Module.Role.uid,
+		role = EntityManager.CreateCharacter(Module.Role.uid,
 				Module.Role.Basic.name,
 				Module.Role.Basic.hp,
 				Module.Role.pos);
@@ -43,6 +43,7 @@ public class MainState : GameState {
 
 	public override void OnLeave() {
 		Module.UI.mb.Hide();
+		EntityManager.ClearCharacter();
 		controller = null;
 		alreadyenter = false;
 	}
@@ -72,7 +73,7 @@ public class MainState : GameState {
 	void ack_movepoint(int err, wire obj) {
 		Debug.Assert(err == 0);
 		a_movepoint ack = (a_movepoint)obj;
-		var c = CharacterManager.Get(ack.uid);
+		var c = EntityManager.GetCharacter(ack.uid);
 		if (c == null)
 			return ;
 		var src = Vector3.zero;
@@ -95,12 +96,12 @@ public class MainState : GameState {
 					name = "我是怪";
 				else
 					name = Tool.tostring(p.name);
-				CharacterManager.Create(p.uid, name, p.hp, src);
+				EntityManager.CreateCharacter(p.uid, name, p.hp, src);
 			}
 		}
 		if (ack.leave != null) {
 			for (int i = 0; i < ack.leave.Length; i++)
-				CharacterManager.Remove(ack.leave[i]);
+				EntityManager.RemoveCharacter(ack.leave[i]);
 		}
 	}
 
@@ -108,18 +109,18 @@ public class MainState : GameState {
 		a_moveenter ack = (a_moveenter)obj;
 		Vector3 src = new Vector3();
 		Tool.ToNative(ref src, ack.coord_x, ack.coord_z);
-		CharacterManager.Create(ack.uid, Tool.tostring(ack.name), ack.hp, src);
+		EntityManager.CreateCharacter(ack.uid, Tool.tostring(ack.name), ack.hp, src);
 	}
 
 	void ack_moveleave(int err, wire obj) {
 		a_moveleave ack = (a_moveleave)obj;
-		CharacterManager.Remove(ack.uid);
+		EntityManager.RemoveCharacter(ack.uid);
 	}
 
 	void ack_attack(int err, wire o) {
 		a_attack ack = (a_attack) o;
-		var atk = CharacterManager.Get(ack.attacker);
-		var target = CharacterManager.Get(ack.target);
+		var atk = EntityManager.GetCharacter(ack.attacker);
+		var target = EntityManager.GetCharacter(ack.target);
 		if (atk == null || target == null)
 			return ;
 		GameObject obj = Tool.InstancePrefab("Effect/EffectAtk");
@@ -132,6 +133,7 @@ public class MainState : GameState {
 		return ;
 	}
 
+<<<<<<< HEAD
 	void on_return() {
 		Module.UI.mb.Show("你确定要返回选择角色界面吗? ", do_return);
 	}
@@ -139,6 +141,14 @@ public class MainState : GameState {
 		Module.UI.mb.Show("正在返回选择角色界面，请稍等...");
 		StateManager.Instance.SwitchState("SelectState");
 	}
+=======
+	void ack_gatekick(int err, wire obj) {
+		Debug.Log("GateKick");
+		StateManager.Instance.SwitchState("LoginState");
+	}
+
+	//////////inherit
+>>>>>>> upstream/master
 
 	//////////inherit
 	void Awake() {
@@ -154,12 +164,14 @@ public class MainState : GameState {
 		a_moveenter moveenter = new a_moveenter();
 		a_moveleave moveleave = new a_moveleave();
 		a_attack attack = new a_attack();
+		a_gatekick kick = new a_gatekick();
 		Register(itemuse, ack_itemuse);
 		Register(movepoint, ack_movepoint);
 		Register(movediff, ack_movediff);
 		Register(moveenter, ack_moveenter);
 		Register(moveleave, ack_moveleave);
 		Register(attack, ack_attack);
+		Register(kick, ack_gatekick);
 	}
 
 	void DebugGrid() {

@@ -53,8 +53,7 @@ r_startgame 0x20f2 {
 
 }
 
-#dummy
-a_startgame 0x20f3 {
+a_gatekick 0x20f3 {
 
 }
 

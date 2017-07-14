@@ -20,10 +20,11 @@ local function s_login(uid, req, fd)
 end
 
 local function s_logout(uid, req, fd)
-	print("logout")
+	print("logout start", uid)
 	aoi.leave(uid)
 	channel.onlinedetach(uid)
 	db.roleland(uid)
+	print("logout stop", uid)
 end
 
 local a_moveenter = {
@@ -61,6 +62,7 @@ local function fillinfo(enter)
 			}
 		else
 			local r = db.rolebasic(uid)
+			assert(r, uid)
 			add[i] = {
 				uid = uid,
 				coord_x = r.coord_x,
@@ -83,7 +85,7 @@ local function notifyenter(uid, base, coord_x, coord_z, enter)
 end
 
 local function r_startgame(uid, req, fd)
-	--print("start game", uid)
+	print("start game", uid)
 	local role = db.roleget(uid)
 	local basic = role.basic
 	local x = basic.coord_x or 1.0

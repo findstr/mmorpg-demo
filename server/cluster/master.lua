@@ -52,7 +52,7 @@ end
 
 M.kickmaster = function(fd)
 	local a = masterfd_agent[fd]
-	masterfd_agent[masterfd] = nil
+	masterfd_agent[fd] = nil
 	master_inst:close(fd)
 end
 

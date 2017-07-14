@@ -30,7 +30,6 @@ local function r_roleinfo(uid, req, fd)
 	if not info then
 		return channel.errorclient(fd, uid, "a_roleinfo", errno.ROLE_NONEXIST)
 	end
-	print("r_roleinfo", uid, info.bag)
 	a_roleinfo_fill(info)
 	return channel.sendclient(fd, uid, "a_roleinfo", a_roleinfo)
 end
@@ -43,7 +42,6 @@ local function r_rolecreate(uid, req, fd)
 	end
 	info = db.rolecreate(uid, req.name)
 	a_roleinfo_fill(info)
-	print("realy create", info.basic)
 	return channel.sendclient(fd, uid, "a_rolecreate", a_roleinfo)
 end
 

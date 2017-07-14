@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CharacterManager {
+public class EntityManager {
 	private static Dictionary<int, Character> pool = new Dictionary<int, Character>();
-	public static Character Create(int uid, string name, int hp, Vector3 pos) {
+	public static Character CreateCharacter(int uid, string name, int hp, Vector3 pos) {
 		if (pool.ContainsKey(uid))
 			return pool[uid];
 		var obj = Tool.InstancePrefab("Character/Character01", pos, Quaternion.identity);
@@ -16,13 +16,13 @@ public class CharacterManager {
 		c.UID = uid;
 		return c;
 	}
-	public static Character Get(int uid) {
+	public static Character GetCharacter(int uid) {
 		if (pool.ContainsKey(uid))
 			return pool[uid];
 		return null;
 	}
-	public static Character AutoAim(int uid, float radius) {
-		var atk = Get(uid);
+	public static Character AutoAimCharacter(int uid, float radius) {
+		var atk = GetCharacter(uid);
 		foreach (KeyValuePair<int, Character> entry in pool) {
 			if (entry.Value == atk)
 				continue;
@@ -33,15 +33,17 @@ public class CharacterManager {
 		}
 		return null;
 	}
-	public static void Remove(int uid) {
-		var c = Get(uid);
+	public static void RemoveCharacter(int uid) {
+		var c = GetCharacter(uid);
 		if (c == null)
 			return ;
 		GameObject.Destroy(c.gameObject);
 		pool.Remove(uid);
 		return ;
 	}
-	public static void Clear(int uid) {
-
+	public static void ClearCharacter() {
+		foreach (KeyValuePair<int, Character> entry in pool)
+			GameObject.Destroy(entry.Value.gameObject);
+		pool.Clear();
 	}
 }
