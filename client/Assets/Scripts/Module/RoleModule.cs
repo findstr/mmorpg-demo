@@ -26,7 +26,9 @@ public struct PropSt {
 }
 
 public class Role {
+	public static bool firstlogin = true;
 	public static int uid;
+	public static int token;
 	public static BasicSt Basic;
 	public static PropSt Prop;
 	public static Dictionary<int, DB.IdCount> bag = new Dictionary<int, DB.IdCount>();

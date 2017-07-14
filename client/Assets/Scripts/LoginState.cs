@@ -53,12 +53,16 @@ public class LoginState : GameState {
 		Module.UI.mb.Show("你确定要登陆吗? ", do_login);
 	}
 
-	void do_login() {
-		Module.UI.mb.Show("正在登陆，请稍等...");
-
+	void do_loginchallenge() {
 		r_accountchallenge req = new r_accountchallenge();
 		NetInstance.Login.Send(req);
 		Debug.Log("[LoginState] Challenge");
+	}
+
+	void do_login() {
+		var login = DB.DB.IpConfig.Get("login");
+		NetInstance.Login.Connect(login.IP, login.Port, do_loginchallenge);
+		Module.UI.mb.Show("正在登陆，请稍等...");
 	}
 
 	// Use this for initialization
@@ -101,17 +105,24 @@ public class LoginState : GameState {
 		NetInstance.Login.Send(req);
 	}
 
+	void do_logingate() {
+		r_gatelogin req = new r_gatelogin();
+		req.uid = Module.Role.uid;
+		req.token = Module.Role.token;
+		NetInstance.Gate.Send(req);
+	}
+
 	void ack_accountlogin(int err, wire obj) {
 		Debug.Log("[LoginState] ack_accountlogin err:" + err);
 		if (err != 0)
 			return ;
 		a_accountlogin ack = (a_accountlogin)obj;
 		Module.Role.uid = ack.uid;
-		r_gatelogin req = new r_gatelogin();
-		req.uid = ack.uid;
-		req.token = ack.token;
-		NetInstance.Gate.Send(req);
+		Module.Role.token = ack.token;
+		var gate = DB.DB.IpConfig.Get("gate");
+		NetInstance.Gate.Connect(gate.IP, gate.Port, do_logingate);
 	}
+
 	void ack_gatelogin(int err, wire obj) {
 		Debug.Log("[LoginState] GateLogin:" + err);
 		if (err == 0)

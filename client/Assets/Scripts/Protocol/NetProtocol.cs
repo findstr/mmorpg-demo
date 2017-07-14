@@ -30,13 +30,14 @@ public class NetProtocol {
 		return ;
 	}
 
-	public void Connect(string addr, int port) {
+	public void Connect(string addr, int port, event_cb_t cb) {
 		Close();
 		Debug.Log("Connect:" + addr + ":" + port);
 		connect_addr = addr;
 		connect_port = port;
 		socket.Connect(addr, port);
 		socket_status = socket.Status;
+		event_connect = cb;
 	}
 
 	public void Event(event_cb_t open, event_cb_t close) {
@@ -89,6 +90,18 @@ public class NetProtocol {
 	public void Update() {
 		if (socket_status == NetSocket.CLOSE)
 			return ;
+		switch (socket_status) {
+		case NetSocket.CONNECTING:
+		case NetSocket.DISCONNECT:
+			if (socket.Status == NetSocket.CONNECTED) {
+				socket_status = NetSocket.CONNECTED;
+				if (event_connect != null) {
+					event_connect();
+					event_connect = null;
+				}
+			}
+			break;
+		}
 		if (socket.Length < 2) {
 			if (socket.Status == NetSocket.DISCONNECT) {
 				if (event_close != null)
@@ -96,15 +109,6 @@ public class NetProtocol {
 				socket_status = NetSocket.DISCONNECT;
 				Debug.Log("[NetProtocol] Reconnect addr " + connect_addr + ":" + connect_port);
 				socket.Connect(connect_addr, connect_port);
-			}
-			switch (socket_status) {
-			case NetSocket.DISCONNECT:
-				if (socket.Status == NetSocket.CONNECTED) {
-					socket_status = NetSocket.CONNECTED;
-					if (event_connect != null)
-						event_connect();
-				}
-				break;
 			}
 			return ;
 		}
