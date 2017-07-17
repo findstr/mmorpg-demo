@@ -95,8 +95,8 @@ public class MoveController {
 		r_movesync sync = new r_movesync();
 		sync.coord_x = pos.x;
 		sync.coord_z = pos.z;
+		Debug.Log("ServerUpdate" + pos + ":" + sync._tag());
 		NetInstance.Gate.Send(sync);
-		Debug.Log("ServerUpdate" + pos);
 	}
 
 	public void OnUpdate() {

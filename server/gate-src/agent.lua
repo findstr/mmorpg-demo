@@ -25,6 +25,17 @@ local function regclient(cmd, func)
 	CMD[cmd] = func
 end
 
+local function regclientproto(cmd, func)
+	cmd = cproto:querytag(cmd)
+	local cb = function(self, cmd, dat)
+		local dat = dat:sub(4 + 1)
+		local req = cproto:decode(cmd, dat)
+		func(self, req)
+	end
+	CMD[cmd] = cb
+
+end
+
 local function protowrapper(proto, cb)
 	return function(self, cmd, data)
 		local pk
@@ -117,22 +128,14 @@ local function agent_kickout(self)
 end
 
 local function agent_masterdata(self, fd, d, sz)
-	local dat = core.tostring(d, sz)
-	np.drop(d);
+	local dat = np.tostring(d, sz)
 	local cmd = unpack("<I4", dat);
-	local ok = hub.tryforward(self, cmd, dat)
-	if ok then
-		return
-	end
-	local dat = dat:sub(4 + 1)
-	local req = cproto:decode(cmd, dat)
 	local func = CMD[cmd]
 	if not func then
-		print("[gate] forward fail cmd:", cmd)
-		return
+		return hub.tryforward(self, cmd, dat)
+	else
+		return func(self, cmd, dat)
 	end
-	print("cmd", cmd)
-	func(self, req)
 end
 
 ------------protocol
@@ -175,12 +178,21 @@ local function r_login(self, req)
 	return sendclient(self.gatefd, "a_gatelogin", a_gatelogin)
 end
 
+local function r_movesync(self, cmd, packet)
+	local dat = packet:sub(4+1)
+	local req = cproto:decode(cmd, dat)
+	self.coord_x = req.coord_x
+	self.coord_z = req.coord_z
+	local ok = hub.tryforward(self, cmd, packet)
+end
+
 local function s_forcepoint(self, req)
 	self.coord_x = req.coord_x
 	self.coord_z = req.coord_z
 end
 
-regclient("r_gatelogin", r_login)
+regclientproto("r_gatelogin", r_login)
+regclient("r_movesync", r_movesync)
 hub.regagent(sproto, "s_forcepoint", s_forcepoint)
 
 -----------interface

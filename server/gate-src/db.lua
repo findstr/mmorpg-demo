@@ -38,6 +38,7 @@ function M.start()
 	dbinst, err = redis:connect {
 		addr = env.get("dbport")
 	}
+	dbinst:select(env.get("dbindex"))
 	return dbinst and true or false
 end
 

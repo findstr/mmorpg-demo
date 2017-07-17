@@ -126,7 +126,10 @@ public class LoginState : GameState {
 
 	void ack_gatelogin(int err, wire obj) {
 		Debug.Log("[LoginState] GateLogin:" + err);
-		if (err == 0)
+		if (err == 0) {
+			a_gatelogin ack = (a_gatelogin)obj;
+			Module.Role.pos = new Vector3(ack.coord_x, 0, ack.coord_z);
 			StateManager.Instance.SwitchState("SelectState");
+		}
 	}
 }

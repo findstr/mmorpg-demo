@@ -45,7 +45,7 @@ local function mark(towerx, towerz, radius, markvalue)
 end
 
 local function collectentity(ti, tbl)
-	local entity = tower_entity[ti]
+	local entity = assert(tower_entity[ti], ti)
 	for id, v in pairs(entity) do
 		assert(v == ti)
 		tbl[#tbl + 1] = id
@@ -131,8 +131,8 @@ function M.enter(id, coordx, coordz, mode, radius, ud)
 	assert(towerz <= regionz)
 	local ti = towerx * XPOWER + towerz
 	local p = {
-		towerx = coordx,
-		towerz = coordz,
+		towerx = towerx,
+		towerz = towerz,
 		mode = mode,	--'sense, watch'
 		radius = radius,
 	}

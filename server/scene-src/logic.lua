@@ -85,11 +85,11 @@ local function notifyenter(uid, base, coord_x, coord_z, enter)
 end
 
 local function r_startgame(uid, req, fd)
-	print("start game", uid)
 	local role = db.roleget(uid)
 	local basic = role.basic
 	local x = basic.coord_x or 1.0
 	local z = basic.coord_z or 1.0
+	print("start game", uid, x, z)
 	aoi.enter(uid, x, z, "watch", 1)
 	aoi.around(uid, enter)
 	a_movediff.enter = fillinfo(enter)

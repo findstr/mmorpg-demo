@@ -46,6 +46,8 @@ public class MainState : GameState {
 		EntityManager.ClearCharacter();
 		controller = null;
 		alreadyenter = false;
+		NetInstance.Login.Close();
+		NetInstance.Gate.Close();
 	}
 
 	public override string Name() {

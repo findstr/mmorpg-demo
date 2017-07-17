@@ -57,12 +57,13 @@ public class NetProtocol {
 	}
 
 	public bool Send(wire obj) {
+		Debug.Log("Send++++");
 		if (!isConnected()) {
 			Debug.Log("[NetProtocol] Send:" + obj._name() + " disconnect" + socket.Status);
 			return false;
 		}
 		int cmd = obj._tag();
-		//Debug.Log("Send Cmd:" + cmd + " name:" + obj._name());
+		Debug.Log("Send Cmd:" + cmd + " name:" + obj._name());
 		byte[] dat = null;
 		obj._serialize(out dat);
 		short len = (short)(4 + dat.Length);

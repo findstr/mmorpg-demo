@@ -93,8 +93,6 @@ public class SelectState : GameState {
 	}
 
 	public override void OnLeave() {
-		NetInstance.Login.Close();
-		NetInstance.Gate.Close();
 		Module.UI.mb.Hide();
 	}
 
