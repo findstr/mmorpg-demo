@@ -59,7 +59,19 @@ public class Character : MonoBehaviour {
 	}
 	public int HP {
 		get { return UI.HP; }
-		set { UI.HP = value; }
+		set {
+			int delta = UI.HP;
+			Debug.Log("[HP]Uid:" + uid + "delta:" + delta + ":value:" + value);
+			UI.HP = value;
+			delta -= value;
+			if (delta == 0f)
+				return ;
+			var pos = transform.position;
+			pos.y += GameConfig.role_ui_high;
+			var obj = Tool.InstancePrefab("UI/FlyNum", pos, Quaternion.identity);
+			var fly = obj.GetComponent<FlyNum>();
+			fly.Fly(delta, pos, 9);
+		}
 	}
 	public int UID {
 		get { return uid; }
