@@ -60,8 +60,7 @@ public class LoginState : GameState {
 	}
 
 	void do_login() {
-		var login = DB.DB.IpConfig.Get("login");
-		NetInstance.Login.Connect(login.IP, login.Port, do_loginchallenge);
+		do_loginchallenge();
 		Module.UI.mb.Show("正在登陆，请稍等...");
 	}
 
