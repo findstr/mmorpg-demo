@@ -57,8 +57,8 @@ local dbk_role_skill = "skill"
 local DIRTY_BASIC = 0x01
 local DIRTY_BAG = 0x02
 local DIRTY_PROP = 0x04
-local DIRTY_SKILL = 0x05
-local DIRTY_LAND = 0x06
+local DIRTY_SKILL = 0x08
+local DIRTY_LAND = 0x10
 local DIRTY_ALL = DIRTY_BASIC | DIRTY_BAG | DIRTY_PROP | DIRTY_SKILL
 
 local rolecache = {}
@@ -128,6 +128,7 @@ function M.rolecreate(uid, name)
 	}
 	rolecache[uid] = role
 	roledirty[uid] = DIRTY_ALL
+	print("db.rolecreate")
 	return role
 end
 
@@ -168,11 +169,13 @@ end
 local function roleupdate(uid, role, dirty)
 	local count = 0
 	local k = format(dbk_role, uid)
+	print("roleupdate", dirty)
 	for k, flag in pairs(part_flag) do
-		if dirty & flag ~= 0 then
+		if (dirty & flag) ~= 0 then
 			count = count + 1
 			cmdbuffer[count] = k
 			count = count + 1
+			print("roleupdate", uid, k)
 			cmdbuffer[count] = dbproto:encode(part_proto[k], role[k])
 		end
 	end
@@ -211,8 +214,9 @@ local function writedb()
 	for uid, dirty in pairs(roledirty) do
 		local role = rolecache[uid]
 		roledirty[uid] = nil
+		print("roleupdate dirty", dirty)
 		roleupdate(uid, role, dirty)
-		if dirty & DIRTY_LAND ~= 0 then
+		if (dirty & DIRTY_LAND) ~= 0 then
 			roledirty[uid] = nil
 		end
 	end
