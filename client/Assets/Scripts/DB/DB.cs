@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Xml;
-using System.IO;
 using System.Reflection;
 using System.Collections;
 using System.Collections.Generic;
@@ -33,9 +32,8 @@ public class XmlSet<T, K> : XmlLoad where T:new(){
 	}
 	public override void Load(string path) {
 		XmlDocument doc = new XmlDocument();
-		if (!System.IO.File.Exists(path))
-			return ;
-		doc.LoadXml(System.IO.File.ReadAllText(path));
+		var text = (TextAsset)Resources.Load(path);
+		doc.LoadXml(text.text);
 		XmlNode root = doc.DocumentElement;
 		for (int i = 0; i < root.ChildNodes.Count; i++) {
 			var n = root.ChildNodes[i];
@@ -72,7 +70,7 @@ public class XmlSet<T, K> : XmlLoad where T:new(){
 
 
 public class DB {
-	public static XmlSet<LanguageItem, string> Language = new XmlSet<LanguageItem, string>();
+	public static XmlSet<LanguageItem, string> LanguageCN = new XmlSet<LanguageItem, string>();
 	public static XmlSet<RoleLevelItem, int> RoleLevel = new XmlSet<RoleLevelItem, int>();
 	public static XmlSet<ItemItem, int> Item = new XmlSet<ItemItem, int>();
 	public static XmlSet<ErrnoItem, int> Errno = new XmlSet<ErrnoItem, int>();
@@ -88,7 +86,7 @@ public class DB {
 		for (int j = 0; j < fi.Length; j++) {
 			var name = fi[j].Name;
 			XmlLoad obj = (XmlLoad)fi[j].GetValue(null);
-			obj.Load(Tool.GetPath("DB/" + name + ".xml"));
+			obj.Load("DB/" + name);
 		}
 	}
 }}
