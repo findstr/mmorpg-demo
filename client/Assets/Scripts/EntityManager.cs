@@ -34,6 +34,7 @@ public class EntityManager {
 		return null;
 	}
 	public static void RemoveCharacter(int uid) {
+		Debug.Log("RemoveCharacter:" + uid);
 		var c = GetCharacter(uid);
 		if (c == null)
 			return ;

@@ -119,7 +119,7 @@ end
 local a_gatekick = {}
 local function agent_kickout(self)
 	if self.uid then
-		print("agent_kickout", self)
+		print("agent_kickout", self.uid)
 		sendclient(self.gatefd, "a_gatekick", a_gatekick)
 		notify_logout(self)
 	end

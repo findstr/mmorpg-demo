@@ -29,6 +29,7 @@ public class LoginState : GameState {
 	public override void OnLeave() {
 		Module.UI.mb.Hide();
 		Debug.Log("OnLeave");
+		NetInstance.Login.Close();
 	}
 	public override string Name() {
 		return "LoginState";
@@ -112,7 +113,6 @@ public class LoginState : GameState {
 	}
 
 	void ack_accountlogin(int err, wire obj) {
-		NetInstance.Login.Close();
 		Debug.Log("[LoginState] ack_accountlogin err:" + err);
 		if (err != 0)
 			return ;
