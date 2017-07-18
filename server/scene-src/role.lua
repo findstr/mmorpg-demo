@@ -23,6 +23,7 @@ local function a_roleinfo_fill(role)
 	a_roleinfo.prop = role.prop
 	a_roleinfo.hp = basic.hp
 	a_roleinfo.mp = basic.mp
+	print("roleinfo_fill", basic.hp, basic.mp, basic.exp)
 end
 
 local function r_roleinfo(uid, req, fd)

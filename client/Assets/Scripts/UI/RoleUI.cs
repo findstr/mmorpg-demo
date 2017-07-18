@@ -24,11 +24,12 @@ public class RoleUI : MonoBehaviour {
 		var EXP = xml.Exp;
 		role_name.text = Module.Role.Basic.name;
 		role_level.text = Module.Role.Basic.level.ToString();
-		role_hp_bar.value = Module.Role.Basic.hp / HP;
+		role_hp_bar.value = (float)Module.Role.Basic.hp / HP;
 		role_hp_text.text = Module.Role.Basic.hp.ToString() + "/" + HP.ToString();
-		role_mp_bar.value = Module.Role.Basic.mp / MP;
+		role_mp_bar.value = (float)Module.Role.Basic.mp / MP;
 		role_mp_text.text = Module.Role.Basic.mp.ToString() + "/" + MP.ToString();
-		role_exp_bar.value = Module.Role.Basic.exp / EXP;
+		role_exp_bar.value = (float)Module.Role.Basic.exp / EXP;
+		Debug.Log("XXXXX HP:" + Module.Role.Basic.exp + ":" + EXP + ":" + role_exp_bar.value);
 		role_exp_text.text = Module.Role.Basic.exp.ToString() + "/" + EXP.ToString();
 	}
 

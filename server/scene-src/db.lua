@@ -20,6 +20,8 @@ local dbproto = zproto:parse [[
 		.exp:integer 3
 		.level:integer 4
 		.gold:integer 5
+		.hp:integer 6
+		.mp:integer 7
 	}
 	role_bag {
 		.bag:idcount[id] 1
@@ -29,8 +31,6 @@ local dbproto = zproto:parse [[
 		.def:integer 2
 		.matk:integer 3
 		.mdef:integer 4
-		.hp:integer 5
-		.mp:integer 6
 	}
 	role_skill {
 		skill {
@@ -80,7 +80,7 @@ local part_flag = {
 function M.rolecreate(uid, name)
 	local level = assert(xml.getkey("RoleLevel.xml", 1), "RoleLevel.xml")
 	local create = assert(xml.get("RoleCreate.xml"), "RoleCreate.xml")
-	print("role:create", level.hp, level.mp)
+	print("role:create", level.hp, level.mp, create.exp.value[1])
 	local basic = {
 		uid = uid,
 		name = name,
