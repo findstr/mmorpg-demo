@@ -1,6 +1,7 @@
 local core = require "silly.core"
 local env = require "silly.env"
 local zproto = require "zproto"
+local xml = require "XML"
 local property = require "protocol.property"
 local redis = require "redis"
 local format = string.format
@@ -19,8 +20,6 @@ local dbproto = zproto:parse [[
 		.exp:integer 3
 		.level:integer 4
 		.gold:integer 5
-		.hp:integer 6
-		.magic:integer 7
 	}
 	role_bag {
 		.list:idcount[id] 1
@@ -30,6 +29,8 @@ local dbproto = zproto:parse [[
 		.def:integer 2
 		.matk:integer 3
 		.mdef:integer 4
+		.hp:integer 5
+		.magic:integer 6
 	}
 	role_skill {
 		skill {
@@ -79,6 +80,9 @@ local part_flag = {
 }
 
 function M.rolecreate(uid, name)
+	local conf = xml.get("RoleLevel.xml")
+	local level = xml.getkey("RoleLevel.xml", 1)
+	print("rolecreate", conf, level)
 	local basic = {
 		uid = uid,
 		name = name,
@@ -272,6 +276,7 @@ function M.start()
 	}
 	dbinst:select(9)
 	dbtimer()
+	M.rolecreate(333, "hello")
 	return dbinst and true or false
 end
 

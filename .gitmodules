@@ -4,6 +4,6 @@
 [submodule "client/Assets/Resources"]
 	path = client/Assets/Resources
 	url = git@git.oschina.net:gotocoding/mmorpg-model.git
-[submodule "client/Tool"]
-	path = client/Tool
+[submodule "Tool"]
+	path = Tool
 	url = git@git.oschina.net:gotocoding/mmorpg-config.git

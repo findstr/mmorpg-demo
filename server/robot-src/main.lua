@@ -43,6 +43,7 @@ local function oneuser(i)
 		data = function(f, d, sz)
 			local str = np.tostring(d, sz)
 			local cmd = unpack("<I4", str)
+			print("login", cmd)
 			if cmd == Achallenge then
 				local ack = cproto:decode(cmd, str:sub(4+1))
 				randomkey = ack.randomkey
@@ -67,7 +68,7 @@ local function oneuser(i)
 		data = function(f, d, sz)
 			local str = np.tostring(d, sz)
 			local cmd = unpack("<I4", str)
-			--print(string.format("%x", cmd))
+			print(string.format("%x", cmd))
 			if cmd == Agate then
 				local ack = cproto:decode(cmd, str:sub(4+1))
 				coordx, coordz = ack.coord_x, ack.coord_z
@@ -153,16 +154,16 @@ end
 
 core.start(function()
 	local id = 1
-	--for j = 1, 100 do
-		for i = 1, 2 do
+	for j = 1, 1 do
+		for i = 1, 1 do
 			core.fork(function()
 				oneuser(id)
 			end)
 			id = id + 1
 			core.sleep(300)
 		end
-		core.sleep(1000)
-	--end
+		core.sleep(300)
+	end
 	print("=============================")
 end)
 
