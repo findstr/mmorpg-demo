@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?> 
+<!-- 
+任务ID 描述 
+int string 
+--> 
+<MainTask>
+    <l key="1" /> 
+    <l key="2" /> 
+</MainTask>

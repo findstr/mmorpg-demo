@@ -42,6 +42,7 @@ core.start(function()
 	local cmd = string.format("find %s -name '*.xml'", xmlpath)
 	xml.parselist {
 		xmlpath .. "/RoleLevel.xml",
+		xmlpath .. "/RoleCreate.xml",
 		xmlpath .. "/ItemUse.xml",
 		xmlpath .. "/SkillEffect.xml",
 		xmlpath .. "/NPC.xml",

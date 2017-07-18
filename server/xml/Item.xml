@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?> 
+<!-- 
+道具ID 等级 描述 图标 道具类型 Data1 Data2 
+int int string string int string int 
+--> 
+<Item>
+    <l key="1" level="1" type="0" d1="null" d2="null" /> 
+    <l key="10001" level="1" type="2" d1="null" d2="10" /> 
+    <l key="10002" level="1" type="2" d1="null" d2="10" /> 
+    <l key="10003" level="1" type="1" d1="null" d2="10" /> 
+    <l key="10004" level="1" type="1" d1="null" d2="10" /> 
+    <l key="10005" level="1" type="1" d1="null" d2="10" /> 
+    <l key="10006" level="1" type="1" d1="null" d2="10" /> 
+</Item>

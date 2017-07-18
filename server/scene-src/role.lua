@@ -19,7 +19,7 @@ local function a_roleinfo_fill(role)
 	a_roleinfo.level = basic.level
 	a_roleinfo.exp = basic.exp
 	a_roleinfo.gold = basic.gold
-	a_roleinfo.bag = role.bag.list
+	a_roleinfo.bag = role.bag.bag
 	a_roleinfo.prop = role.prop
 	a_roleinfo.hp = basic.hp
 end

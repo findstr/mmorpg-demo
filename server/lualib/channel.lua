@@ -132,6 +132,21 @@ local function multicastmap(cmd, ack, map)
 	return multicastgate(gate, cmd, ack)
 end
 
+local function multicastmapclr(cmd, ack, map)
+	for uid, _ in pairs(map) do
+		local fd = user_gate[uid]
+		map[uid] = nil
+		local g = gate[fd]
+		if not g then
+			g = {}
+			gate[fd] = g
+		end
+		g[#g + 1] = uid
+	end
+	return multicastgate(gate, cmd, ack)
+end
+
+
 local function multicastarr(cmd, ack, arr)
 	local i = 1
 	for i = 1, #arr do
@@ -315,6 +330,7 @@ sendserver = sendserver,
 sendclient = sendclient,
 senduid = senduid,
 multicastmap = multicastmap,
+multicastmapclr = multicastmapclr,
 multicastarr = multicastarr,
 multicastarrclr = multicastarrclr,
 errorclient = senderror,

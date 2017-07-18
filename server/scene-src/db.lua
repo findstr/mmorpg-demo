@@ -22,7 +22,7 @@ local dbproto = zproto:parse [[
 		.gold:integer 5
 	}
 	role_bag {
-		.list:idcount[id] 1
+		.bag:idcount[id] 1
 	}
 	role_prop {
 		.atk:integer 1
@@ -35,10 +35,8 @@ local dbproto = zproto:parse [[
 	role_skill {
 		skill {
 			.skillid:integer 1
-			.skilllv:integer 2
 		}
-		.active:skill[skillid] 2
-		.passive:skill[skillid] 3
+		.skills:skill[skillid] 1
 	}
 ]]
 
@@ -80,50 +78,46 @@ local part_flag = {
 }
 
 function M.rolecreate(uid, name)
-	local conf = xml.get("RoleLevel.xml")
-	local level = xml.getkey("RoleLevel.xml", 1)
-	print("rolecreate", conf, level)
+	local level = assert(xml.getkey("RoleLevel.xml", 1), "RoleLevel.xml")
+	local create = assert(xml.get("RoleCreate.xml"), "RoleCreate.xml")
 	local basic = {
 		uid = uid,
 		name = name,
-		exp = 0,
-		level = 0,
-		gold = 100,
-		hp = 90,
-		magic = 100,
-		coord_x = 10,
-		coord_z = 10,
-	}
-	local bag = {
-		list = {
-			[10000] = {
-				id = 10000,
-				count = 100
-			},
-			[10001] = {
-				id = 10001,
-				count = 101,
-			}
-		}
+		exp = assert(create.exp.value[1]),
+		level = 1,
+		gold = assert(create.exp.value[1]),
+		hp = assert(level.hp),
+		magic = assert(level.magic),
+		coord_x = create.coord.value[1],
+		coord_z = create.coord.value[2],
 	}
 	local prop = {
-		atk = 99,
-		def = 98,
-		matk = 89,
-		mdef = 88,
+		atk = level.atk,
+		def = level.def,
+		matk = level.matk,
+		mdef = level.mdef,
+	}
+	local bag = {
+		bag = {}
 	}
 	local skill = {
-		active = {
-			[10000000] = {
-				skillid = 10000000,
-				skilllv = 1,
-			},
-			[10001000] = {
-				skillid = 10001000,
-				skilllv = 1,
-			},
-		}
+		skills = {}
 	}
+
+	local b = bag.bag
+	for _, v in pairs(create.bag.value_list) do
+		b[v.id] = {
+			id = v.id,
+			count = v.count
+		}
+	end
+	local s = skill.skills
+	for _, v in pairs(create.skill.value_list) do
+		s[v.id] = {
+			id = v.id,
+			count = v.count
+		}
+	end
 	role = {
 		basic = basic,
 		bag = bag,
@@ -157,6 +151,7 @@ function M.roleload(uid)
 		local j = i + 1
 		local k = dat[i]
 		local v = dat[j]
+		print(uid, i, j, k, v)
 		dat[i] = nil
 		dat[j] = nil
 		local protok = part_proto[k]
@@ -276,7 +271,6 @@ function M.start()
 	}
 	dbinst:select(9)
 	dbtimer()
-	M.rolecreate(333, "hello")
 	return dbinst and true or false
 end
 

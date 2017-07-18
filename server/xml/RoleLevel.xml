@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?> 
+<!-- 
+玩家等级 所需经验 最高法力 最大血量 物攻 物防 法攻 法防 必过任务ID 
+int int int int int int int int int 
+--> 
+<RoleLevel>
+    <l key="1" exp="90" magic="100" hp="100" atk="8" def="1" matk="8" mdef="1" task="0" /> 
+    <l key="2" exp="180" magic="100" hp="100" atk="8" def="1" matk="8" mdef="1" task="1" /> 
+</RoleLevel>

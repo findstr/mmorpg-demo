@@ -31,7 +31,6 @@ function M.start()
 		}
 		aoi.enter(k, x, z, "sense", 0, npc_sense)
 		NPC[k] = obj
-		print(k, v.Name, v.Model)
 	end
 end
 

@@ -12,7 +12,14 @@ public class LanguageItem {
 
 public class RoleLevelItem {
 	public int Key;
-	public string Value;
+	public int Exp;
+	public int Magic;
+	public int Hp;
+	public int Atk;
+	public int Def;
+	public int Matk;
+	public int Mdef;
+	public int Task;
 }
 
 public class ItemUseItem {

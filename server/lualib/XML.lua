@@ -1,6 +1,6 @@
 local SLAXML = require 'slaxml'
 local log = require "log"
-
+local POWER = 10000
 local config = {}
 
 config.null = {}
@@ -93,7 +93,7 @@ local function parseone(file)
                         local trans = assert(T[typ], "[config] unsupport type " .. typ .. name)
                         local v = trans(current, name, value)
                         if typeidx == 2 then
-                                assert(string.upper(typetbl[typeidx - 1]) == "INT", "[config] first field must be int")
+                                --assert(string.upper(typetbl[typeidx - 1]) == "INT", "[config] first field must be int")
                                 data[v] = current
                         end
                 end, -- attribute found on current element
@@ -101,6 +101,18 @@ local function parseone(file)
                 closeElement = function(name,nsURI)
                         if current.Key then
                                 data[current.Key] = current
+				if current.Key1 and current.Key2 then
+					local k1, k2 = current.Key1, current.Key2
+					assert(type(k1) == "integer")
+					assert(type(k2) == "integer")
+					local sub = data._subkey
+					if not sub then
+						sub = {}
+						data._subkey = sub
+					end
+					assert(k2 < POWER)
+					sub[k1 * POWER + k2] = current
+				end
                         end
                 end, -- When "</foo>" or </x:foo> or "/>" is seen
                 text         = function(text)
@@ -128,6 +140,15 @@ function config.getkey(name, key)
                 return nil
         end
         return t[key]
+end
+
+function config.getkey2(name, key1, key2)
+	local t = XML[name]
+	if not t then
+		return nil
+	end
+	local k = key1 * POWER + key2
+	return t[k]
 end
 
 return config

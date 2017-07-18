@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?> 
+<!-- 
+类型 送的东西  
+string list:idcount  
+--> 
+<RoleCreate>
+    <l key="bag" value="10001:1,10002:2,10003:3,10004:4,10005:5,10006:6" /> 
+    <l key="task" value="1:1" /> 
+    <l key="exp" value="1:10" /> 
+    <l key="gold" value="1:1000" /> 
+    <l key="coord" value="1:10,2:10" /> 
+    <l key="skill" value="1:1001001,2:1002001" /> 
+</RoleCreate>
