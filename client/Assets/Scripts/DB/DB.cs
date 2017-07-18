@@ -33,7 +33,7 @@ public class XmlSet<T, K> : XmlLoad where T:new(){
 	public override void Load(string path) {
 		XmlDocument doc = new XmlDocument();
 		var text = (TextAsset)Resources.Load(path);
-		Debug.Log("Load:" + path);
+		Debug.Log("XmlLoad:" + path);
 		doc.LoadXml(text.text);
 		XmlNode root = doc.DocumentElement;
 		for (int i = 0; i < root.ChildNodes.Count; i++) {

@@ -4,6 +4,6 @@
 int int int int int int int int int 
 --> 
 <RoleLevel>
-    <l key="1" exp="90" magic="100" hp="100" atk="8" def="1" matk="8" mdef="1" task="0" /> 
-    <l key="2" exp="180" magic="100" hp="100" atk="8" def="1" matk="8" mdef="1" task="1" /> 
+    <l key="1" exp="90" mp="100" hp="100" atk="8" def="1" matk="8" mdef="1" task="0" /> 
+    <l key="2" exp="180" mp="100" hp="100" atk="8" def="1" matk="8" mdef="1" task="1" /> 
 </RoleLevel>

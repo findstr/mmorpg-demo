@@ -16,6 +16,7 @@ public struct BasicSt {
 	public int level;
 	public int gold;
 	public int hp;
+	public int mp;
 }
 
 public struct PropSt {

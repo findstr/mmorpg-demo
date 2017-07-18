@@ -137,6 +137,7 @@ public class SelectState : GameState {
 			Module.Role.Basic.level = ack.level;
 			Module.Role.Basic.gold = ack.gold;
 			Module.Role.Basic.hp = ack.hp;
+			Module.Role.Basic.mp = ack.mp;
 			Module.Role.Prop.atk = ack.prop.atk;
 			Module.Role.Prop.def = ack.prop.def;
 			Module.Role.Prop.matk = ack.prop.matk;
@@ -144,7 +145,10 @@ public class SelectState : GameState {
 			Debug.Log("SetBag:" + ack.bag);
 			Tool.ToNative(ref Module.Role.bag, ack.bag);
 			role_name.text = Module.Role.Basic.name;
-			Debug.Log("RoleInfoName:" + Module.Role.Basic.name + ":" + Module.Role.Basic.hp);
+			Debug.Log("RoleInfoName:" + Module.Role.Basic.name +
+					" hp:" + Module.Role.Basic.hp +
+					" lv:" + Module.Role.Basic.level +
+					" exp:" + Module.Role.Basic.exp);
 		} else {
 			createUI();
 		}
@@ -159,6 +163,7 @@ public class SelectState : GameState {
 			Module.Role.Basic.level = ack.level;
 			Module.Role.Basic.gold = ack.gold;
 			Module.Role.Basic.hp = ack.hp;
+			Module.Role.Basic.mp = ack.mp;
 			Module.Role.Prop.atk = ack.prop.atk;
 			Module.Role.Prop.def = ack.prop.def;
 			Module.Role.Prop.matk = ack.prop.matk;

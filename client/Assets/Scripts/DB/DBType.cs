@@ -13,7 +13,7 @@ public class LanguageItem {
 public class RoleLevelItem {
 	public int Key;
 	public int Exp;
-	public int Magic;
+	public int Mp;
 	public int Hp;
 	public int Atk;
 	public int Def;

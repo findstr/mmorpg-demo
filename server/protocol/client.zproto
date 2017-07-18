@@ -75,8 +75,9 @@ a_roleinfo 0x3001 {
 	.exp:integer 3
 	.gold:integer 4
 	.hp:integer 5
-	.prop:roleprop 6
-	.bag:idcount[] 7
+	.mp:integer 6
+	.prop:roleprop 7
+	.bag:idcount[] 8
 }
 
 r_rolecreate 0x3002 {
@@ -89,8 +90,9 @@ a_rolecreate 0x3003 {
 	.exp:integer 3
 	.gold:integer 4
 	.hp:integer 5
-	.prop:roleprop 6
-	.bag:idcount[] 7
+	.mp:integer 6
+	.prop:roleprop 7
+	.bag:idcount[] 8
 }
 
 r_itemuse 0x3004 {

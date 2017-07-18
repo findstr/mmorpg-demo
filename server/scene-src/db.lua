@@ -30,7 +30,7 @@ local dbproto = zproto:parse [[
 		.matk:integer 3
 		.mdef:integer 4
 		.hp:integer 5
-		.magic:integer 6
+		.mp:integer 6
 	}
 	role_skill {
 		skill {
@@ -80,14 +80,15 @@ local part_flag = {
 function M.rolecreate(uid, name)
 	local level = assert(xml.getkey("RoleLevel.xml", 1), "RoleLevel.xml")
 	local create = assert(xml.get("RoleCreate.xml"), "RoleCreate.xml")
+	print("role:create", level.hp, level.mp)
 	local basic = {
 		uid = uid,
 		name = name,
 		exp = assert(create.exp.value[1]),
 		level = 1,
-		gold = assert(create.exp.value[1]),
+		gold = assert(create.gold.value[1]),
 		hp = assert(level.hp),
-		magic = assert(level.magic),
+		mp = assert(level.mp),
 		coord_x = create.coord.value[1],
 		coord_z = create.coord.value[2],
 	}
@@ -113,9 +114,8 @@ function M.rolecreate(uid, name)
 	end
 	local s = skill.skills
 	for _, v in pairs(create.skill.value_list) do
-		s[v.id] = {
-			id = v.id,
-			count = v.count
+		s[v.count] = {
+			skillid = v.count,
 		}
 	end
 	role = {
@@ -151,7 +151,6 @@ function M.roleload(uid)
 		local j = i + 1
 		local k = dat[i]
 		local v = dat[j]
-		print(uid, i, j, k, v)
 		dat[i] = nil
 		dat[j] = nil
 		local protok = part_proto[k]
