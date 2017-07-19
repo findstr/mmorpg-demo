@@ -6,18 +6,15 @@ using UnityEngine.UI;
 public class CharacterUI : MonoBehaviour {
 	public Slider role_hpbar;
 	public Text role_name;
-	public Vector3 role_hpbar_offset;
-	public Vector3 role_name_offset;
+	public float role_hpbar_offset;
+	public float role_name_offset;
 	public float role_ui_scale_frac = 2.0f;
 	public float role_ui_scale_min = 0.5f;
 	public float role_ui_scale_max = 1.0f;
 
-	private int hp = 100;
-	public int HP {
-		get { return hp; }
+	public float HP {
 		set {
-			hp = value;
-			role_hpbar.value = hp;
+			role_hpbar.value = value;
 		}
 	}
 	public string Name {
@@ -36,11 +33,11 @@ public class CharacterUI : MonoBehaviour {
 			return ;
 		float scale = role_ui_scale_frac / Vector3.Distance(transform.position, maincamera.transform.position);
 		var pos = transform.position;
-		pos.y += 1.9f;
+		pos.y += role_hpbar_offset;
 		var hp_uipos = maincamera.WorldToScreenPoint(pos);
 		hp_uipos = uicamera.ScreenToWorldPoint(hp_uipos);
 		checkSee(role_hpbar.gameObject, hp_uipos, scale);
-		pos.y += 0.3f;
+		pos.y += role_name_offset;
 		var name_uipos = maincamera.WorldToScreenPoint(pos);
 		name_uipos = uicamera.ScreenToWorldPoint(name_uipos);
 		checkSee(role_name.gameObject, name_uipos, scale);

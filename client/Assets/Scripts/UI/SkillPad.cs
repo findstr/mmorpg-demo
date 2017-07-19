@@ -18,7 +18,7 @@ public class SkillPad: MonoBehaviour {
 		if (hit == null)
 			return ;
 		r_attack atk = new r_attack();
-		atk.skillid = 10000000;
+		atk.skillid = 1001001;
 		atk.target = hit.UID;
 		NetInstance.Gate.Send(atk);
 	}

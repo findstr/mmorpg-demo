@@ -9,20 +9,28 @@ public class EffectAtk : MonoBehaviour {
 	private GameObject particle;
 	private float timestage1;
 	private float timestage2;
-	private GameObject src;
-	private GameObject dst;
+	private Vector3 src_pos;
+	private Quaternion src_rot;
+	private Vector3 dst_pos;
+	private Quaternion dst_rot;
 
 	public GameObject SRC {
-		set { src = value; }
+		set {
+			src_pos = value.transform.position;
+			src_rot = value.transform.rotation;
+		}
 	}
 	public GameObject DST {
-		set { dst = value; }
+		set {
+			dst_pos = value.transform.position;
+			dst_rot = value.transform.rotation;
+		}
 	}
 
 	public void Fire() {
 		stage = 1;
 		timestage1 = Time.time;
-		particle = Instantiate(particle_run, src.transform.position, src.transform.rotation);
+		particle = Instantiate(particle_run, src_pos, src_rot);
 	}
 
 	void UpdateStage1() {
@@ -30,11 +38,11 @@ public class EffectAtk : MonoBehaviour {
 		if (delta > 1.0f) {
 			timestage2 = Time.time;
 			Destroy(particle);
-			particle = Instantiate(particle_hit, dst.transform.position, dst.transform.rotation);
+			particle = Instantiate(particle_hit, dst_pos, dst_rot);
 			stage = 2;
 		} else {
-			particle.transform.position = Vector3.Lerp(src.transform.position,
-					dst.transform.position, delta / 1.0f);
+			particle.transform.position = Vector3.Lerp(src_pos,
+					dst_pos, delta / 1.0f);
 		}
 	}
 

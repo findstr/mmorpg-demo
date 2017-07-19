@@ -57,20 +57,25 @@ public class Character : MonoBehaviour {
 		get { return UI.Name; }
 		set { UI.Name = value; }
 	}
+	private int hp;
 	public int HP {
-		get { return UI.HP; }
+		get { return hp; }
 		set {
-			int delta = UI.HP;
-			Debug.Log("[HP]Uid:" + uid + "delta:" + delta + ":value:" + value);
-			UI.HP = value;
-			delta -= value;
-			if (delta == 0f)
+			int delta = hp;
+			hp = value;
+			delta = hp - delta;
+			if (delta == 0.0f)
 				return ;
+			var xml = DB.DB.RoleLevel.Get(Module.Role.Basic.level);
+			float HP = xml.Hp;
+			float rat = hp / HP;
+			Debug.Log("[HP]Uid:" + uid + "delta:" + delta + ":value:" + value + ":max:" + rat);
+			UI.HP = rat;
 			var pos = transform.position;
 			pos.y += GameConfig.role_ui_high;
 			var obj = Tool.InstancePrefab("UI/FlyNum", pos, Quaternion.identity);
 			var fly = obj.GetComponent<FlyNum>();
-			fly.Fly(delta, pos, 9);
+			fly.Fly(delta, pos, 3);
 		}
 	}
 	public int UID {

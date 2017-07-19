@@ -7,8 +7,13 @@ sr_register 0x01 {
 }
 
 sa_register 0x02 {
+	player {
+		.uid:integer 1
+		.coord_x:float 2
+		.coord_z:float 3
+	}
 	.rpc:integer 1
-	.online:integer[] 2
+	.online:player[] 2
 }
 
 sr_fetchtoken 0x03 {

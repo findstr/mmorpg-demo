@@ -4,11 +4,20 @@ NPC NPC等级 获得经验值 类型 血量 攻击 防御 法攻 法防 初始�
 int int int int int int int int int list:int int string string 
 --> 
 <NPC>
-    <l key="1" level="1" exp="10" type="1" hp="99" atk="1" def="10" matk="1" mdef="1" coord="1,1" distance="10" /> 
-    <l key="2" level="1" exp="10" type="1" hp="99" atk="1" def="10" matk="1" mdef="1" coord="2,2" distance="10" /> 
-    <l key="3" level="1" exp="10" type="1" hp="99" atk="1" def="10" matk="1" mdef="1" coord="3,3" distance="10" /> 
-    <l key="4" level="1" exp="10" type="1" hp="99" atk="1" def="10" matk="1" mdef="1" coord="4,4" distance="10" /> 
-    <l key="5" level="1" exp="10" type="1" hp="99" atk="1" def="10" matk="1" mdef="1" coord="5,5" distance="10" /> 
-    <l key="6" level="1" exp="10" type="1" hp="99" atk="1" def="10" matk="1" mdef="1" coord="6,6" distance="10" /> 
-    <l key="7" level="1" exp="10" type="1" hp="99" atk="1" def="10" matk="1" mdef="1" coord="7,7" distance="10" /> 
+    <l key="1" level="1" exp="10" type="1" hp="99" atk="1" def="10" matk="1" mdef="1" coord="60,60" distance="10" /> 
+    <l key="2" level="1" exp="10" type="1" hp="99" atk="1" def="10" matk="1" mdef="1" coord="60,61" distance="10" /> 
+    <l key="3" level="1" exp="10" type="1" hp="99" atk="1" def="10" matk="1" mdef="1" coord="60,62" distance="10" /> 
+    <l key="4" level="1" exp="10" type="1" hp="99" atk="1" def="10" matk="1" mdef="1" coord="60,63" distance="10" /> 
+    <l key="5" level="1" exp="10" type="1" hp="99" atk="1" def="10" matk="1" mdef="1" coord="61,60" distance="10" /> 
+    <l key="6" level="1" exp="10" type="1" hp="99" atk="1" def="10" matk="1" mdef="1" coord="61,61" distance="10" /> 
+    <l key="7" level="1" exp="10" type="1" hp="99" atk="1" def="10" matk="1" mdef="1" coord="61,62" distance="10" /> 
+    <l key="8" level="1" exp="10" type="1" hp="99" atk="1" def="10" matk="1" mdef="1" coord="61,63" distance="10" /> 
+    <l key="9" level="1" exp="10" type="1" hp="99" atk="1" def="10" matk="1" mdef="1" coord="62,60" distance="10" /> 
+    <l key="10" level="1" exp="10" type="1" hp="99" atk="1" def="10" matk="1" mdef="1" coord="62,61" distance="10" /> 
+    <l key="11" level="1" exp="10" type="1" hp="99" atk="1" def="10" matk="1" mdef="1" coord="62,62" distance="10" /> 
+    <l key="12" level="1" exp="10" type="1" hp="99" atk="1" def="10" matk="1" mdef="1" coord="62,63" distance="10" /> 
+    <l key="13" level="1" exp="10" type="1" hp="99" atk="1" def="10" matk="1" mdef="1" coord="63,60" distance="10" /> 
+    <l key="14" level="1" exp="10" type="1" hp="99" atk="1" def="10" matk="1" mdef="1" coord="63,61" distance="10" /> 
+    <l key="15" level="1" exp="10" type="1" hp="99" atk="1" def="10" matk="1" mdef="1" coord="63,62" distance="10" /> 
+    <l key="16" level="1" exp="10" type="1" hp="99" atk="1" def="10" matk="1" mdef="1" coord="63,63" distance="10" /> 
 </NPC>

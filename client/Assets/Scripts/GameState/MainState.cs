@@ -36,8 +36,6 @@ public class MainState : GameState {
 		i.id = 10001;
 		Module.Role.bag[10001] = i;
 		*/
-		r_startgame req = new r_startgame();
-		NetInstance.Gate.Send(req);
 		DB.DB.Load();
 	}
 
@@ -148,6 +146,16 @@ public class MainState : GameState {
 		StateManager.Instance.SwitchState("LoginState");
 	}
 
+	void ack_rolepoint(int err, wire obj) {
+		a_rolepoint ack = (a_rolepoint)obj;
+		Module.Role.Basic.hp += ack.hp;
+		Module.Role.Basic.mp += ack.mp;
+		Module.Role.Basic.exp += ack.exp;
+		Module.Role.Basic.level += ack.level;
+		Module.UI.role.RefreshRole();
+		Debug.Log("[MainState] RolePoint:" + ack.hp + ":" + ack.mp + ":" + ack.exp + ":" + ack.level);
+	}
+
 	//////////inherit
 	void Awake() {
 		Module.Misc.tool = GetComponent<GameTool>();
@@ -163,6 +171,7 @@ public class MainState : GameState {
 		a_moveleave moveleave = new a_moveleave();
 		a_attack attack = new a_attack();
 		a_gatekick kick = new a_gatekick();
+		a_rolepoint rolepoint = new a_rolepoint();
 		Register(itemuse, ack_itemuse);
 		Register(movepoint, ack_movepoint);
 		Register(movediff, ack_movediff);
@@ -170,6 +179,7 @@ public class MainState : GameState {
 		Register(moveleave, ack_moveleave);
 		Register(attack, ack_attack);
 		Register(kick, ack_gatekick);
+		Register(rolepoint, ack_rolepoint);
 	}
 
 	void DebugGrid() {

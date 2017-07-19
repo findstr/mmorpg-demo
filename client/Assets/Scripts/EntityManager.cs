@@ -5,6 +5,7 @@ using UnityEngine;
 public class EntityManager {
 	private static Dictionary<int, Character> pool = new Dictionary<int, Character>();
 	public static Character CreateCharacter(int uid, string name, int hp, Vector3 pos) {
+		Debug.Log("[EntityManager] CreateCharacter:" + uid);
 		if (pool.ContainsKey(uid))
 			return pool[uid];
 		var obj = Tool.InstancePrefab("Character/Character01", pos, Quaternion.identity);
@@ -27,14 +28,13 @@ public class EntityManager {
 			if (entry.Value == atk)
 				continue;
 			float dist = Vector3.Distance(atk.Position, entry.Value.Position);
-			Debug.Log("Dist:" + dist);
 			if (dist < radius)
 				return entry.Value;
 		}
 		return null;
 	}
 	public static void RemoveCharacter(int uid) {
-		Debug.Log("RemoveCharacter:" + uid);
+		Debug.Log("[EntityManager]RemoveCharacter:" + uid);
 		var c = GetCharacter(uid);
 		if (c == null)
 			return ;

@@ -4,11 +4,11 @@
 int int string string int int string int int 
 --> 
 <Skill>
-    <l key="1001001" magic="0" atkp="atk" defp="def" atkv="200000" nextlv="1001002" /> 
-    <l key="1001002" magic="0" atkp="atk" defp="def" atkv="200000" nextlv="1001003" /> 
-    <l key="1001003" magic="0" atkp="atk" defp="def" atkv="200000" nextlv="1001004" /> 
-    <l key="1001004" magic="0" atkp="atk" defp="def" atkv="200000" nextlv="1001005" /> 
-    <l key="1001005" magic="0" atkp="atk" defp="def" atkv="200000" nextlv="1001006" /> 
-    <l key="1001006" magic="0" atkp="atk" defp="def" atkv="200000" nextlv="0" /> 
-    <l key="1002001" magic="3" atkp="matk" defp="mdef" atkv="200000" /> 
+    <l key="1001001" mp="0" atkp="atk" defp="def" atkv="200000" nextlv="1001002" /> 
+    <l key="1001002" mp="0" atkp="atk" defp="def" atkv="200000" nextlv="1001003" /> 
+    <l key="1001003" mp="0" atkp="atk" defp="def" atkv="200000" nextlv="1001004" /> 
+    <l key="1001004" mp="0" atkp="atk" defp="def" atkv="200000" nextlv="1001005" /> 
+    <l key="1001005" mp="0" atkp="atk" defp="def" atkv="200000" nextlv="1001006" /> 
+    <l key="1001006" mp="0" atkp="atk" defp="def" atkv="200000" nextlv="0" /> 
+    <l key="1002001" mp="3" atkp="matk" defp="mdef" atkv="200000" /> 
 </Skill>

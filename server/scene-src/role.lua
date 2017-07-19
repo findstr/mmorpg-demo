@@ -14,16 +14,15 @@ local a_roleinfo = {
 	hp = false,
 }
 local function a_roleinfo_fill(role)
-	local basic = role.basic
-	a_roleinfo.name = basic.name
-	a_roleinfo.level = basic.level
-	a_roleinfo.exp = basic.exp
-	a_roleinfo.gold = basic.gold
-	a_roleinfo.bag = role.bag.bag
-	a_roleinfo.prop = role.prop
-	a_roleinfo.hp = basic.hp
-	a_roleinfo.mp = basic.mp
-	print("roleinfo_fill", basic.hp, basic.mp, basic.exp)
+	a_roleinfo.name = role.name
+	a_roleinfo.level = role.level
+	a_roleinfo.exp = role.exp
+	a_roleinfo.gold = role.gold
+	a_roleinfo.bag = role.bag
+	a_roleinfo.prop = role
+	a_roleinfo.hp = role.hp
+	a_roleinfo.mp = role.mp
+	print("roleinfo_fill", role.hp, role.mp, role.exp)
 end
 
 local function r_roleinfo(uid, req, fd)
@@ -51,10 +50,11 @@ local a_itemuse = {
 	hp = false,
 }
 local function r_itemuse(uid, req, fd)
+	--[[
 	local id = req.id
 	local count = req.count
-	local bag = db.rolebag(uid)
-	local basic = db.rolebasic(uid)
+	local bag = db.roleget(uid)
+	local basic = db.roleget(uid)
 	for k, v in pairs(bag) do
 		print('itemuse bag', k, v)
 	end
@@ -75,6 +75,7 @@ local function r_itemuse(uid, req, fd)
 	db.roledirtybasic(uid)
 	a_itemuse.hp = hp
 	return channel.sendclient(fd, uid, "a_itemuse", a_itemuse)
+	]]--
 end
 
 channel.regclient("r_roleinfo", r_roleinfo)

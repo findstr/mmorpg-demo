@@ -15,14 +15,14 @@ function M.coord(uid)
 	if ok then
 		x = tonumber(res)
 	else
-		x = 1.0
+		x = 10.0
 	end
 
 	ok, res = dbinst:hget(k, "z")
 	if ok then
 		z = tonumber(res)
 	else
-		z = 1.0
+		z = 10.0
 	end
 	return x, z
 end

@@ -23,15 +23,16 @@ local dbproto = zproto:parse [[
 		.hp:integer 6
 		.mp:integer 7
 	}
-	role_bag {
-		.bag:idcount[id] 1
-	}
 	role_prop {
 		.atk:integer 1
 		.def:integer 2
 		.matk:integer 3
 		.mdef:integer 4
 	}
+	role_bag {
+		.bag:idcount[id] 1
+	}
+
 	role_skill {
 		skill {
 			.skillid:integer 1
@@ -80,8 +81,21 @@ local part_flag = {
 function M.rolecreate(uid, name)
 	local level = assert(xml.getkey("RoleLevel.xml", 1), "RoleLevel.xml")
 	local create = assert(xml.get("RoleCreate.xml"), "RoleCreate.xml")
-	print("role:create", level.hp, level.mp, create.exp.value[1])
-	local basic = {
+	local bag = {}
+	local skills = {}
+	for _, v in pairs(create.bag.value_list) do
+		bag[v.id] = {
+			id = v.id,
+			count = v.count
+		}
+	end
+	for _, v in pairs(create.skill.value_list) do
+		skills[v.count] = {
+			skillid = v.count,
+		}
+	end
+	local role = {
+		--basic
 		uid = uid,
 		name = name,
 		exp = assert(create.exp.value[1]),
@@ -89,40 +103,19 @@ function M.rolecreate(uid, name)
 		gold = assert(create.gold.value[1]),
 		hp = assert(level.hp),
 		mp = assert(level.mp),
-		coord_x = create.coord.value[1],
-		coord_z = create.coord.value[2],
-	}
-	local prop = {
+		--prop
 		atk = level.atk,
 		def = level.def,
 		matk = level.matk,
 		mdef = level.mdef,
-	}
-	local bag = {
-		bag = {}
-	}
-	local skill = {
-		skills = {}
-	}
-
-	local b = bag.bag
-	for _, v in pairs(create.bag.value_list) do
-		b[v.id] = {
-			id = v.id,
-			count = v.count
-		}
-	end
-	local s = skill.skills
-	for _, v in pairs(create.skill.value_list) do
-		s[v.count] = {
-			skillid = v.count,
-		}
-	end
-	role = {
-		basic = basic,
+		--skills
+		skills = skills,
+		--bag
 		bag = bag,
-		prop = prop,
-		skill = skill,
+		--memory
+		coord_x = false,
+		coord_z = false,
+
 	}
 	rolecache[uid] = role
 	roledirty[uid] = DIRTY_ALL
@@ -130,7 +123,11 @@ function M.rolecreate(uid, name)
 	return role
 end
 
-
+local function merge(dst, src)
+	for k, v in pairs(src) do
+		dst[k] = v
+	end
+end
 local cmdbuffer = {}
 function M.roleload(uid)
 	local role = rolecache[uid]
@@ -155,7 +152,7 @@ function M.roleload(uid)
 		dat[j] = nil
 		local protok = part_proto[k]
 		local info = dbproto:decode(protok, v)
-		dat[k] = info
+		merge(dat, info)
 	end
 	return dat
 end
@@ -174,7 +171,7 @@ local function roleupdate(uid, role, dirty)
 			cmdbuffer[count] = k
 			count = count + 1
 			print("roleupdate", uid, k)
-			cmdbuffer[count] = dbproto:encode(part_proto[k], role[k])
+			cmdbuffer[count] = dbproto:encode(part_proto[k], role)
 		end
 	end
 	if count == 0 then
@@ -220,7 +217,7 @@ local function writedb()
 	end
 end
 
-local function try_get(dbk)
+local function try_getf(dbk)
 	return function(uid)
 		local role = rolecache[uid]
 		if not role then
@@ -229,6 +226,13 @@ local function try_get(dbk)
 		return role[dbk]
 	end
 end
+
+local function try_get()
+	return function(uid)
+		return rolecache[uid]
+	end
+end
+
 
 local function role_dirty(flag)
 	return function(uid)
@@ -246,10 +250,10 @@ local function role_dirty(flag)
 	end
 end
 
-M.rolebasic = try_get(dbk_role_basic)
-M.rolebag = try_get(dbk_role_bag)
-M.roleprop = try_get(dbk_role_prop)
-M.roleskill = try_get(dbk_role_skill)
+M.rolebag = try_getf("bag")
+M.roleprop = try_get()
+M.roleskill = try_getf("skills")
+
 M.roledirtybasic = role_dirty(DIRTY_BASIC)
 M.roledirtybag = role_dirty(DIRTY_BAG)
 M.roledirtyprop = role_dirty(DIRTY_PROP)

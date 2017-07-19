@@ -53,7 +53,8 @@ public class SelectState : GameState {
 	}
 	void on_start() {
 		Debug.Log("State Start");
-		StateManager.Instance.SwitchState("MainState");
+		r_startgame req = new r_startgame();
+		NetInstance.Gate.Send(req);
 	}
 
 	void on_return() {
@@ -71,8 +72,10 @@ public class SelectState : GameState {
 		register_proto = true;
 		a_roleinfo roleinfo = new a_roleinfo();
 		a_rolecreate rolecreate = new a_rolecreate();
+		a_startgame rolestart = new a_startgame();
 		Register(roleinfo, ack_roleinfo);
 		Register(rolecreate, ack_rolecreate);
+		Register(rolestart, ack_startgame);
 	}
 
 	///////state machine
@@ -174,6 +177,12 @@ public class SelectState : GameState {
 		}
 		Debug.Log("RoleCreate:" + err);
 	}
-
+	private void ack_startgame(int err, wire obj) {
+		if (err != 0)
+			return ;
+		a_startgame ack = (a_startgame)obj;
+		Module.Role.pos = new Vector3(ack.coord_x, 0, ack.coord_z);
+		StateManager.Instance.SwitchState("MainState");
+	}
 }
 

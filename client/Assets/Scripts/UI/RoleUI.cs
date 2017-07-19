@@ -18,7 +18,7 @@ public class RoleUI : MonoBehaviour {
 	}
 
 	public void RefreshRole() {
-		var xml = DB.DB.RoleLevel.Get(Module.Role.Basic.level);
+		var xml = DB.DB.RoleLevel.Get(Module.Role.Basic.level + 1);
 		var HP = xml.Hp;
 		var MP = xml.Mp;
 		var EXP = xml.Exp;

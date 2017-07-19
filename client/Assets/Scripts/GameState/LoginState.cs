@@ -94,7 +94,6 @@ public class LoginState : GameState {
 
 	void ack_challenge(int err, wire obj) {
 		a_accountchallenge ack = (a_accountchallenge)obj;
-		Debug.Log("[LoginState] ack_challenge randomkey:" + ack.randomkey);
 		string str = user_passwd.text;
 		byte[] passwd = Tool.sha1(str);
 		byte[] hash = Tool.hmac(passwd, Encoding.Default.GetString(ack.randomkey));
@@ -103,6 +102,7 @@ public class LoginState : GameState {
 		req.user = Encoding.Default.GetBytes(user_name.text);
 		req.passwd = hash;
 		NetInstance.Login.Send(req);
+		Debug.Log("[LoginState] ack_challenge randomkey:" + ack.randomkey + " account:" + user_name.text);
 	}
 
 	void do_logingate() {
@@ -126,8 +126,6 @@ public class LoginState : GameState {
 	void ack_gatelogin(int err, wire obj) {
 		Debug.Log("[LoginState] GateLogin:" + err);
 		if (err == 0) {
-			a_gatelogin ack = (a_gatelogin)obj;
-			Module.Role.pos = new Vector3(ack.coord_x, 0, ack.coord_z);
 			StateManager.Instance.SwitchState("SelectState");
 		}
 	}

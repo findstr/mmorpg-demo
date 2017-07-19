@@ -45,15 +45,19 @@ r_gatelogin 0x20f0 {
 }
 
 a_gatelogin 0x20f1 {
-	.coord_x:float 1
-	.coord_z:float 2
+
 }
 
 r_startgame 0x20f2 {
 
 }
 
-a_gatekick 0x20f3 {
+a_startgame 0x20f3 {
+	.coord_x:float 1
+	.coord_z:float 2
+}
+
+a_gatekick 0x20f5 {
 
 }
 
@@ -102,6 +106,17 @@ r_itemuse 0x3004 {
 
 a_itemuse 0x3005 {
 	.hp:integer 1
+}
+
+r_rolepoint 0x3006 {
+
+}
+
+a_rolepoint 0x3007 {
+	.level:integer 1
+	.exp:integer 2
+	.mp:integer 3
+	.hp:integer 4
 }
 
 ########scene

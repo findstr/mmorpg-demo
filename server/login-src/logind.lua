@@ -137,7 +137,7 @@ local function auth(fd, user, passwd)
 	end
 	uid = tonumber(uid)
 	local kick_gate = uid_online_gate[uid]
-	print("online uid", uid, "kick gate", kick_gate)
+	print("[logind] online uid", uid, "kick gate", kick_gate)
 	if not kick_gate then
 		return uid
 	end

@@ -178,7 +178,12 @@ local function sr_register(uid, req, fd)
 		local l = {}
 		for uid, agent in pairs(online_agent) do
 			if agent[SCENE_KEY] == req.id then
-				l[#l + 1] = uid
+				local x, z = agent:coord()
+				l[#l + 1] = {
+					uid = uid,
+					coord_x = x,
+					coord_z = z,
+				}
 			end
 		end
 		req.online = l

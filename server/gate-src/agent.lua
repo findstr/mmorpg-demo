@@ -33,7 +33,6 @@ local function regclientproto(cmd, func)
 		func(self, req)
 	end
 	CMD[cmd] = cb
-
 end
 
 local function protowrapper(proto, cb)
@@ -80,6 +79,7 @@ local function agent_new(self, gatefd)
 		coord_x = false,
 		coord_z = false,
 		gatefd = gatefd,
+		start = false,
 	}
 	setmetatable(obj, mt)
 	return obj
@@ -99,7 +99,7 @@ end
 
 local function agent_free(self)
 	print("agent_free", self)
-	if self.uid then
+	if self.uid and self.start then
 		db.updatecoord(self.uid, self.coord_x, self.coord_z)
 	end
 	for k, _ in pairs(self) do
@@ -119,7 +119,7 @@ end
 local a_gatekick = {}
 local function agent_kickout(self)
 	if self.uid then
-		print("agent_kickout", self.uid)
+		print("[agent] agent_kickout", self.uid)
 		sendclient(self.gatefd, "a_gatekick", a_gatekick)
 		notify_logout(self)
 	end
@@ -138,28 +138,22 @@ local function agent_masterdata(self, fd, d, sz)
 	end
 end
 
-------------protocol
-local s_login = {
-	coord_x = false,
-	coord_z = false,
-}
-
-local s_logout = {}
-
-local function notify_login(self)
-	s_login.coord_x = self.coord_x
-	s_login.coord_z = self.coord_z
-	hub.sendscene(self, "s_login", s_login)
+local function agent_coord(self)
+	return self.coord_x, self.coord_z
 end
 
+------------protocol
+local s_logout = {}
+
 notify_logout = function (self)
+	print("notify_logout", self.start)
+	if not self.start then
+		return
+	end
 	hub.sendscene(self, "s_logout", s_logout)
 end
 
-local a_gatelogin = {
-	coord_x = false,
-	coord_z = false,
-}
+local a_gatelogin = {}
 local function r_login(self, req)
 	print("r_login", self)
 	local ok = token.validate(req.uid, req.token)
@@ -169,13 +163,22 @@ local function r_login(self, req)
 	end
 	local uid = req.uid
 	self.uid = uid
-	local x, z = db.coord(uid)
-	self.coord_x, self.coord_z = x, z
-	a_gatelogin.coord_x = x
-	a_gatelogin.coord_z = z
 	hub.login(uid, self)
-	notify_login(self)
 	return sendclient(self.gatefd, "a_gatelogin", a_gatelogin)
+end
+
+local s_login = {
+	coord_x = false,
+	coord_z = false,
+}
+local function r_startgame(self, req)
+	print("r_startgame")
+	self.start = true
+	local x, z = db.coord(self.uid)
+	self.coord_x, self.coord_z = x, z
+	s_login.coord_x = x
+	s_login.coord_z = z
+	hub.sendscene(self, "s_login", s_login)
 end
 
 local function r_movesync(self, cmd, packet)
@@ -192,6 +195,7 @@ local function s_forcepoint(self, req)
 end
 
 regclientproto("r_gatelogin", r_login)
+regclientproto("r_startgame", r_startgame)
 regclient("r_movesync", r_movesync)
 hub.regagent(sproto, "s_forcepoint", s_forcepoint)
 
@@ -202,6 +206,7 @@ agent {
 	logout  -- logout [used by master]
 	kickout	-- kickout [used by channelhub]
 	masterdata -- master data process [used by master]
+	coord	-- coord of agent[used by channelhub]
 	uid	-- roleid [used by channelhub]
 	gatefd  -- masterfd [used by channelhub]
 }
@@ -211,6 +216,8 @@ M.create = agent_create
 M.logout = agent_logout
 M.kickout = agent_kickout
 M.masterdata = agent_masterdata
+M.coord = agent_coord
+
 
 return M
 

@@ -7,6 +7,7 @@ local db = require "db"
 local aoi = require "aoi"
 local xml = require "XML"
 local npc = require "npc"
+local scene = require "scene"
 local unpack = string.unpack
 
 require "role"
@@ -20,7 +21,8 @@ local EVENT = {
 	connected = function(fd, online)
 		local tbl = {}
 		for i = 1, #online do
-			local uid = online[i]
+			local player = online[i]
+			local uid = player.uid
 			tbl[uid] = "online"
 			db.roleload(uid)
 			print("[scene] online", uid)
@@ -44,10 +46,11 @@ core.start(function()
 		xmlpath .. "/RoleLevel.xml",
 		xmlpath .. "/RoleCreate.xml",
 		xmlpath .. "/ItemUse.xml",
-		xmlpath .. "/SkillEffect.xml",
+		xmlpath .. "/Skill.xml",
 		xmlpath .. "/NPC.xml",
 	}
 	aoi.start(100.0, 100.0)
+	scene.start(npc)
 	npc.start()
 	local dbok = db.start()
 	local channelok = channel.start {

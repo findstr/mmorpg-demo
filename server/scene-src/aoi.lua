@@ -116,9 +116,12 @@ function M.around(id, enter)
 		end
 	end
 end
-
+local EMPTY = {}
 function M.watcher(id)
 	local p = entities[id]
+	if not p then
+		return EMPTY
+	end
 	local ti = p.towerx * XPOWER + p.towerz
 	return tower_watch[ti]
 end
