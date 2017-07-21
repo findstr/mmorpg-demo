@@ -24,8 +24,8 @@ local a_movediff = {
 	leave = false,
 }
 
-local enter = {}
-local leave = {}
+local enter_buffer = {}
+local leave_buffer = {}
 
 local function fillinfoone(uid)
 	if uid < const.UIDSTART then
@@ -72,22 +72,6 @@ local function notifyenter(uid, role, coord_x, coord_z, enter)
 	return channel.multicastarrclr("a_moveenter", a_moveenter, enter)
 end
 
-local function r_startgame(uid, req, fd)
-	local role = db.roleget(uid)
-	role.coord_x = req.coord_x
-	role.coord_z = req.coord_z
-	local x = req.coord_x
-	local z = req.coord_z
-	print("start game", uid, x, z)
-	aoi.enter(uid, x, z, "watch", 1)
-	aoi.around(uid, enter)
-	a_movediff.enter = fillinfo(enter)
-	a_movediff.leave = nil
-	channel.senduid(uid, "a_movediff", a_movediff)
-	notifyenter(uid, role, x, z, enter)
-	assert(#enter == 0)
-end
-
 local function role_movesync(uid, coord_x, coord_z)
 	local role = db.roleload(uid)
 	if coord_x < 0 then
@@ -96,27 +80,27 @@ local function role_movesync(uid, coord_x, coord_z)
 	if coord_z < 0 then
 		coord_z = 0.0
 	end
-	local move = aoi.move(uid, coord_x, coord_z, enter, leave)
+	local move = aoi.move(uid, coord_x, coord_z, enter_buffer, leave_buffer)
 	if not move then
 		return
 	end
 	--notify myself
-	a_movediff.enter = fillinfo(enter)
-	a_movediff.leave = leave
+	a_movediff.enter = fillinfo(enter_buffer)
+	a_movediff.leave = leave_buffer
 	channel.senduid(uid, "a_movediff", a_movediff)
 	--notify leave
 	a_moveleave.uid = uid
-	channel.multicastarrclr("a_moveleave", a_moveleave,  leave)
+	channel.multicastarrclr("a_moveleave", a_moveleave,  leave_buffer)
 	--notify enter
-	notifyenter(uid, role, coord_x, coord_z, enter)
-	assert(#enter == 0)
-	assert(#leave == 0)
+	notifyenter(uid, role, coord_x, coord_z, enter_buffer)
+	assert(#enter_buffer == 0)
+	assert(#leave_buffer == 0)
 end
 
 local function r_movepoint(uid, req, fd)
 	--print("r_movepoint", uid, req.src_coord_x, req.src_coord_z)
 	role_movesync(uid, req.src_coord_x, req.src_coord_z)
-	local watch = aoi.watcher(uid)
+	local watch = aoi.filter(uid)
 	req.uid = uid
 	return channel.multicastmap("a_movepoint", req, watch)
 end
@@ -135,33 +119,37 @@ function M.login(uid, req)
 	channel.senduid(uid, "a_startgame", req)
 	local x, z = req.coord_x, req.coord_z
 	print("start game", uid, x, z)
-	aoi.enter(uid, x, z, "watch", 1)
-	aoi.around(uid, enter)
-	a_movediff.enter = fillinfo(enter)
+	aoi.leave(uid)
+	aoi.enter(uid, x, z, enter_buffer)
+	a_movediff.enter = fillinfo(enter_buffer)
 	a_movediff.leave = nil
 	channel.senduid(uid, "a_movediff", a_movediff)
-	notifyenter(uid, role, x, z, enter)
-	assert(#enter == 0)
+	notifyenter(uid, role, x, z, enter_buffer)
+	assert(#enter_buffer == 0)
 end
 
 function M.enter(uid, coordx, coordz, mode, radius, ud)
-	aoi.enter(uid, coordx, coordz, mode, radius, ud)
+	print("scene.enter", uid)
+	aoi.enter(uid, coordx, coordz, enter_buffer)
 	assert(uid < const.UIDSTART)
 	local info = fillinfoone(uid)
-	local watch = aoi.watcher(uid)
+	local watch = aoi.filter(uid)
 	fill_a_moveenter(uid, info)
-	channel.multicastmap("a_moveenter", a_moveenter, aoi.watcher(uid))
+	channel.multicastarr("a_moveenter", a_moveenter, enter_buffer)
 end
 
 function M.leave(uid)
 	a_moveleave.uid = uid
-	local watch = aoi.watcher(uid)
+	local watch = aoi.filter(uid)
+	if not watch then
+		return
+	end
 	channel.multicastmap("a_moveleave", a_moveleave,  watch)
 	aoi.leave(uid)
 end
 
 function M.multicast(uid, cmd, req)
-	local watch = aoi.watcher(uid)
+	local watch = aoi.filter(uid)
 	return channel.multicastmap("a_attack", req, watch)
 end
 

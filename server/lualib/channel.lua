@@ -122,12 +122,14 @@ local gate = {}
 local function multicastmap(cmd, ack, map)
 	for uid, _ in pairs(map) do
 		local fd = user_gate[uid]
-		local g = gate[fd]
-		if not g then
-			g = {}
-			gate[fd] = g
+		if fd then
+			local g = gate[fd]
+			if not g then
+				g = {}
+				gate[fd] = g
+			end
+			g[#g + 1] = uid
 		end
-		g[#g + 1] = uid
 	end
 	return multicastgate(gate, cmd, ack)
 end
@@ -152,12 +154,14 @@ local function multicastarr(cmd, ack, arr)
 	for i = 1, #arr do
 		local uid = arr[i]
 		local fd = user_gate[uid]
-		local g = gate[fd]
-		if not g then
-			g = {}
-			gate[fd] = g
+		if fd then
+			local g = gate[fd]
+			if not g then
+				g = {}
+				gate[fd] = g
+			end
+			g[#g + 1] = uid
 		end
-		g[#g + 1] = uid
 	end
 	return multicastgate(gate, cmd, ack)
 end

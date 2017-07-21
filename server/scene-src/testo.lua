@@ -1,7 +1,9 @@
-local core
-local aoi = require "aoi"
-local REGIONX = 1000 * 10
-local REGIONZ = 1000 * 10
+--testo.lua
+package.path = package.path .. ";scene-src/?.lua"
+package.cpath = package.cpath .. ";luaclib/?.so"
+local aoi = require "aoi_origin"
+local REGIONX = 100
+local REGIONZ = 100
 
 local index = {}
 local entity = {
@@ -36,17 +38,24 @@ for i = 1, 5 do
 		coordz = z
 	}
 	--print("pc i:", i, "x:", x, "z:", z)
-	aoi.enter(i, x, z, "watch", 1)
+	aoi.enter(i, x, z, "watch", 9)
 end
 
 local enter = {}
 local leave = {}
+local function clear(tbl)
+	for k, v in pairs(tbl) do
+		tbl[k] = nil
+	end
+end
 for i = 1, 4 do
 	for j = 1, 5000 do
 		local x = math.random(0, REGIONX)
 		local z = math.random(0, REGIONZ)
 		--print("pc i:", i, "x:", x, "z:", z)
 		aoi.move(i, x, z, enter, leave)
+		clear(enter)
+		clear(leave)
 	end
 end
 
