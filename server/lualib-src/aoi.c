@@ -11,6 +11,10 @@
 #define	GRID (1.0f)
 #define	RADIUS 9.0f
 
+#define	MARK_CLEAR	(0)
+#define	MARK_ENTER	(1)
+#define	MARK_LEAVE	(2)
+
 struct object {
 	int id;
 	float radius;
@@ -171,12 +175,10 @@ mark_clear(struct mark_buffer *mark)
 	mark->idx = 0;
 }
 
-
-
-typedef void (* travel_t)(struct aoi *aoi, struct tower *tower, void *ud);
+typedef void (* travel_t)(struct aoi *aoi, struct tower *tower, int ud);
 
 static void
-around_travel(struct aoi *aoi, float coord[2], float radius, travel_t cb, void *ud)
+around_travel(struct aoi *aoi, float coord[2], float radius, travel_t cb, int ud)
 {
 	int x, z;
 	float start[2];
@@ -245,15 +247,18 @@ object_new(struct aoi *aoi, int id, float coord[2], float radius)
 	return obj;
 }
 
-static void
-tower_mark(struct aoi *aoi, struct tower *tower, void *ud)
+
+static inline void
+tower_mark(struct aoi *aoi, struct tower *tower, int ud)
 {
 	if (tower->markud) {
 		tower->markud = 0;
 	} else {
-		int flag = (intptr_t)ud;
-		tower->markud = flag;
-		mark_do(&aoi->mark, tower - aoi->scene);
+		struct mark_buffer *mark = &aoi->mark;
+		tower->markud = ud;
+		if (mark->idx >= mark->cap)
+			mark_resize(mark);
+		mark->arr[mark->idx++] = tower - aoi->scene;
 	}
 }
 
@@ -269,17 +274,11 @@ tower_notify(struct tower *t, struct event_queue *q,  int id, int mode)
 	}
 }
 
-static void
-tower_enter(struct aoi *aoi, struct tower *tower, void *ud)
+static inline void
+tower_enter(struct aoi *aoi, struct tower *tower, int id)
 {
-	int id = (intptr_t)ud;
 	tower_notify(tower, aoi->event, id, 'E');
 }
-
-
-
-#define	MARK_ENTER	('E')
-#define	MARK_LEAVE	('L')
 
 static inline void
 update_move(struct aoi *aoi, struct object *obj, float coord[2])
@@ -287,13 +286,11 @@ update_move(struct aoi *aoi, struct object *obj, float coord[2])
 	int i;
 	int id = obj->id;
 	struct tower *tower;
-	void *mark_enter = (void *)MARK_ENTER;
-	void *mark_leave = (void *)MARK_LEAVE;
 	struct mark_buffer *mark = &aoi->mark;
 	struct tower *scene = aoi->scene;
 	struct event_queue *q = aoi->event;
-	around_travel(aoi, obj->coord, obj->radius, tower_mark, mark_leave);
-	around_travel(aoi, coord, obj->radius, tower_mark, mark_enter);
+	around_travel(aoi, obj->coord, obj->radius, tower_mark, MARK_LEAVE);
+	around_travel(aoi, coord, obj->radius, tower_mark, MARK_ENTER);
 	for (i = 0; i < aoi->mark.idx; i++) {
 		int sid = aoi->mark.arr[i];
 		tower = &scene[sid];
@@ -325,10 +322,9 @@ aoi_move(struct aoi *aoi, int id, float coord[2])
 	assert(coord[0] / GRID <= aoi->region[0]);
 	assert(coord[1] / GRID <= aoi->region[1]);
 	if (obj == NULL) {
-		intptr_t ud = id;
 		obj = object_new(aoi, id, coord, radius);
 		hash_set(aoi->hash, id, obj);
-		around_travel(aoi, coord, radius, tower_enter, (void *)ud);
+		around_travel(aoi, coord, radius, tower_enter, id);
 	} else {
 		int x = coord[0] / GRID;
 		int z = coord[1] / GRID;
