@@ -21,12 +21,12 @@ function M.kill(uid)
 	scene.leave(uid)
 	local n = NPC[uid]
 	NPC[uid] =  nil
-	local now = core.current() + TIMEOUT
+	local now = core.monotonic() + TIMEOUT
 	relive[now] = n
 end
 
 local function relive_timer()
-	local now = core.current()
+	local now = core.monotonic()
 	for t, n in pairs(relive) do
 		print("[npc] relive now:", now, " relive", t, n)
 		if t <= now then

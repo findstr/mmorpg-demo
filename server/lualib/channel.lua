@@ -218,7 +218,7 @@ end
 
 local function rpc_waitfor(socket, id)
 	local co = core.running()
-	local w = rpc_wheel(core.current() + TIMEOUT)
+	local w = rpc_wheel(core.monotonic() + TIMEOUT)
 	socket.suspend[id] = co
 	local expire = socket.wheel[w]
 	expire[#expire + 1] = id
@@ -241,7 +241,7 @@ local function rpc_timer(now, socket)
 end
 
 local function rpc_timerwrapper()
-	local now = core.current()
+	local now = core.monotonic()
 	for _, s in pairs(rpc_socket) do
 		local ok ,err = core.pcall(timer, now, s)
 		if not ok then

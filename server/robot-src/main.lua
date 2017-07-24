@@ -116,9 +116,9 @@ local function oneuser(i)
 	core.wait()
 	client:send(encodeproto("r_startgame", EMPTY))
 	---------test logic
-	local last = core.current()
+	local last = core.monotonic()
 	while true do
-		local now = core.current()
+		local now = core.monotonic()
 		local delta = now - last
 		local x = math.random(-SPEED, SPEED) * delta
 		local z = math.random(-SPEED, SPEED) * delta
