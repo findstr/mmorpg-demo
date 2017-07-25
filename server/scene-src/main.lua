@@ -6,7 +6,7 @@ local tool = require "tool"
 local db = require "db"
 local aoi = require "aoi"
 local xml = require "XML"
-local npc = require "npc"
+local npcmgr = require "npcmgr"
 local scene = require "scene"
 local unpack = string.unpack
 
@@ -50,7 +50,7 @@ core.start(function()
 		xmlpath .. "/NPC.xml",
 	}
 	aoi.start(1000.0, 1000.0)
-	npc.start()
+	npcmgr.start()
 	local dbok = db.start()
 	local channelok = channel.start {
 		channelid = slaveid,

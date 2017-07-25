@@ -87,6 +87,7 @@ M.enter = enter_by(update_user)
 M.npcenter = enter_by(update_npc)
 M.move = update_user
 M.npcmove = update_npc
+M.npcleave = M.leave
 
 return M
 

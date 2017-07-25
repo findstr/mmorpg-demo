@@ -267,17 +267,6 @@ local function dbtimer()
 	core.timeout(timer_sec, dbtimer)
 end
 
-function M.npcadd(uid, entity)
-	assert(entity.name == nil)
-	rolecache[uid] = entity
-end
-
-function M.npcdel(uid)
-	local e = rolecache[uid]
-	rolecache[uid] = nil
-	return e
-end
-
 function M.start()
 	local err
 	dbinst, err = redis:connect {
