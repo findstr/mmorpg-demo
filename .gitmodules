@@ -7,3 +7,6 @@
 [submodule "Tool"]
 	path = Tool
 	url = git@git.oschina.net:gotocoding/mmorpg-config.git
+[submodule "mmorpg-client"]
+	path = mmorpg-client
+	url = git@git.oschina.net:findstr/mmorpg-client.git
