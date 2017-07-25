@@ -1,5 +1,4 @@
 local SLAXML = require 'slaxml'
-local log = require "log"
 local POWER = 10000
 local config = {}
 
@@ -63,7 +62,7 @@ T["LIST:IDCOUNT"] = config.tolistidcnt
 local function parseone(file)
         local f, err = io.open(file)
         if not f then
-                log.print("[config] parseone", file, err)
+                print("[config] parseone", file, err)
                 return
         end
         local fname = string.match(file, "([^/]+)$")
