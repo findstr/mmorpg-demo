@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?> 
 <!-- 
-技能ID 需要法力 攻击属性 防御属性 攻击加成 技能范围 技能名字 下一级技能ID 技能等级 
-int int string string int int string int int 
+技能ID 需要法力 攻击属性 防御属性 攻击加成 下一级技能ID 
+int int string string int int 
 --> 
 <Skill>
     <l key="1001001" mp="0" atkp="atk" defp="def" atkv="200000" nextlv="1001002" /> 

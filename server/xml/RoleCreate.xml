@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?> 
 <!-- 
-类型 送的东西  
-string list:idcount  
+类型 送的东西 
+string list:idcount 
 --> 
 <RoleCreate>
     <l key="bag" value="10001:1,10002:2,10003:3,10004:4,10005:5,10006:6" /> 

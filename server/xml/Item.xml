@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?> 
 <!-- 
-道具ID 等级 描述 图标 道具类型 Data1 Data2 
-int int string string int string int 
+道具ID 等级 道具类型 Data1 Data2 
+int int int string int 
 --> 
 <Item>
     <l key="1" level="1" type="0" d1="null" d2="null" /> 

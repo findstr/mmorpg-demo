@@ -53,8 +53,9 @@ r_startgame 0x20f2 {
 }
 
 a_startgame 0x20f3 {
-	.coord_x:float 1
-	.coord_z:float 2
+	.clock:integer 1
+	.coord_x:float 2
+	.coord_z:float 3
 }
 
 a_gatekick 0x20f5 {
@@ -136,18 +137,20 @@ a_movedir 0x5001 {
 }
 
 r_movepoint 0x5002 {
-	.src_coord_x:float 1
-	.src_coord_z:float 2
-	.dst_coord_x:float 3
-	.dst_coord_z:float 4
+	.coord_x:float 1
+	.coord_z:float 2
+	.moveto_x:float 3
+	.moveto_z:float 4
+	.movetime:integer 5
 }
 
 a_movepoint 0x5003 {
-	.src_coord_x:float 1
-	.src_coord_z:float 2
-	.dst_coord_x:float 3
-	.dst_coord_z:float 4
-	.uid:integer 5
+	.coord_x:float 1
+	.coord_z:float 2
+	.moveto_x:float 3
+	.moveto_z:float 4
+	.movetime:integer 5
+	.uid:integer 6
 }
 
 r_moveenter 0x5004 {
@@ -160,6 +163,9 @@ a_moveenter 0x5005 {
 	.hp:integer 3
 	.coord_x:float 4
 	.coord_z:float 5
+	.moveto_x:float 6
+	.moveto_z:float 7
+	.movetime:integer 8
 }
 
 r_moveleave 0x5006 {
@@ -174,10 +180,13 @@ a_moveleave 0x5007 {
 a_movediff 0x5008 {
 	player {
 		.uid:integer 1
-		.coord_x:float 2
-		.coord_z:float 3
-		.name:string 4
-		.hp:integer 5
+		.movetime:integer 2
+		.coord_x:float 3
+		.coord_z:float 4
+		.moveto_x:float 5
+		.moveto_z:float 6
+		.name:string 7
+		.hp:integer 8
 	}
 	.enter:player[] 1
 	.leave:integer[] 2
@@ -187,6 +196,7 @@ a_movediff 0x5008 {
 r_movesync 0x5009 {
 	.coord_x:float 1
 	.coord_z:float 2
+	.movetime:integer 3
 }
 
 a_movesync 0x500a {

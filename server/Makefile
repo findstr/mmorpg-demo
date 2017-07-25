@@ -29,18 +29,6 @@ macosx: PLAT := macosx
 LUACLIB_PATH=luaclib
 #-----------project
 INCLUDE = -I ./silly/lua/ -I ./silly/silly-src/
-SRC = \
-      silly-src/main.c\
-      silly-src/silly_socket.c\
-      silly-src/silly_queue.c\
-      silly-src/silly_worker.c\
-      silly-src/silly_timer.c\
-      silly-src/silly_run.c\
-      silly-src/silly_daemon.c\
-      silly-src/silly_env.c\
-      silly-src/silly_malloc.c\
-
-OBJS = $(patsubst %.c,%.o,$(SRC))
 
 linux macosx: all
 
@@ -48,6 +36,7 @@ all: silly/silly\
 	$(LUACLIB_PATH)	\
 	$(TARGET) \
 	$(LUACLIB_PATH)/aoi.so \
+	$(LUACLIB_PATH)/aux.so \
 
 silly/silly:
 	make -C silly/ $PLAT
@@ -57,6 +46,9 @@ $(LUACLIB_PATH):
 
 $(LUACLIB_PATH)/aoi.so: lualib-src/lualib-aoi.c lualib-src/aoi.c lualib-src/hashtable.c
 	$(CC) $(CCFLAG) $(INCLUDE) -o $@ $^ $(SHARED)
+$(LUACLIB_PATH)/aux.so: lualib-src/lualib-aux.c
+	$(CC) $(CCFLAG) $(INCLUDE) -o $@ $^ $(SHARED)
+
 clean:
 	-rm -rf $(LUACLIB_PATH)
 	make -C silly/clean

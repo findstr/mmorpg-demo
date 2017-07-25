@@ -44,4 +44,11 @@ public class IPConfigItem {
 	public int Port;
 }
 
+public class NPCItem {
+	public int Key;
+	public int type;
+	public int distance;
+	public string name;
+	public string model;
+}
 }

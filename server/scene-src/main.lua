@@ -50,7 +50,6 @@ core.start(function()
 		xmlpath .. "/NPC.xml",
 	}
 	aoi.start(1000.0, 1000.0)
-	scene.start(npc)
 	npc.start()
 	local dbok = db.start()
 	local channelok = channel.start {

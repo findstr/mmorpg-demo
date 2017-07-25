@@ -71,11 +71,12 @@ public class XmlSet<T, K> : XmlLoad where T:new(){
 
 
 public class DB {
+	public static XmlSet<IPConfigItem, string> IpConfig = new XmlSet<IPConfigItem, string>();
 	public static XmlSet<LanguageItem, string> LanguageCN = new XmlSet<LanguageItem, string>();
 	public static XmlSet<RoleLevelItem, int> RoleLevel = new XmlSet<RoleLevelItem, int>();
 	public static XmlSet<ItemItem, int> Item = new XmlSet<ItemItem, int>();
 	public static XmlSet<ErrnoItem, int> Errno = new XmlSet<ErrnoItem, int>();
-	public static XmlSet<IPConfigItem, string> IpConfig = new XmlSet<IPConfigItem, string>();
+	public static XmlSet<NPCItem, int> NPC = new XmlSet<NPCItem, int>();
 
 	private static bool loaded = false;
 	public static void Load() {

@@ -20,7 +20,7 @@ public class MainState : GameState {
 		Module.UI.mb.Hide();
 		alreadyenter = true;
 		Module.Misc.state = this;
-		role = EntityManager.CreateCharacter(Module.Role.uid,
+		role = EntityManager.CreatePC(Module.Role.uid,
 				Module.Role.Basic.name,
 				Module.Role.Basic.hp,
 				Module.Role.pos);
@@ -78,10 +78,19 @@ public class MainState : GameState {
 			return ;
 		var src = Vector3.zero;
 		var dst = Vector3.zero;
-		Tool.ToNative(ref src, ack.src_coord_x, ack.src_coord_z);
-		Tool.ToNative(ref dst, ack.dst_coord_x, ack.dst_coord_z);
+		Tool.ToNative(ref src, ack.coord_x, ack.coord_z);
+		Tool.ToNative(ref dst, ack.moveto_x, ack.moveto_z);
 		Debug.Log("[MainState] AckMovePoint:" + ack.uid);
-		c.MovePoint(src, dst);
+		c.MovePoint(src, dst, (uint)ack.movetime);
+	}
+
+	private string getEntityName(int uid, byte[] name) {
+		if (name == null) {
+			var xml = DB.DB.NPC.Get(uid);
+			return xml.name;
+		} else {
+			return Tool.tostring(name);
+		}
 	}
 
 	void ack_movediff(int err, wire obj) {
@@ -90,13 +99,19 @@ public class MainState : GameState {
 			for (int i = 0; i < ack.enter.Length; i++) {
 				var p = ack.enter[i];
 				var src = Vector3.zero;
+				var dst = Vector3.zero;
+				Character c;
 				Tool.ToNative(ref src, p.coord_x, p.coord_z);
+				Tool.ToNative(ref dst, p.moveto_x, p.moveto_z);
 				string name;
-				if (p.name == null)
-					name = "我是怪";
-				else
+				if (p.name == null) {
+					var xml = DB.DB.NPC.Get(p.uid);
+					c = EntityManager.CreateNPC(p.uid, xml.name, p.hp, src, xml.model);
+				} else {
 					name = Tool.tostring(p.name);
-				EntityManager.CreateCharacter(p.uid, name, p.hp, src);
+					c = EntityManager.CreatePC(p.uid, name, p.hp, src);
+				}
+				c.MovePoint(src, dst, (uint)p.movetime);
 			}
 		}
 		if (ack.leave != null) {
@@ -109,7 +124,8 @@ public class MainState : GameState {
 		a_moveenter ack = (a_moveenter)obj;
 		Vector3 src = new Vector3();
 		Tool.ToNative(ref src, ack.coord_x, ack.coord_z);
-		EntityManager.CreateCharacter(ack.uid, Tool.tostring(ack.name), ack.hp, src);
+		string name = getEntityName(ack.uid, ack.name);
+		EntityManager.CreatePC(ack.uid, name, ack.hp, src);
 	}
 
 	void ack_moveleave(int err, wire obj) {

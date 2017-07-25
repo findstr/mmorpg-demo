@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?> 
 <!-- 
-任务ID 描述 
-int string 
+任务ID 
+int 
 --> 
 <MainTask>
     <l key="1" /> 

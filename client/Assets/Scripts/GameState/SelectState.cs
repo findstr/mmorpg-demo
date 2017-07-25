@@ -182,7 +182,9 @@ public class SelectState : GameState {
 			return ;
 		a_startgame ack = (a_startgame)obj;
 		Module.Role.pos = new Vector3(ack.coord_x, 0, ack.coord_z);
+		Module.Control.clock = (uint)ack.clock;
 		StateManager.Instance.SwitchState("MainState");
+		Debug.Log("[SelectState] StartGame:" + Module.Control.clock);
 	}
 }
 

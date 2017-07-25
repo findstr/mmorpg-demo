@@ -15,6 +15,7 @@ public class MoveDir {
 [RequireComponent(typeof(Animator))]
 [RequireComponent(typeof(Rigidbody))]
 [RequireComponent(typeof(CapsuleCollider))]
+[RequireComponent(typeof(NavMeshAgent))]
 public class Character : MonoBehaviour {
 	//component
 	private Rigidbody RB;
@@ -31,11 +32,11 @@ public class Character : MonoBehaviour {
 	}
 
 	bool SetRun(float z) {
-		if (z > 0.1f) {
+		if (z > 0.0001f) {
 			animator.SetBool("Run", true);
 			animator.SetFloat("RunDir", 1.0f);
 			return true;
-		} else if (z < -0.1f) {
+		} else if (z < -0.0001f) {
 			animator.SetBool("Run", true);
 			animator.SetFloat("RunDir", -1.0f);
 			return true;
@@ -99,8 +100,17 @@ public class Character : MonoBehaviour {
 
 	}
 
-	public void MovePoint(Vector3 src, Vector3 dst) {
+	public void MovePoint(Vector3 src, Vector3 dst, uint movetime) {
+		float dist = Vector3.Distance(src, dst);
+		uint reachtime = (uint)(dist / GameConfig.main_runspeed * 1000) + movetime;
+		int havetime = (int)(reachtime - Module.Control.clock);
+		if (havetime < 0)
+			havetime = 1;
+		float ndist = Vector3.Distance(transform.position, dst);
+		float speed = ndist / ((float)havetime / 1000);
+		Debug.Log("Speed" + dist + ":" + ndist + ":" + havetime + ":" + speed);
 		agent.SetDestination(dst);
+		agent.speed = speed;
 		move_type = MoveType.MOVE_POINT;
 	}
 
@@ -144,7 +154,7 @@ public class Character : MonoBehaviour {
 	{
 		var src = transform.position;
 		src.y = 0;
-		var pos = Vector3.Slerp(src, shadow.pos, 0.3f);
+		var pos = Vector3.Slerp(src, shadow.pos, 0.5f);
 		pos.y = transform.position.y;
 		transform.position = pos;
 	}

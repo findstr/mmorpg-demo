@@ -3,28 +3,46 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class EntityManager {
-	private static Dictionary<int, Character> pool = new Dictionary<int, Character>();
-	public static Character CreateCharacter(int uid, string name, int hp, Vector3 pos) {
-		Debug.Log("[EntityManager] CreateCharacter:" + uid);
-		if (pool.ContainsKey(uid))
-			return pool[uid];
-		var obj = Tool.InstancePrefab("Character/Character01", pos, Quaternion.identity);
+	private static Dictionary<int, Character> CP = new Dictionary<int, Character>();
+	private static Dictionary<int, NPC> NP = new Dictionary<int, NPC>();
+
+	private static Character create(string model, int uid, string name, int hp, Vector3 pos) {
+		var obj = Tool.InstancePrefab(model, pos, Quaternion.identity);
 		Debug.Assert(obj);
 		Character c = obj.GetComponent<Character>();
-		pool[uid] = c;
+		CP[uid] = c;
 		c.Name = name;
 		c.HP = hp;
 		c.UID = uid;
 		return c;
 	}
+
+	public static Character CreatePC(int uid, string name, int hp, Vector3 pos) {
+		Debug.Log("[EntityManager] CreatePC:" + uid);
+		if (CP.ContainsKey(uid))
+			return CP[uid];
+		return create("Character/Character01", uid, name, hp, pos);
+	}
+
+	public static Character CreateNPC(int uid, string name, int hp, Vector3 pos, string model) {
+		Debug.Log("[EntityManager] CreateNPC:" + uid);
+		if (NP.ContainsKey(uid))
+			return CP[uid];
+		var c = create("NPC/" + model, uid, name, hp, pos);
+		var npc = c.gameObject.GetComponent<NPC>();
+		Debug.Assert(npc);
+		NP[uid] = npc;
+		return c;
+	}
+
 	public static Character GetCharacter(int uid) {
-		if (pool.ContainsKey(uid))
-			return pool[uid];
+		if (CP.ContainsKey(uid))
+			return CP[uid];
 		return null;
 	}
 	public static Character AutoAimCharacter(int uid, float radius) {
 		var atk = GetCharacter(uid);
-		foreach (KeyValuePair<int, Character> entry in pool) {
+		foreach (KeyValuePair<int, Character> entry in CP) {
 			if (entry.Value == atk)
 				continue;
 			float dist = Vector3.Distance(atk.Position, entry.Value.Position);
@@ -39,12 +57,14 @@ public class EntityManager {
 		if (c == null)
 			return ;
 		GameObject.Destroy(c.gameObject);
-		pool.Remove(uid);
+		CP.Remove(uid);
+		NP.Remove(uid);
 		return ;
 	}
 	public static void ClearCharacter() {
-		foreach (KeyValuePair<int, Character> entry in pool)
+		foreach (KeyValuePair<int, Character> entry in CP)
 			GameObject.Destroy(entry.Value.gameObject);
-		pool.Clear();
+		CP.Clear();
+		NP.Clear();
 	}
 }

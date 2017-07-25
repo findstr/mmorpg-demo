@@ -65,13 +65,13 @@ public class MoveController {
 		if (hitObj.tag != "Terrian")
 			return false;
 		Tool.PlayParticle(GameConfig.move.click_particle, hitInfo.point, 0.3f);
-		role.MovePoint(role.transform.position, hitInfo.point);
+		role.MovePoint(role.transform.position, hitInfo.point, Module.Control.clock);
 		//notify Net
 		r_movepoint movepoint = new r_movepoint();
-		movepoint.src_coord_x = role.transform.position.x;
-		movepoint.src_coord_z = role.transform.position.z;
-		movepoint.dst_coord_x = hitInfo.point.x;
-		movepoint.dst_coord_z = hitInfo.point.z;
+		movepoint.coord_x = role.transform.position.x;
+		movepoint.coord_z = role.transform.position.z;
+		movepoint.moveto_x = hitInfo.point.x;
+		movepoint.moveto_z = hitInfo.point.z;
 		NetInstance.Gate.Send(movepoint);
 		Debug.Log("MovePoint:" + role.transform.position + " to " + hitInfo.point);
 		return true;
