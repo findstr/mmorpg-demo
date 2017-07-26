@@ -172,7 +172,7 @@ local s_login = {
 	coord_z = false,
 }
 local function r_startgame(self, req)
-	print("r_startgame")
+	print("r_startgame", self.uid, self.gatefd)
 	self.start = true
 	local x, z = db.coord(self.uid)
 	self.coord_x, self.coord_z = x, z

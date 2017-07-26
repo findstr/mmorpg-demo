@@ -89,13 +89,13 @@ function M.login(uid, req)
 	req.clock = clock
 	channel.senduid(uid, "a_startgame", req)
 	local x, z = req.coord_x, req.coord_z
+	print("start game", uid, x, z)
 	role.coord_x = x
 	role.coord_z = z
 	role.moveto_x = x
 	role.moveto_z = z
 	role.movetime = clock
 	aoi.leave(uid)
-	print("start game", uid, role.coord_x, role.coord_z)
 	aoi.enter(uid, x, z, enter_buffer)
 	a_movediff.enter = fillinfo(enter_buffer)
 	a_movediff.leave = nil
