@@ -41,14 +41,15 @@ local function think_follow(self, clock)
 		self.coord_x, self.coord_z = x, z
 		self.movetime = clock
 		npc_move(self, x, z)
-		local r_x, r_z = role.coord_x, role.coord_z
-		if NEQ(follow_x, r_x) or NEQ(follow_z, r_z) then
-			self.moveto_x = r_x
-			self.moveto_z = r_z
-			local watch = aoi.filter(self.uid)
-			return channel.multicastmap("a_movepoint", self, watch)
-		end
 	end
+	local r_x, r_z = role.coord_x, role.coord_z
+	if NEQ(follow_x, r_x) or NEQ(follow_z, r_z) then
+		self.moveto_x = r_x
+		self.moveto_z = r_z
+		local watch = aoi.filter(self.uid)
+		return channel.multicastmap("a_movepoint", self, watch)
+	end
+
 end
 
 -----------------------------------logic
