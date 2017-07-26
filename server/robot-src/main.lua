@@ -23,6 +23,8 @@ local Achallenge = cproto:querytag("a_accountchallenge")
 local Alogin = cproto:querytag("a_accountlogin")
 local Agate = cproto:querytag("a_gatelogin")
 local Arole = cproto:querytag("a_rolecreate")
+local Astart = cproto:querytag("a_startgame")
+
 local function oneuser(i)
 	local login, client
 	local gate
@@ -32,10 +34,10 @@ local function oneuser(i)
 	local waitco = core.running()
 	print("run", i, waitco)
 	local r_movepoint = {
-		src_coord_x = false,
-		src_coord_z = false,
-		dst_coord_x = false,
-		dst_coord_z = false,
+		coord_x = false,
+		coord_z = false,
+		moveto_x = false,
+		moveto_z = false,
 	}
 
 	login = msg.createclient {
@@ -70,11 +72,14 @@ local function oneuser(i)
 			local cmd = unpack("<I4", str)
 			if cmd == Agate then
 				local ack = cproto:decode(cmd, str:sub(4+1))
-				coordx, coordz = ack.coord_x, ack.coord_z
+				coordx, coordz = 10.0, 10.0
 				print("[WAKEUP] gatelogin", i, f)
 				core.wakeup(waitco)
 			elseif cmd == Arole then
 				print("[WAKEUP] rolecreate", i, f)
+				core.wakeup(waitco)
+			elseif cmd == Astart then
+				print("[WAKEUP] startgame", i, f)
 				core.wakeup(waitco)
 			end
 		end,
@@ -115,6 +120,7 @@ local function oneuser(i)
 	client:send(encodeproto("r_rolecreate", r_rolecreate))
 	core.wait()
 	client:send(encodeproto("r_startgame", EMPTY))
+	core.wait()
 	---------test logic
 	local last = core.monotonic()
 	while true do
@@ -122,8 +128,9 @@ local function oneuser(i)
 		local delta = now - last
 		local x = math.random(-SPEED, SPEED) * delta
 		local z = math.random(-SPEED, SPEED) * delta
-		r_movepoint.src_coord_x = coordx
-		r_movepoint.src_coord_z = coordz
+		r_movepoint.movetime = now
+		r_movepoint.coord_x = coordx
+		r_movepoint.coord_z = coordz
 		coordx = x + coordx
 		coordz = z + coordz
 		if coordx > REGIONX then
@@ -136,8 +143,8 @@ local function oneuser(i)
 		elseif coordz < 0 then
 			coordz = 0
 		end
-		r_movepoint.dst_coord_x = coordx
-		r_movepoint.dst_coord_z = coordz
+		r_movepoint.moveto_x = coordx
+		r_movepoint.moveto_z = coordz
 		client:send(encodeproto("r_movepoint", r_movepoint))
 		last = now
 		core.sleep(math.random(300, 800))
