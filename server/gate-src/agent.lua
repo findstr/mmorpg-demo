@@ -109,10 +109,11 @@ local function agent_free(self)
 end
 
 local function agent_logout(self)
-	if self.uid then
+	local uid = self.uid
+	if uid then
 		notify_logout(self)
+		hub.logout(uid)
 	end
-	hub.logout(self)
 	agent_free(self)
 end
 

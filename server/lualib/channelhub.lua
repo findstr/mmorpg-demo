@@ -81,7 +81,7 @@ local function online_logout(uid)
 		return
 	end
 	a.slogin = false
-	s.srole = false
+	a.srole = false
 	online_agent[uid] = nil
 end
 
