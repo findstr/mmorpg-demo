@@ -28,8 +28,7 @@ end
 local function regclientproto(cmd, func)
 	cmd = cproto:querytag(cmd)
 	local cb = function(self, cmd, dat)
-		local dat = dat:sub(4 + 1)
-		local req = cproto:decode(cmd, dat)
+		local req = cproto:decode(cmd, dat, 4)
 		func(self, req)
 	end
 	CMD[cmd] = cb
@@ -39,8 +38,7 @@ local function protowrapper(proto, cb)
 	return function(self, cmd, data)
 		local pk
 		if #data > 8 then
-			data = data:sub(8 + 1)
-			req = proto:decode(cmd, data)
+			req = proto:decode(cmd, data, 8)
 		else
 			req = NIL
 		end
@@ -183,11 +181,10 @@ local function r_startgame(self, req)
 end
 
 local function r_movesync(self, cmd, packet)
-	local dat = packet:sub(4+1)
-	local req = cproto:decode(cmd, dat)
+	local req = cproto:decode(cmd, dat, 4)
 	self.coord_x = req.coord_x
 	self.coord_z = req.coord_z
-	local ok = hub.tryforward(self, cmd, packet)
+	return hub.tryforward(self, cmd, packet)
 end
 
 local function s_forcepoint(self, req)

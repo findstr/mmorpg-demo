@@ -47,13 +47,13 @@ local function oneuser(i)
 			local cmd = unpack("<I4", str)
 			print("login", cmd)
 			if cmd == Achallenge then
-				local ack = cproto:decode(cmd, str:sub(4+1))
+				local ack = cproto:decode(cmd, str, 4)
 				randomkey = ack.randomkey
 				core.wakeup(waitco)
 				print("randomkey", ack.randomkey)
 				print("[WAKEUP] randomkey", i)
 			elseif cmd == Alogin then
-				local ack = cproto:decode(cmd, str:sub(4+1))
+				local ack = cproto:decode(cmd, str, 4)
 				uid = ack.uid
 				token = ack.token
 				print("accountlogin", uid, token)
@@ -71,7 +71,7 @@ local function oneuser(i)
 			local str = np.tostring(d, sz)
 			local cmd = unpack("<I4", str)
 			if cmd == Agate then
-				local ack = cproto:decode(cmd, str:sub(4+1))
+				local ack = cproto:decode(cmd, str, 4)
 				coordx, coordz = 10.0, 10.0
 				print("[WAKEUP] gatelogin", i, f)
 				core.wakeup(waitco)
@@ -147,7 +147,7 @@ local function oneuser(i)
 		r_movepoint.moveto_z = coordz
 		client:send(encodeproto("r_movepoint", r_movepoint))
 		last = now
-		core.sleep(math.random(300, 800))
+		core.sleep(math.random(800, 1000))
 	end
 end
 

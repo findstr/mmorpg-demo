@@ -29,8 +29,7 @@ local function router_regserver(cmd, func)
 	local cb = function(uid, dat, fd)
 		local req
 		if #dat > 8 then
-			dat = dat:sub(8 + 1)
-			req = sproto:decode(cmd, dat)
+			req = sproto:decode(cmd, dat, 8)
 		else
 			req = NIL
 		end
@@ -49,8 +48,7 @@ local function router_regagent(proto, cmd, func)
 		end
 		local req
 		if #dat > 8 then
-			dat = dat:sub(8 + 1)
-			req = proto:decode(cmd, dat)
+			req = proto:decode(cmd, dat, 8)
 		else
 			req = NIL
 		end
