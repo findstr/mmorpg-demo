@@ -162,28 +162,26 @@ function M.roleget(uid)
 end
 
 local function roleupdate(uid, role, dirty)
-	local count = 0
-	local k = format(dbk_role, uid)
-	print("roleupdate", dirty)
+	local t = format(dbk_role, uid)
+	local cmd = {
+		"hmset",
+		t,
+	}
+	local i = 2
+	print("roleupdate", k, dirty)
 	for k, flag in pairs(part_flag) do
 		if (dirty & flag) ~= 0 then
-			count = count + 1
-			cmdbuffer[count] = k
-			count = count + 1
-			print("roleupdate", uid, k)
-			cmdbuffer[count] = dbproto:encode(part_proto[k], role)
+			i = i + 1
+			cmd[i] = k
+			i = i + 1
+			cmd[i] = dbproto:encode(part_proto[k], role)
+			print("roleupdate", t, k)
 		end
 	end
-	if count == 0 then
+	if i == 0 then
 		return
 	end
-	local ok, err = dbinst:hmset(k, tunpack(cmdbuffer, 1, count))
-	for i = 1, count do
-		cmdbuffer[i] = nil
-	end
-	if not ok then
-		print("roleupdate", err)
-	end
+	return cmd
 end
 
 function M.roleland(uid)
@@ -206,13 +204,23 @@ end
 
 local function writedb()
 	roledirtycount = 0
+	local i = 0
 	for uid, dirty in pairs(roledirty) do
 		local role = rolecache[uid]
 		roledirty[uid] = nil
-		print("roleupdate dirty", dirty)
-		roleupdate(uid, role, dirty)
+		local cmd = roleupdate(uid, role, dirty)
+		if cmd then
+			i = i + 1
+			cmdbuffer[i] = cmd
+		end
 		if (dirty & DIRTY_LAND) ~= 0 then
 			roledirty[uid] = nil
+		end
+	end
+	if i ~= 0 then
+		dbinst:pipeline(cmdbuffer)
+		for j = 1, i do
+			cmdbuffer[j] = nil
 		end
 	end
 end
